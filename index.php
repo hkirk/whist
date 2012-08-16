@@ -17,38 +17,43 @@
 				{ id: 'sol',     name: 'Sol',            multiplier: 1, maxTricks: 1 },
 				{ id: 'rensol',  name: 'Ren Sol',        multiplier: 2, maxTricks: 0 },
 				{ id: 'bord',    name: 'Bordlægger',     multiplier: 4, maxTricks: 1 },
-				{ id: 'renbord', name: 'Ren Bordlægger', multiplier: 8, maxTricks: 0 }
+				{ id: 'renbord', name: 'Ren Bordl.', multiplier: 8, maxTricks: 0 }
 			];
-			var totalPoints  = [ 0, 0, 0, 0 ];
-			var lastPoints = null;
+			var totalPoints = [ 0, 0, 0, 0 ];
+			var lastPoints = [ null, null, null, null ];
+			var isRoundCalculated = true; // pseudo round 0 is calculated to totalPoints
 
 			function addRound() {
+				if(!isRoundCalculated) {
+					alert("Round is not calculated!");
+					return;
+				}
+				// TODO: Disable inputs for previous round
 				round++;
 				var html = "<tr class=\"" + round + "\">";
 				html += "<td>" + round + "</td>";
 				html += "<td>";
 				html += createBidSelect(round);
+				html += "/";
 				html += createTrickSelect(round);
 				html += "</td>"
 				for (var player=0; player<4; player++) {
 					html += "<td>"
-					html += "<input type='checkbox' id='bidderteam-" + round + "-" + player+"' />";
-					html += "<br/>";
-					html += "<input type=\"text\" id=\"result-" + round + "-" + player + "\" readonly='readonly' />";
+					html += "<input type='checkbox' id='bidderteam-" + round + "-" + player+"' /> - ";
+					html += "<input type=\"text\" id=\"result-" + round + "-" + player + "\" readonly='readonly' size='3' />";
 					html += "</td>";
 				}
 				html += "</tr>";
 				$('#round-results').append(html);
-				updateTotalPoints();
+				lastPoints = totalPoints.slice(0); // clone
+				isRoundCalculated = false;
 			}
 			
-			// TODO: Find a better strategy for updating total points!
-			function updateTotalPoints() {
-				if(lastPoints) {
-					for(var p=0;p<4;p++) {
-						totalPoints[p] += lastPoints[p];
-						$('#total-'+p).val(totalPoints[p]);
-					}
+			function updateTotalPoints(currentPoints) {
+				for(var p=0;p<4;p++) {
+					totalPoints[p] = lastPoints[p] + currentPoints[p];
+					var points = totalPoints[p]; 
+					$('#total-'+p).val(points);
 				}
 			}
 			
@@ -57,8 +62,7 @@
 				select.addOption('', 'Melding');
 				for (var i = 7; i <= 13; i++) {
 					$(extras).each(function(index,extra) {
-						//var points = calculateNormal(i, i, extra);
-						var points = 8;
+						var points = calculateNormal(i, i, extra);
 						select.addOption(i + "-" + index, i + (extra.name ? " " + extra.name : "") + " ("+points+")");
 					});
 				}
@@ -79,8 +83,9 @@
 			}
 			
 			function createSelect(id) {
-				var select = $("<select/>");
-				select.attr('id', id);
+				var select = $("<select/>", {
+					id: id
+				});
 				select.addOption = function(value, text) {
 					createOption(value, text, this);
 				}
@@ -88,19 +93,22 @@
 			}
 			
 			function createOption(value,text,select) {
-				var option = $("<option/>");
-				option.attr('value', value);
-				option.text(text);
-				if(select) {
-					select.append(option);
-				}
+				var option = $("<option/>", {
+					value: value,
+					text: text
+				});
+				select &&	select.append(option);
 				return option;
 			}
+			
 			/*
 			 * 
 			 */
 			function calculatePoints() {
-				// save result
+				if(round<1) {
+					alert("No latest round!");
+					return;
+				}
 
 				var bid = $("#bid-" + round).val();
 				var tricks = $("#tricks-" + round).val();
@@ -152,7 +160,8 @@
 				for(var p=0;p<4;p++) {
 					$("#result-" + round + "-" + p).val(points[p]);
 				}
-				lastPoints = points;
+				updateTotalPoints(points);
+				isRoundCalculated = true;
 			}
 			
 			function getBidderTeamPlayers() {
@@ -215,21 +224,21 @@
 				</tr>
 			</thead>
 			<tbody id="round-results">
-				
+
 			</tbody>
 			<tfoot>
-					<th>#</th>
-					<th>Total:</th>
-					<?php
-					for ($player = 0; $player < 4; $player++) {
-						echo "<th>";
-						echo "<input type='text' readonly='readonly' id='total-$player' />";
-						echo "</th>";
-					}
-					?>
-				</tr>				
-			</tfoot>
-		</table>
-		<input type="button" value="Calculate latest round" onclick="calculatePoints()" />
-	</body>
+			<th>#</th>
+			<th>Total:</th>
+			<?php
+			for ($player = 0; $player < 4; $player++) {
+				echo "<th>";
+				echo "<input type='text' readonly='readonly' id='total-$player' />";
+				echo "</th>";
+			}
+			?>
+		</tr>				
+	</tfoot>
+</table>
+<input type="button" value="Calculate latest round" onclick="calculatePoints()" />
+</body>
 </html>
