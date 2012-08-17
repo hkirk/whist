@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link type="text/css" href="index.css" rel="stylesheet" media="all" />
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Whist calculator</title>
@@ -28,38 +29,37 @@
 					alert("Round is not calculated!");
 					return;
 				}
-				// TODO: Disable inputs for previous round
 				round++;
-				var html = "<tr class=\"" + round + "\">";
-				html += "<td>" + round + "</td>";
-				html += "<td>";
-				html += createBidSelect(round);
-				html += "/";
-				html += createTrickSelect(round);
-				html += "</td>"
+				var html = "<tr id='round-" + round + "' class=\"" + round + "\">";
+				html += "<th class='round'>" + round + "</th>";
+				html += "<td class='bid'></td>";
+				html += "<td class='tricks'></td>"
 				for (var player=0; player<4; player++) {
-					html += "<td>"
-					html += "<input type='checkbox' id='bidderteam-" + round + "-" + player+"' /> - ";
-					html += "<input type=\"text\" id=\"result-" + round + "-" + player + "\" readonly='readonly' size='3' />";
-					html += "</td>";
+					html += "<td class='result result-"+player+"'></td>"
+					html += "<td class='total total-"+player+"'></td>";
 				}
 				html += "</tr>";
-				$('#round-results').append(html);
+				$('tbody').append(html);
+				// Reset controls
+				$("#bid").val("");
+				$("#tricks").val("");
+				for(var p=0;p<4;p++) {
+					$("#bidderteam-"+p).prop('checked',false);
+				}
 				lastPoints = totalPoints.slice(0); // clone
 				isRoundCalculated = false;
 			}
 			
-			function updateTotalPoints(currentPoints) {
+			function updateTotalPoints(currentPoints, row) {
 				for(var p=0;p<4;p++) {
-					totalPoints[p] = lastPoints[p] + currentPoints[p];
-					var points = totalPoints[p]; 
-					$('#total-'+p).val(points);
+					var points = totalPoints[p] = lastPoints[p] + currentPoints[p];
+					$('#total-'+p).text(points);
+					row.find(".total-"+p).text(points);
 				}
 			}
 			
-			function createBidSelect(round) {
-				var select = createSelect("bid-" + round);
-				select.addOption('', 'Melding');
+			function populateBidSelect() {
+				var select = getSelect("#bid");
 				for (var i = 7; i <= 13; i++) {
 					$(extras).each(function(index,extra) {
 						var points = calculateNormal(i, i, extra);
@@ -70,16 +70,21 @@
 					var points = calculateSolo(0, solo);
 					select.addOption('solo-'+index, solo.name + " ("+points+")");
 				});
-				return select.wrap("<div/>").parent().html();
 			}
 			
-			function createTrickSelect(round) {
-				var select = createSelect("tricks-" + round);
-				select.addOption('', 'Stik');
+			function populateTrickSelect() {
+				var select = getSelect("#tricks");
 				for (var i = 0; i <= 13; i++) {
 					select.addOption(i, i);
 				}
-				return select.wrap("<div/>").parent().html();
+			}
+			
+			function getSelect(selector) {
+				var select = $(selector);
+				select.addOption = function(value, text) {
+					createOption(value, text, this);
+				}
+				return select;
 			}
 			
 			function createSelect(id) {
@@ -110,8 +115,12 @@
 					return;
 				}
 
-				var bid = $("#bid-" + round).val();
-				var tricks = $("#tricks-" + round).val();
+				var bidSelect = $("#bid");
+				var bid = bidSelect.val();
+				var bidText = bidSelect.find(":selected").text();
+				var tricksSelect = $("#tricks");
+				var tricks = tricksSelect.val();
+				var tricksText = tricksSelect.find(":selected").text();
 				if(bid===''||tricks==='') {
 					alert("Missing input!");
 					return;
@@ -157,17 +166,29 @@
 						default: alert("Too many bidders!"); return;
 					}
 				}
+				var row = $("tr#round-"+round);
 				for(var p=0;p<4;p++) {
-					$("#result-" + round + "-" + p).val(points[p]);
+					var td = row.find("td.result-"+ p);
+					td.text(points[p]);
+					var removeClass = points[p]<0.0?"positive":"negative";
+					var addClass = points[p]<0.0?"negative":"positive";
+					td.removeClass(removeClass).addClass(addClass);
+					td.removeClass("bidderteam"); // default is not bidder team
 				}
-				updateTotalPoints(points);
+//				$(bidders).each(function(index,player) {
+//					var td = row.find("td.result-"+ player);
+//					td.addClass("bidderteam");
+//				});
+				row.find("td.bid").text(bidText);
+				row.find("td.tricks").text(tricksText);
+				updateTotalPoints(points, row);
 				isRoundCalculated = true;
 			}
 			
 			function getBidderTeamPlayers() {
 				var bidders = [];
 				for(var player=0; player<4; player++) {
-					if($("#bidderteam-"+round+"-"+player).is(':checked')) {
+					if($("#bidderteam-"+player).is(':checked')) {
 						bidders.push(player);
 					}
 				}
@@ -204,41 +225,64 @@
 				//alert("bid: "+bid+", tricks: "+tricks+", lm: "+looserMultiplier+", ld: "+looserDisplacement+", em: "+extra.multiplier);
 				return G * Math.pow(2, bid-7) * extra.multiplier * looserMultiplier * (tricks-bid+looserDisplacement);
 			}
+			
+			function init() {
+				populateBidSelect();
+				populateTrickSelect();
+				addRound();
+			}
+			
+			$(function() {
+				init();			
+			});
 		</script>
 	</head>
 	<body>
-		<input type="button" value="Add round" onclick="addRound()"/>
+		<h1>The funky Whist Calculator</h1>
 		<table class="results">
 			<thead>
 				<tr>
 					<th>#</th>
 					<th>Melding</th>
-					<?php
-					for ($player = 1; $player <= 4; $player++) {
-						echo "<th>";
-						echo "Player $player</br/>";
-						echo "<input type=\"text\" name=\"player[$player]\" />";
-						echo "</th>";
-					}
-					?>
+					<th>Stik</th>
+					<?php for ($player = 1; $player <= 4; $player++) { ?>
+						<th colspan='2'>
+							Player <?= $player ?> <br />
+							<input type="text" size="5" name="player[<?= $player ?>]" />
+						</th>
+					<?php } ?>
 				</tr>
 			</thead>
-			<tbody id="round-results">
-
+			<tbody>
 			</tbody>
 			<tfoot>
-			<th>#</th>
-			<th>Total:</th>
-			<?php
-			for ($player = 0; $player < 4; $player++) {
-				echo "<th>";
-				echo "<input type='text' readonly='readonly' id='total-$player' />";
-				echo "</th>";
-			}
-			?>
-		</tr>				
-	</tfoot>
-</table>
-<input type="button" value="Calculate latest round" onclick="calculatePoints()" />
-</body>
+				<tr id="controls">
+					<td colspan="3">
+						<select id="bid">
+							<option value="">Melding</option>
+						</select>
+						/
+						<select id="tricks">
+							<option value="">Stik</option>
+						</select>
+					</td>
+					<?php for ($p = 0; $p < 4; $p++) { ?>
+						<td colspan="2">
+							<input type="checkbox" id="bidderteam-<?= $p ?>" />
+						</td>
+					<?php } ?>
+				</tr>
+				<tr id="total">
+					<th colspan="3">Total:</th>
+					<?php for ($p = 0; $p < 4; $p++) { ?>
+						<th colspan='2' id='total-<?= $p ?>'> </th>
+					<?php } ?>
+				</tr>				
+			</tfoot>
+		</table>
+		<div id="buttons-container">
+			<input type="button" value="Add round" onclick="addRound()"/>
+			<input type="button" value="Calculate latest round" onclick="calculatePoints()" />
+		</div>
+	</body>
 </html>

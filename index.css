@@ -1,0 +1,57 @@
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+td, th {
+	border: 2px solid black;
+}
+
+thead th {
+	background-color: #CCC;
+}
+
+tbody th {
+	background-color: #CCC;
+}
+
+tfoot th {
+	background-color: #CCC;
+}
+
+thead th, tfoot th {
+	/*border: 3px solid black;*/
+}
+
+td.negative {
+	color: red;
+}
+td.positive {
+	color: green;
+}
+thead th {
+	text-align: center;
+}
+tfoot th {
+	text-align: right;
+}
+tr#controls td {
+	text-align: center;
+}
+tbody td.result, tbody td.total {
+	text-align: right;
+}
+tbody th.round {
+	text-align: right;
+}
+tbody td.bid, tbody td.tricks {
+	text-align: center;
+}
+
+tbody td.result.bidderteam, tbody td.total.bidderteam {
+	background-color: #00A;
+}
+
+#buttons-container {
+	margin-top: 10px;
+}
