@@ -9,18 +9,14 @@ td, th {
 
 thead th {
 	background-color: #CCC;
+	text-align: center;
 }
-
 tbody th {
 	background-color: #CCC;
 }
-
 tfoot th {
 	background-color: #CCC;
-}
-
-thead th, tfoot th {
-	/*border: 3px solid black;*/
+	text-align: right;
 }
 
 td.negative {
@@ -29,29 +25,37 @@ td.negative {
 td.positive {
 	color: green;
 }
-thead th {
-	text-align: center;
-}
-tfoot th {
-	text-align: right;
-}
-tr#controls td {
-	text-align: center;
-}
+
 tbody td.result, tbody td.total {
 	text-align: right;
 }
+tbody td.result {
+	border-right: 1px solid black;
+}
+tbody td.total {
+	border-left: 1px solid black;
+}
+
+tr#bidderteam td {
+	text-align: center;
+}
+tr#bidderteam td.bid-tricks {
+	text-align: right;
+}
+
 tbody th.round {
 	text-align: right;
 }
-tbody td.bid, tbody td.tricks {
+tbody td.bid-tricks {
 	text-align: center;
 }
 
-tbody td.result.bidderteam, tbody td.total.bidderteam {
-	background-color: #00A;
+tbody td.result.bidder-team, tbody td.total.bidder-team {
+	background-color: #EEF;
+}
+tbody td.result.opponent-team, tbody td.total.opponent-team {
 }
 
-#buttons-container {
+div {
 	margin-top: 10px;
 }
