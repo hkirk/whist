@@ -1,0 +1,61 @@
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+td, th {
+	border: 2px solid black;
+}
+
+thead th {
+	background-color: #CCC;
+	text-align: center;
+}
+tbody th {
+	background-color: #CCC;
+}
+tfoot th {
+	background-color: #CCC;
+	text-align: right;
+}
+
+td.negative {
+	color: red;
+}
+td.positive {
+	color: green;
+}
+
+tbody td.result, tbody td.total {
+	text-align: right;
+}
+tbody td.result {
+	border-right: 1px solid black;
+}
+tbody td.total {
+	border-left: 1px solid black;
+}
+
+tr#bidderteam td {
+	text-align: center;
+}
+tr#bidderteam td.bid-tricks {
+	text-align: right;
+}
+
+tbody th.round {
+	text-align: right;
+}
+tbody td.bid-tricks {
+	text-align: center;
+}
+
+tbody td.result.bidder-team, tbody td.total.bidder-team {
+	background-color: #EEF;
+}
+tbody td.result.opponent-team, tbody td.total.opponent-team {
+}
+
+div {
+	margin-top: 10px;
+}
