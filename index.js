@@ -161,9 +161,10 @@ $(function() {
 			return;
 		}
 		var splittedBidTemp = bidTemp.split("-");
-		var bidTricks = splittedBidTemp[0];
-		var extraOrSoloIndex = splittedBidTemp[1];
-		var isSolo = bidTricks==='solo';
+		var bidTricksTemp = splittedBidTemp[0];
+		var bidTricks = undefined;
+		var extraOrSoloIndex = parseInt(splittedBidTemp[1]);
+		var isSolo = bidTricksTemp==='solo';
 
 		var bidders = getBidderTeamPlayers();
 		if(bidders.length===0) {
@@ -172,11 +173,11 @@ $(function() {
 		}
 				
 		var points = [null, null, null, null];
-		// Note: bidTricks, tricks and extraOrSoloIndex are strings, but are coerced into numbers(ints) in the formula
 		var result = 0;
 		if (isSolo) { // sol
 			result = calculateSolo(tricks, solos[extraOrSoloIndex]);
 		} else { // normal
+			bidTricks = parseInt(bidTricksTemp);
 			result = calculateNormal(bidTricks, tricks, extras[extraOrSoloIndex]);
 		}				
 		// Initialize all players points to opponent team points
