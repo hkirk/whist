@@ -49,6 +49,8 @@ $(function() {
 	var totalPoints = [ 0, 0, 0, 0 ];
 	var lastPoints = [ null, null, null, null ];
 	var isRoundCalculated = true; // pseudo round 0 is calculated to totalPoints
+	
+	var domRefs = undefined;
 
 	function addRound() {	
 		if(!isRoundCalculated) {
@@ -59,7 +61,6 @@ $(function() {
 		var html = "<tr id='round-" + round + "'>";
 		html += "<th class='round'>" + round + "</th>";
 		html += "<td class='bid-tricks'></td>";
-		//html += "<td class='tricks'></td>"
 		for (var player=0; player<4; player++) {
 			html += "<td class='result result-"+player+"'></td>"
 			html += "<td class='total total-"+player+"'></td>";
@@ -67,8 +68,8 @@ $(function() {
 		html += "</tr>";
 		$('tbody').append(html);
 		// Reset controls
-		$("#bid").val("");
-		$("#tricks").val("");
+		domRefs.bid.val("");
+		domRefs.tricks.val("");
 		for(var p=0;p<4;p++) {
 			$("#bidderteam-"+p).prop('checked',false);
 		}
@@ -92,27 +93,55 @@ $(function() {
 			$('#total-'+p).text(points);
 		}
 	}
+	
+	function clearRoundPoints(row) {
+		var p;
+		var td;
+		for(p=0;p<4;p++) {
+			td = row.find("td.result-"+p+", td.total-"+p);
+			td.text("");
+			td.removeClass("negative positive opponent-team bidder-team");
+		}
+	}
+	
+	function resetRound() {
+		var row = getRoundRow();
+		updateTotalPoints([0,0,0,0]);
+		clearRoundPoints(row);
+		isRoundCalculated = false;
+	}
+	
+	function inputChanged() {
+		var p;
+		if(getBidderTeamPlayers().length === 0 || domRefs.bid.val()==="" || domRefs.tricks.val()==="") {
+			resetRound();
+		} else {
+			calculatePoints();
+		}
+	}
 			
 	function populateBidSelect() {
-		var select;
-		select = getOptionAdder("#bid-normal");
+		var optgroup;
+		var points;
+		var text;
+		optgroup = getOptionAdder("#bid-normal");
 		for (var i = 7; i <= 13; i++) {
 			$(extras).each(function(index,extra) {
-				var points = calculateNormal(i, i, extra);
-				var text = getNormalBidText(i, index);
-				select.addOption(i + "-" + index, text + " ("+points+")");
+				points = calculateNormal(i, i, extra);
+				text = getNormalBidText(i, index);
+				optgroup.addOption(i + "-" + index, text + " ("+points+")");
 			});
 		}
-		select = getOptionAdder("#bid-solo");
+		optgroup = getOptionAdder("#bid-solo");
 		$(solos).each(function(index, solo) {
-			var points = calculateSolo(0, solo);
-			var text = getSoloBidText(index);
-			select.addOption('solo-'+index, text + " ("+points+")");
+			points = calculateSolo(0, solo);
+			text = getSoloBidText(index);
+			optgroup.addOption('solo-'+index, text + " ("+points+")");
 		});
 	}
 			
 	function populateTrickSelect() {
-		var select = getOptionAdder("#tricks");
+		var select = getOptionAdder(domRefs.tricks);
 		for (var i = 0; i <= 13; i++) {
 			select.addOption(i, i);
 		}
@@ -145,19 +174,18 @@ $(function() {
 		return option;
 	}
 			
-	/*
-			 * 
-			 */
 	function calculatePoints() {
+		var p;
 		if(round<1) {
 			alert("No latest round!");
 			return;
 		}
 
-		var bidTemp = $("#bid").val();
-		var tricks = $("#tricks").val();
+		var bidTemp = domRefs.bid.val();
+		var tricks = domRefs.tricks.val();
 		if(bidTemp===''||tricks==='') {
 			alert("Missing input!");
+			resetRound();
 			return;
 		}
 		var splittedBidTemp = bidTemp.split("-");
@@ -169,6 +197,7 @@ $(function() {
 		var bidders = getBidderTeamPlayers();
 		if(bidders.length===0) {
 			alert("Missing bidder(s)!");
+			resetRound();
 			return;
 		}
 				
@@ -182,7 +211,7 @@ $(function() {
 		}				
 		// Initialize all players points to opponent team points
 		var opponentTeamPoints = result * -1;
-		for(var p=0;p<4;p++) {
+		for(p=0;p<4;p++) {
 			points[p] = opponentTeamPoints;
 		}
 				
@@ -194,6 +223,7 @@ $(function() {
 					break;
 				default:
 					alert("We don't support more than one solo-player :(");
+					resetRound();
 					return;
 			}					
 		} else { // normal
@@ -208,12 +238,13 @@ $(function() {
 					break;
 				default:
 					alert("Too many bidders!");
+					resetRound();
 					return;
 			}
 		}
-		updateTotalPoints(points, row);
-		var row = $("tr#round-"+round);
-		for(var p=0;p<4;p++) {
+		updateTotalPoints(points);
+		var row = getRoundRow();
+		for(p=0;p<4;p++) {
 			var isOpponent = bidders.indexOf(p)<0;
 			var td = row.find("td.result-"+p);
 			td.text(points[p]);
@@ -233,6 +264,10 @@ $(function() {
 		isRoundCalculated = true;
 	}
 	
+	function getRoundRow() {
+		return $("tr#round-"+round);
+	}
+	
 	function toggleClass(element, bool, trueClass, falseClass) {
 		if(bool) {
 			element.removeClass(falseClass).addClass(trueClass);
@@ -243,9 +278,9 @@ $(function() {
 			
 	function getBidderTeamPlayers() {
 		var bidders = [];
-		for(var player=0; player<4; player++) {
-			if($("#bidderteam-"+player).prop('checked')) {
-				bidders.push(player);
+		for(var p=0; p<4; p++) {
+			if(domRefs.bidderteam[p].prop('checked')) {
+				bidders.push(p);
 			}
 		}
 		return bidders;
@@ -263,13 +298,37 @@ $(function() {
 		//alert("bid: "+bid+", tricks: "+tricks+", lm: "+looserMultiplier+", ld: "+looserDisplacement+", em: "+extra.multiplier);
 		return G * Math.pow(2, bid-7) * extra.multiplier * looserMultiplier * (tricks-bid+looserDisplacement);
 	}
+	
+	function initDOMRefs() {
+		domRefs = {
+			bid: $("#bid"),
+			tricks: $("#tricks"),
+			bidderteam: (function() {
+				var bidderteam = [];
+				for(var p=0; p<4; p++) {
+					bidderteam.push($("#bidderteam-"+p));
+				}
+				return bidderteam;
+			})(),
+			addRound: $("#addRound")
+		};
+	}
+	
+	function initHandlers() {
+		domRefs.bid.change(inputChanged);
+		domRefs.tricks.change(inputChanged);
+		$.each(domRefs.bidderteam, function(index, member) {
+			member.change(inputChanged);
+		});
+		domRefs.addRound.click(addRound);
+	}
 			
 	function init() {
+		initDOMRefs();
+		initHandlers();
 		populateBidSelect();
 		populateTrickSelect();
 		addRound();
-		$("#addRound").click(addRound);
-		$("#calculatePoints").click(calculatePoints);
 	}
 			
 	init();
