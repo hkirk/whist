@@ -60,5 +60,4 @@ function rewrite_null($e) {
 </table>
 <?php
 render_view('controls/' . $controls_view, $controls_view_data);
-
 ?>

@@ -3,8 +3,8 @@
 require("../lib/lib.php");
 
 $player_id_validator = function($value) {
-					return $value === "" || ctype_digit($value);
-				};
+			return $value === "" || ctype_digit($value);
+		};
 
 
 switch (request_method()) {
@@ -13,15 +13,15 @@ switch (request_method()) {
 		$location = check_get_string($_POST, 'location');
 		$description = check_get_string($_POST, 'description');
 		$player_ids = check_get_indexed_array($_POST, 'player_ids', 4, $player_id_validator);
-		$attachments = check_get_multi_checkbox_array($_POST, 'attachments', $VALID_VALUES['attachments']);
-		$point_rules = check_get_multi_checkbox_array($_POST, 'point_rules', $VALID_VALUES['point_rules']);
+		$attachments = check_get_multi_checkbox_array($_POST, 'attachments', $OPTIONAL_ATTACHMENTS);
+		$point_rules = check_get_multi_checkbox_array($_POST, 'point_rules', $POINT_RULES);
 		check_input($location, $description, $player_ids, $attachments, $point_rules);
 		$used_player_ids = array();
 		$data = array(
-				'missing_location' => FALSE,
-				'missing_player' => FALSE,
-				'multi_player' => FALSE,
-				'unknown_player' => FALSE
+			'missing_location' => FALSE,
+			'missing_player' => FALSE,
+			'multi_player' => FALSE,
+			'unknown_player' => FALSE
 		);
 		$input_error = FALSE;
 		if (trim($location) === "") {
@@ -48,7 +48,7 @@ switch (request_method()) {
 	case "GET" :
 		$players = db_load_players();
 		$data = array(
-				'players' => $players
+			'players' => $players
 		);
 
 		render_page("New game", "New game", "newgame", $data);

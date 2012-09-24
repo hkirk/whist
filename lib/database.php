@@ -19,8 +19,8 @@ function db_force_connect() {
 	$name = $s['name'];
 	$dsn = "mysql:host=$host;dbname=$name;charset=UTF-8";
 	$attributes = array(
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
-			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+		PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
+		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 	);
 	$_db = new PDO($dsn, $s['username'], $s['password'], $attributes);
 	return $_db;
@@ -39,9 +39,9 @@ EOS;
 	$players = array();
 	foreach ($stm as $row) {
 		$players[] = array(
-				'id' => $row['id'],
-				'nickname' => $row['nickname'],
-				'fullname' => $row['fullname']
+			'id' => $row['id'],
+			'nickname' => $row['nickname'],
+			'fullname' => $row['fullname']
 		);
 	}
 	return $players;
@@ -50,17 +50,17 @@ EOS;
 
 // Map with values as sets (map with truth value)
 $VALID_VALUES = array(
-		'attachments' => array(
-				'sans' => TRUE,
-				'tips' => TRUE,
-				'strongs' => TRUE,
-				'halves' => TRUE
-		),
-		'point_rules' => array(
-				'reallybad' => TRUE,
-				'tiptricks' => TRUE,
-				'solotricks' => TRUE
-		)
+	'attachments' => array(
+		'sans' => TRUE,
+		'tips' => TRUE,
+		'strongs' => TRUE,
+		'halves' => TRUE
+	),
+	'point_rules' => array(
+		'reallybad' => TRUE,
+		'tiptricks' => TRUE,
+		'solotricks' => TRUE
+	)
 );
 
 
@@ -85,10 +85,10 @@ VALUES
 (?, ?, ?, ?, NOW(), NULL, NOW())
 EOS;
 	$params = array(
-			$location,
-			$description,
-			db_set_string($attachments),
-			db_set_string($point_rules)
+		$location,
+		$description,
+		db_set_string($attachments),
+		db_set_string($point_rules)
 	);
 	db_prepare_execute($sql, $params);
 	$game_id = $_db->lastInsertId();
@@ -101,9 +101,9 @@ EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($player_ids as $index => $player_id) {
 		$params = array(
-				$game_id,
-				$index,
-				$player_id
+			$game_id,
+			$index,
+			$player_id
 		);
 		$result = $stm->execute($params);
 	}
@@ -127,9 +127,9 @@ SELECT ?, (
 ),?, NOW(), NULL, NOW()
 EOS;
 	$params = array(
-			$game_id,
-			$game_id,
-			$bid_type
+		$game_id,
+		$game_id,
+		$bid_type
 	);
 	db_prepare_execute($sql, $params);
 	$id = $_db->lastInsertId();
@@ -152,11 +152,11 @@ INSERT INTO normal_game_rounds
 VALUES(?, ?, NULL, ?, ?, NULL, ?)
 EOS;
 	$params = array(
-			$game_round_id,
-			$bid_winner_position,
-			$bid_tricks,
-			$bid_attachment,
-			$tips
+		$game_round_id,
+		$bid_winner_position,
+		$bid_tricks,
+		$bid_attachment,
+		$tips
 	);
 	db_prepare_execute($sql, $params);
 	db_commit();
@@ -178,8 +178,8 @@ INSERT INTO solo_game_rounds
 VALUES(?, ?)
 EOS;
 	$params = array(
-			$game_round_id,
-			$solo_type
+		$game_round_id,
+		$solo_type
 	);
 	db_prepare_execute($sql, $params);
 	// Solo round players row(s):
@@ -191,8 +191,8 @@ EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($bid_winner_positions as $bid_winner_position) {
 		$params = array(
-				$game_round_id,
-				$bid_winner_position
+			$game_round_id,
+			$bid_winner_position
 		);
 		$stm->execute($params);
 	}
@@ -216,9 +216,9 @@ EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($player_points as $position => $points) {
 		$params = array(
-				$id,
-				$position,
-				$points
+			$id,
+			$position,
+			$points
 		);
 		$stm->execute($params);
 	}
@@ -265,9 +265,9 @@ bid_tricks = ?
 WHERE game_round_id = ?
 EOS;
 	$params = array(
-			$bid_winner_mate_position,
-			$tricks,
-			$id
+		$bid_winner_mate_position,
+		$tricks,
+		$id
 	);
 	db_prepare_execute($sql, $params);
 	db_end_round($id, $player_points);
@@ -285,7 +285,7 @@ USING(game_round_id)
 WHERE r.game_round_id = ?
 EOS;
 	$params = array($id);
-	$rows = db_prepare_execute_fetchAll($sql, $params);
+	list(,, $rows) = db_prepare_execute_fetchAll($sql, $params);
 	//assert(count($rows) === 4);
 	$n_rows = count($rows);
 	if ($n_rows < 1 || $n_rows > 4) {
@@ -315,9 +315,9 @@ EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($bid_winner_tricks_by_position as $position => $tricks) {
 		$params = array(
-				$tricks,
-				$id,
-				$position
+			$tricks,
+			$id,
+			$position
 		);
 		$stm->execute($params);
 	}
@@ -364,11 +364,11 @@ EOS;
 			$expected_round++;
 			db_get_game_rounds_commit_solo_round($solo_data, $round_data, $rounds);
 			$round_data = array(
-					'round' => $round,
-					'bid_type' => $bid_type,
-					'started_at' => $row['started_at'],
-					'ended_at' => $row['ended_at'],
-					'updated_at' => $row['updated_at']
+				'round' => $round,
+				'bid_type' => $bid_type,
+				'started_at' => $row['started_at'],
+				'ended_at' => $row['ended_at'],
+				'updated_at' => $row['updated_at']
 			);
 			$solo_data = NULL;
 		} else {
@@ -378,12 +378,12 @@ EOS;
 		if ($bid_type === "normal") {
 			assert($round !== $last_round);
 			$round_data['bid_data'] = array_filter_entries($row, 'normal_', array(
-					'bid_winner_position',
-					'bid_winner_mate_position',
-					'bid_tricks',
-					'bid_attachment',
-					'tricks',
-					'tips'));
+				'bid_winner_position',
+				'bid_winner_mate_position',
+				'bid_tricks',
+				'bid_attachment',
+				'tricks',
+				'tips'));
 			// Commit round data
 			$rounds[] = $round_data;
 		} else if ($bid_type === "solo") {
@@ -391,8 +391,8 @@ EOS;
 				// First solo player
 				assert($round !== $last_round);
 				$solo_data = array(
-						'type' => $row['solo_type'],
-						'bid_winner_tricks_by_position' => array()
+					'type' => $row['solo_type'],
+					'bid_winner_tricks_by_position' => array()
 				);
 			} else {
 				assert($round === $last_round);
@@ -501,6 +501,35 @@ EOS;
 	$game = array_filter_entries($rows[0], '', array('location', 'description', 'started_at', 'ended_at', 'updated_at'));
 	$game['players'] = $players;
 	return $game;
+}
+
+
+/**
+ * 
+ * @param type $game_id
+ * @return null, 'none', 'solo', or 'normal'
+ */
+function db_get_active_round_bid_type($game_id) {
+	$sql = <<<EOS
+SELECT gr.bid_type AS bid_type, gr.ended_at AS ended_at
+FROM games AS g 
+LEFT OUTER JOIN game_rounds AS gr ON g.id = gr.game_id
+WHERE gr.game_id = ?
+ORDER BY gr.round DESC
+LIMIT 1
+EOS;
+	$params = array($game_id);
+	list(,, $row) = db_prepare_execute_fetch($sql, $params);
+	var_dump($row);
+	if ($row === NULL) {
+		// No such game!
+		return NULL;
+	}
+	if ($row['ended_at'] !== NULL) {
+		// The latest round is ended
+		return 'none';
+	}
+	return $row['bid_type'];
 }
 
 

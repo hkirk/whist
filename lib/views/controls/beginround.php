@@ -1,6 +1,6 @@
 <?php
-global $ATTACHMENTS, $ATTACHMENTS_ORDER;
-global $SOLO_GAMES, $SOLO_GAMES_ORDER;
+global $ATTACHMENTS, $ATTACHMENT_KEY_ORDER;
+global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 ?>
 <form action="beginround.php" method="post">
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
@@ -9,7 +9,7 @@ global $SOLO_GAMES, $SOLO_GAMES_ORDER;
 		<select name="solo">
 			<?php
 			option('', 'Solo Type');
-			foreach ($SOLO_GAMES_ORDER as $solo_game_key) {
+			foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
 				$solo_game = $SOLO_GAMES[$solo_game_key];
 				$content = sprintf('%s (%s)', $solo_game['name'], solo_game_points($solo_game));
 				option($solo_game_key, $content);
@@ -32,7 +32,7 @@ global $SOLO_GAMES, $SOLO_GAMES_ORDER;
 		<select name="attachment">
 			<?php
 			option('', 'Attachment');
-			foreach ($ATTACHMENTS_ORDER as $attachment_key) {
+			foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
 				$attachment = $ATTACHMENTS[$attachment_key];
 				$content = sprintf('%s (x%s)', $attachment['name'], $attachment['multiplier']);
 				option($attachment_key, $content);

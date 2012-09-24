@@ -1,9 +1,15 @@
 <?php
 
 
-function render_page($subtitle, $headline, $view, $viewData) {
+function render_page($subtitle, $headline, $view, $view_data) {
 	$dir = dirname(__FILE__);
 	require($dir . "/views/layout.php");
+}
+
+
+function render_page_and_exit($subtitle, $headline, $view, $view_data) {
+	render_page($subtitle, $headline, $view, $view_data);
+	exit;
 }
 
 
@@ -54,7 +60,7 @@ function multi_checkbox_label($name, $value, $content) {
 }
 
 
-function check_get_multi_checkbox_array($map, $param, $validValues) {
+function check_get_multi_checkbox_array($map, $param, &$valid_values) {
 	if (!isset($map[$param])) {
 		// No checkboxes are checked
 		return array();
@@ -65,10 +71,27 @@ function check_get_multi_checkbox_array($map, $param, $validValues) {
 		return NULL;
 	}
 	foreach ($param as $value) {
-		if (!$validValues[$value]) {
+		if (!isset($valid_values[$value])) {
 			// Invalid value
 			return NULL;
 		}
+	}
+	return $param;
+}
+
+
+function check_get_enum($map, $param, &$valid_values, $allow_blank) {
+	if (!isset($map[$param])) {
+		// Missing input
+		return NULL;
+	}
+	$param = $map[$param];
+	if ($allow_blank && $param === '') {
+		return $param;
+	}
+	if (!isset($valid_values[$param])) {
+		// Invalid value
+		return NULL;
 	}
 	return $param;
 }
@@ -116,15 +139,22 @@ function check_get_indexed_array($map, $param, $length = NULL, $value_validator 
 }
 
 
-function check_get_uint($map, $param) {
+function check_get_uint($map, $param, $allow_blank = FALSE) {
 	$param = check_get_string($map, $param);
 	if ($param === NULL) {
 		return NULL;
 	}
-	if ($param === "" || !ctype_digit($param)) {
+	if ($param === '') {
+		if ($allow_blank) {
+			return $param;
+		} else {
+			return NULL;
+		}
+	}
+	if (!ctype_digit($param)) {
 		return NULL;
 	}
-	return $param;
+	return (int) $param;
 }
 
 
@@ -132,16 +162,15 @@ function check_input() {
 	$params = func_get_args();
 	foreach ($params as $param) {
 		if (is_null($param)) {
-			render_page("Missing input", "Missing input", "missing_input", array());
-			exit;
+			render_unexpected_input_page_and_exit("Missing parameter or invalid type/value!");
 		}
 	}
 }
 
 
-function render_bad_input_page() {
-	render_page("Bad input", "Bad input", "bad_input", array());
-	exit;
+function render_unexpected_input_page_and_exit($message = NULL) {
+	$data = array('message' => $message);
+	render_page_and_exit("Unexpected input", "Unexpected input", "unexpected_input", $data);
 }
 
 
@@ -172,4 +201,9 @@ function array_map_nulls($array, $null_replacement) {
 //				}
 //			};
 //	return array_map($f, $array);
+}
+
+
+function nonnull_index($array, $key) {
+	return isset($array[$key]) && $array[$key] !== NULL;
 }

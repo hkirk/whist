@@ -13,6 +13,12 @@ define('POINT_RULE_REALLYBAD', 'reallybad');
 define('POINT_RULE_TIPS', 'tips');
 define('POINT_RULE_SOLOTRICKS', 'solotricks');
 
+$POINT_RULES = array(
+	POINT_RULE_REALLYBAD => array('name' => 'Really Bad', 'description' => NULL),
+	POINT_RULE_SOLOTRICKS => array('name' => 'Solo tricks counts', 'description' => 'Some description'),
+	POINT_RULE_TIPS => array('name' => 'Tips counts', 'description' => 'The base bid points depends on the number of tips.')
+);
+
 define('NONE', "none");
 define('SANS', "sans");
 define('TIPS', "tips");
@@ -21,24 +27,32 @@ define('GOODS', "goods");
 define('HALVES', "halves");
 
 $ATTACHMENTS = array(
-		NONE => array('multiplier' => 1, 'name' => 'None'),
-		SANS => array('multiplier' => 1.5, 'name' => 'Sans'),
-		TIPS => array('multiplier' => 1.5, 'name' => 'Tips'),
-		STRONGS => array('multiplier' => 1.5, 'name' => 'Strongs'),
-		GOODS => array('multiplier' => 2, 'name' => 'Goods'),
-		HALVES => array('multiplier' => 2, 'name' => 'Halves')
+	NONE => array('multiplier' => 1, 'name' => 'None'),
+	SANS => array('multiplier' => 1.5, 'name' => 'Sans', 'description' => 'No trump suit.'),
+	TIPS => array('multiplier' => 1.5, 'name' => 'Tips'),
+	STRONGS => array('multiplier' => 1.5, 'name' => 'Strongs', 'description' => 'Spades are trump.'),
+	GOODS => array('multiplier' => 2, 'name' => 'Goods', 'description' => 'Clubs are trump.'),
+	HALVES => array('multiplier' => 2, 'name' => 'Halves', 'description' => 'The mate chooses the trump suit (The mate suit is illegal).')
 );
 
-$ATTACHMENTS_ORDER = array(
-		NONE, SANS, TIPS, STRONGS, GOODS, HALVES
+$ATTACHMENT_KEY_ORDER = array(
+	NONE, SANS, TIPS, STRONGS, GOODS, HALVES
 );
 
 $OPTIONAL_ATTACHMENTS = array(
-		SANS, TIPS, STRONGS, HALVES
+	SANS => &$ATTACHMENTS[SANS],
+	TIPS => &$ATTACHMENTS[TIPS],
+	STRONGS => &$ATTACHMENTS[STRONGS],
+	HALVES => &$ATTACHMENTS[HALVES]
 );
 
-$REQUIRED_ATTACHMENTS = array(
-		NONE, GOODS
+$OPTIONAL_ATTACHMENT_KEYS_ORDER = array(
+	SANS, TIPS, STRONGS, HALVES
+);
+
+$REQUIRED_ATTACHMENT_KEYS_ORDER = array(
+	NONE => &$ATTACHMENTS[NONE],
+	GOODS => &$ATTACHMENTS[GOODS]
 );
 
 define('SOLO_SOLO', "solo");
@@ -47,14 +61,14 @@ define('SOLO_TABLE', "table");
 define('SOLO_CLEANTABLE', "cleantable");
 
 $SOLO_GAMES = array(
-		SOLO_SOLO => array('multiplier' => 1, 'name' => 'Solo'),
-		SOLO_CLEANSOLO => array('multiplier' => 2, 'name' => 'Clean Solo'),
-		SOLO_TABLE => array('multiplier' => 4, 'name' => 'Table Solo'),
-		SOLO_CLEANTABLE => array('multiplier' => 8, 'name' => 'Clean Table Solo')
+	SOLO_SOLO => array('multiplier' => 1, 'name' => 'Solo'),
+	SOLO_CLEANSOLO => array('multiplier' => 2, 'name' => 'Clean Solo'),
+	SOLO_TABLE => array('multiplier' => 4, 'name' => 'Table Solo'),
+	SOLO_CLEANTABLE => array('multiplier' => 8, 'name' => 'Clean Table Solo')
 );
 
-$SOLO_GAMES_ORDER = array(
-		SOLO_SOLO, SOLO_CLEANSOLO, SOLO_TABLE, SOLO_CLEANTABLE
+$SOLO_GAME_KEY_ORDER = array(
+	SOLO_SOLO, SOLO_CLEANSOLO, SOLO_TABLE, SOLO_CLEANTABLE
 );
 
 

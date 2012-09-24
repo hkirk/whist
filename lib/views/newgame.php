@@ -1,3 +1,8 @@
+<?php
+global $POINT_RULES;
+global $OPTIONAL_ATTACHMENT_KEYS_ORDER;
+global $ATTACHMENTS;
+?>
 <form action="" method="post">
 	<fieldset>
 		<legend>Informations</legend>
@@ -8,35 +13,52 @@
 	</fieldset>
 	<fieldset>
 		<legend>Point rules</legend>
-		<?php multi_checkbox_label("point_rules", "reallybad", "Really bad points?") ?>
-		<?php multi_checkbox("point_rules", "reallybad") ?>
-		<?php multi_checkbox_label("point_rules", "solotricks", "Solo tricks?") ?>
-		<?php multi_checkbox("point_rules", "solotricks") ?>
-		<?php multi_checkbox_label("point_rules", "tiptricks", "Tip tricks?") ?>
-		<?php multi_checkbox("point_rules", "tiptricks") ?>
+		<?php
+		$name = "point_rules";
+		?>
+		<?php foreach ($POINT_RULES as $point_rule_key => $point_rule): ?>
+			<div>
+				<?php
+				multi_checkbox($name, $point_rule_key);
+				multi_checkbox_label($name, $point_rule_key, $point_rule['name'] . '?');
+				?>
+				<?php if (isset($point_rule['description'])) : ?>
+					<p><?php echo $point_rule['description'] ?></p>
+				<?php endif; ?>
+			</div>
+		<?php endforeach; ?>
 	</fieldset>
 	<fieldset>
 		<legend>Bid attachments</legend>
-		<?php multi_checkbox_label("attachments", "sans", "Sans (no trump)?") ?>
-		<?php multi_checkbox("attachments", "sans") ?>
-		<?php multi_checkbox_label("attachments", "halves", "Halves?") ?>
-		<?php multi_checkbox("attachments", "halves") ?>
-		<?php multi_checkbox_label("attachments", "strongs", "Strongs (spades)?") ?>
-		<?php multi_checkbox("attachments", "strongs") ?>
-		<?php multi_checkbox_label("attachments", "tips", "Tips?") ?>
-		<?php multi_checkbox("attachments", "tips") ?>
+		<?php
+		$name = 'attachments';
+		?>
+		<?php foreach ($OPTIONAL_ATTACHMENT_KEYS_ORDER as $attachment_key) : ?>
+			<div>
+				<?php
+				$attachment = $ATTACHMENTS[$attachment_key];
+				multi_checkbox($name, $attachment_key);
+				multi_checkbox_label($name, $attachment_key, $attachment['name'] . '?');
+				?>
+				<?php if (isset($attachment['description'])) : ?>
+					<p><?php echo $attachment['description'] ?></p>
+				<?php endif; ?>
+			</div>
+		<?php endforeach; ?>
 	</fieldset>
 	<fieldset>
 		<legend>Players</legend>
-		<?php for($p=0; $p<4; $p++): ?>
+		<?php
+		for ($p = 0; $p < 4; $p++):
+			?>
 			<?php
 			$id = "player_ids$p";
 			$name = "player_ids[$p]";
 			?>
-			<label for="<?php echo $id ?>">Player <?php echo $p+1 ?></label>
+			<label for="<?php echo $id ?>">Player <?php echo $p + 1 ?></label>
 			<select id="<?php echo $id ?>" name="<?php echo $name ?>">
 				<option value="">Pick player</option>
-				<?php foreach($players as $player): ?>
+				<?php foreach ($players as $player): ?>
 					<?php
 					$value = $player['id'];
 					$text = "${player['nickname']} (${player['fullname']})";

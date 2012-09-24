@@ -10,11 +10,26 @@ $id = check_get_uint($_GET, 'id');
 
 check_input($id);
 
+
+function game_render_error($key) {
+	$data = array(
+		'unknown_game' => FALSE,
+		'bad_rounds' => FALSE,
+		'inconsistent_points' => FALSE
+	);
+	$data[$key] = TRUE;
+	render_page("Error", "Error", 'game_error', $data);
+	exit;
+}
+
+
 $db_game = db_get_game($id);
+if ($db_game === NULL) {
+	game_render_error('unknown_game');
+}
 
 $players = array();
 $total_points = array();
-
 foreach ($db_game['players'] as $player) {
 	$players[] = array_filter_entries($player, "", array("nickname", "fullname"));
 	$total_points[] = $player['total_points'];
@@ -22,6 +37,9 @@ foreach ($db_game['players'] as $player) {
 
 
 $db_rounds = db_get_game_rounds($id);
+if ($db_rounds === NULL) {
+	game_render_error('bad_rounds');
+}
 
 $acc_total_points = array_fill(0, 4, 0);
 
@@ -47,17 +65,17 @@ foreach ($db_rounds as $r) {
 			$acc_total_points[$position] += $player_points;
 		}
 		$player_data[] = array(
-				'round_points' => $player_points,
-				'total_points' => $acc_total_points[$position]
+			'round_points' => $player_points,
+			'total_points' => $acc_total_points[$position]
 		);
 	}
 	$round = array(
-			'index' => $r['round'],
-			'dealer_position' => $r['round'] % 4,
-			'players' => $player_data,
-			'bid' => $bid,
-			'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
-			'bid_winner_mate_position' => $bid_winner_mate_position
+		'index' => $r['round'],
+		'dealer_position' => $r['round'] % 4,
+		'players' => $player_data,
+		'bid' => $bid,
+		'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
+		'bid_winner_mate_position' => $bid_winner_mate_position
 	);
 	$rounds[] = $round;
 }
@@ -70,27 +88,34 @@ printf("</p>");
 printf("<p>TP:");
 var_dump($total_points);
 printf("</p>");
-assert($acc_total_points === $total_points);
+printf("<p>ACC TP:");
+var_dump($acc_total_points);
+printf("</p>");
+
+// Consistency check
+if ($acc_total_points !== $total_points) {
+	game_render_error('inconsistent_points');
+}
 
 $data = array(
+	'game_id' => $id,
+	'players' => $players,
+	'rounds' => $rounds,
+	'total_points' => $total_points,
+//	'controls_view' => 'endround',
+//	'controls_view_data' => array(
+//		'game_id' => $id,
+//		'players' => $players,
+//		'bid_type' => 'solo',
+//		'bid_winner_positions' => array(
+//			0, 2, 3
+//		)
+//	)
+	'controls_view' => 'beginround',
+	'controls_view_data' => array(
 		'game_id' => $id,
-		'players' => $players,
-		'rounds' => $rounds,
-		'total_points' => $total_points,
-		'controls_view' => 'endround',
-		'controls_view_data' => array(
-				'game_id' => $id,
-				'players' => $players,
-				'bid_type' => 'solo',
-				'bid_winner_positions' => array(
-						0, 2, 3
-				)
-		)
-//'controls_view' => 'beginround',
-// 'controls_view_data' => array(
-//'game_id' => $id,
-// 'players' => $players
-//)
+		'players' => $players
+	)
 );
 
 render_page("Game", "Game", "game", $data);

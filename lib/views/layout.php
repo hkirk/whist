@@ -11,7 +11,7 @@
 		<div>
 			<h1><?php echo $headline; ?></h1>
 			<div>
-				<?php render_view($view, $viewData); ?>
+				<?php render_view($view, $view_data); ?>
 			</div>
 		</div>
 	</body>
