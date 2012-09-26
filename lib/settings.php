@@ -1,7 +1,7 @@
 <?php
 
 $SETTINGS = array(
-	"baseUrl" => "http://ca-it.dk/~can/whist-dev",
+	"base_url" => "http://ca-it.dk/~can/whist-dev",
 	"database" => array(
 		"host" => "localhost",
 		"name" => "whist_calc",

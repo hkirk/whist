@@ -23,7 +23,7 @@ function game_render_error($key) {
 }
 
 
-$db_game = db_get_game($id);
+$db_game = db_get_game_with_players($id);
 if ($db_game === NULL) {
 	game_render_error('unknown_game');
 }
@@ -34,6 +34,16 @@ foreach ($db_game['players'] as $player) {
 	$players[] = array_filter_entries($player, "", array("nickname", "fullname"));
 	$total_points[] = $player['total_points'];
 }
+
+// beginround only:
+$legal_attachment_keys = array();
+foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
+	if (in_array($attachment_key, $REQUIRED_ATTACHMENT_KEYS_ORDER) || in_array($attachment_key, $db_game['attachments'])) {
+		$legal_attachment_keys[] = $attachment_key;
+	}
+}
+$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
+// /beginround
 
 
 $db_rounds = db_get_game_rounds($id);
@@ -114,7 +124,9 @@ $data = array(
 	'controls_view' => 'beginround',
 	'controls_view_data' => array(
 		'game_id' => $id,
-		'players' => $players
+		'players' => $players,
+		'legal_attachment_keys' => $legal_attachment_keys,
+		'is_tips_legal' => $is_tips_legal
 	)
 );
 

@@ -32,21 +32,25 @@ global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 		<select name="attachment">
 			<?php
 			option('', 'Attachment');
-			foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
+			foreach ($legal_attachment_keys as $attachment_key) {
 				$attachment = $ATTACHMENTS[$attachment_key];
 				$content = sprintf('%s (x%s)', $attachment['name'], $attachment['multiplier']);
 				option($attachment_key, $content);
 			}
 			?>
 		</select>
-		<select name="tips">
-			<?php
-			option('', 'Tips');
-			for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
-				option($tips, $tips);
-			}
-			?>
-		</select>
+		<?php if ($is_tips_legal): ?>
+			<select name="tips">
+				<?php
+				option('', 'Tips');
+				for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
+					option($tips, $tips);
+				}
+				?>
+			</select>
+		<?php else: ?>
+			<input type="hidden" name="tips" value="" />
+		<?php endif ?>
 	</fieldset>
 	<fieldset>
 		<legend>Bid winners</legend>

@@ -1,7 +1,7 @@
 <?php
 require("../lib/lib.php");
 
-$conn = db_connect();
+$conn = _db_connect();
 
 $stm = $conn->query("SELECT * FROM games");
 

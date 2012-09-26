@@ -25,7 +25,8 @@ function request_method() {
 
 
 function redirect_path($path) {
-	$url = $SETTINGS["baseUrl"] . $path;
+	global $SETTINGS;
+	$url = $SETTINGS["base_url"] . $path;
 	header("Location: $url");
 	exit;
 }
