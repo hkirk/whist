@@ -53,14 +53,14 @@ $data = array(
 $input_error = FALSE;
 
 
-$game = db_get_game_type_with_active_round_bid_type($game_id);
+$game = db_get_game_type_with_active_round($game_id);
 
 if ($game === NULL) {
 	$input_error = $data['unknown_game'] = TRUE;
 	beginround_render_page_and_exit($data);
 }
 
-if ($game['active_round_bid_type'] !== NULL) {
+if ($game['active_round'] !== NULL) {
 	$input_error = $data['has_active_round'] = TRUE;
 }
 var_dump($game);
