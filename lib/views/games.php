@@ -7,10 +7,10 @@ All games
 		</tr>
 	</head>
 	<tbody>
-		<?php foreach($stm as $row): ?>
+		<?php foreach($games as $game): ?>
 			<tr>
-				<td><?php echo $row['started_at']; ?></td>
-				<td><?php echo $row['location']; ?></td>
+				<td><?php echo $game['started_at']; ?></td>
+				<td><?php echo $game['location']; ?></td>
 			</tr>
 		<?php endforeach ?>
 	</tbody>

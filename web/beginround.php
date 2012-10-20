@@ -1,6 +1,6 @@
 <?php
 
-require("../lib/lib.php");
+require("lib.php");
 
 if (request_method() !== 'POST') {
 	return;

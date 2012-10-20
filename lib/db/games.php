@@ -153,9 +153,6 @@ ORDER BY gp.player_position ASC
 EOS;
     $params = array($game_id);
     list(,, $rows) = _db_prepare_execute_fetchAll($sql, $params);
-    printf("Rows: ");
-    var_dump($rows);
-    printf("Rows done");
     $n_rows = count($rows);
     if ($n_rows !== 4) {
         error_log("Invalid number of rows $n_rows");

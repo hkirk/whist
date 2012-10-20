@@ -1,6 +1,6 @@
 <?php
 
-require("../lib/lib.php");
+require("lib.php");
 
 if (request_method() !== 'POST') {
 	return;
@@ -31,7 +31,7 @@ foreach ($tricks_array as $index => $dummy) {
 function endround_render_page_and_exit($data) {
 	render_page_and_exit("Input Error", "Input error", "end_round_input_error", $data);
 }
-printf("FFF");
+
 
 $data = array(
 	'unknown_game' => FALSE,

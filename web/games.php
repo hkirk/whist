@@ -1,22 +1,17 @@
 <?php
-require("../lib/lib.php");
 
-$conn = _db_connect();
+require("lib.php");
 
-$stm = $conn->query("SELECT * FROM games");
+if (request_method() !== "GET") {
+	return;
+}
+
 
 $subtitle = "Games";
 $headline = "The games";
 $view = "games";
 $data = Array(
-	'stm' => $stm
+	'games' => array()
 );
 
 render_page($subtitle, $headline, $view, $data);
-
-/*
-printf("Games:");
-foreach($stm as $row) {
-	printf("Game: ".$row['id']);
-}
-*/

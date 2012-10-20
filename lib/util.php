@@ -97,12 +97,10 @@ function check_get_enum($map, $param, &$valid_values, $allow_blank) {
 
 
 function check_get_string($map, $param) {
-	printf("I");
 	if (!isset($map[$param])) {
 		// Missing input
 		return NULL;
 	}
-	printf("J");
 	$param = $map[$param];
 	if (!is_string($param)) {
 		// Error - not a string
@@ -161,7 +159,6 @@ function check_get_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = 
 	if ($param === NULL) {
 		return NULL;
 	}
-	printf("A");
 	if ($param === '') {
 		if ($allow_blank) {
 			return $param;
@@ -169,11 +166,9 @@ function check_get_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = 
 			return NULL;
 		}
 	}
-	printf("B");
 	if (!ctype_digit($param)) {
 		return NULL;
 	}
-	printf("C");
 	$int = (int) $param;
 	if (($min !== NULL && $int < $min) || ($max !== NULL && $int > $max)) {
 		return NULL;

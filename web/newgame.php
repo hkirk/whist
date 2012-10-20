@@ -1,6 +1,6 @@
 <?php
 
-require("../lib/lib.php");
+require("lib.php");
 
 $player_id_validator = function($value) {
 			return $value === "" || ctype_digit($value);
@@ -42,7 +42,8 @@ switch (request_method()) {
 			render_page("Input error", "Input error", "newgame_input_error", $data);
 			exit;
 		}
-		db_create_game($location, $description, $player_ids, $attachments, $point_rules);
+		$game_id = db_create_game($location, $description, $player_ids, $attachments, $point_rules);
+		redirect_path("/game.php?id=" . $game_id);
 		return;
 
 	case "GET" :
