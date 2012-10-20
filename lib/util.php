@@ -55,9 +55,7 @@ function multi_checkbox($name, $value) {
 
 
 function multi_checkbox_label($name, $value, $content) {
-	?>
-	<label for="<?php echo $name . "-" . $value ?>"><?php echo $content ?></label>
-	<?php
+	?><label for="<?php echo $name . "-" . $value ?>"><?php echo $content ?></label><?php
 }
 
 
@@ -99,10 +97,12 @@ function check_get_enum($map, $param, &$valid_values, $allow_blank) {
 
 
 function check_get_string($map, $param) {
+	printf("I");
 	if (!isset($map[$param])) {
 		// Missing input
 		return NULL;
 	}
+	printf("J");
 	$param = $map[$param];
 	if (!is_string($param)) {
 		// Error - not a string
@@ -113,17 +113,8 @@ function check_get_string($map, $param) {
 
 
 function check_get_indexed_array($map, $param, $length = NULL, $value_validator = NULL) {
-	if (!isset($map[$param])) {
-		// Missing input
-		return NULL;
-	}
-	$param = $map[$param];
-	if (!is_array($param)) {
-		// Error - not a string
-		return NULL;
-	}
-	if ($length != NULL && count($param) != $length) {
-		// Invalid length
+	$param = check_get_array($map, $param, $length);
+	if ($param === NULL) {
 		return NULL;
 	}
 	$expected_key = 0;
@@ -140,11 +131,37 @@ function check_get_indexed_array($map, $param, $length = NULL, $value_validator 
 }
 
 
-function check_get_uint($map, $param, $allow_blank = FALSE) {
+function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL) {
+	if (!isset($map[$param])) {
+		// Missing input
+		return NULL;
+	}
+	$param = $map[$param];
+	if (!is_array($param)) {
+		// Error - not a string
+		return NULL;
+	}
+	if ($length != NULL && count($param) != $length) {
+		// Invalid length
+		return NULL;
+	}
+	if ($valid_indices !== NULL) {
+		foreach ($param as $key => $value) {
+			if (!in_array($key, $valid_indices)) {
+				return NULL;
+			}
+		}
+	}
+	return $param;
+}
+
+
+function check_get_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = NULL) {
 	$param = check_get_string($map, $param);
 	if ($param === NULL) {
 		return NULL;
 	}
+	printf("A");
 	if ($param === '') {
 		if ($allow_blank) {
 			return $param;
@@ -152,10 +169,16 @@ function check_get_uint($map, $param, $allow_blank = FALSE) {
 			return NULL;
 		}
 	}
+	printf("B");
 	if (!ctype_digit($param)) {
 		return NULL;
 	}
-	return (int) $param;
+	printf("C");
+	$int = (int) $param;
+	if (($min !== NULL && $int < $min) || ($max !== NULL && $int > $max)) {
+		return NULL;
+	}
+	return $int;
 }
 
 
@@ -184,13 +207,22 @@ function array_filter_entries($array, $source_key_prefix, $keys) {
 }
 
 
+function array_convert_numerics_to_ints(&$array) {
+	foreach ($array as $key => $value) {
+		if ($value !== NULL && $value !== '' && ctype_digit($value)) {
+			$array[$key] = (int) $value;
+		}
+	}
+}
+
+
 function array_map_nulls($array, $null_replacement) {
 	$out = array();
-	foreach ($array as $entry) {
-		if ($entry === NULL) {
-			$out[] = $null_replacement;
+	foreach ($array as $key => $value) {
+		if ($value === NULL) {
+			$out[$key] = $null_replacement;
 		} else {
-			$out[] = $entry;
+			$out[$key] = $value;
 		}
 	}
 	return $out;

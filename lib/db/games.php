@@ -118,7 +118,7 @@ EOS;
             }
             $player_position = (int) $row['player_position'];
             assert($player_position === $expected_player_position);
-            $player_points[] = $row['points'];
+            $player_points[] = $row['player_points'];
             $commit = $player_position === 3;
             $expected_player_position++;
         }
@@ -181,11 +181,12 @@ EOS;
 /**
  * 
  * @param type $game_id
- * @return Game array with keys 'attachments', 'point_rules', and 'active_round_bid_type'. The latter is NULL, if there is no active game round
+ * @return Game array with keys 'attachments', 'point_rules', and 'active_round'. The latter is NULL, if there is no active game round.
  */
 function db_get_game_type_with_active_round($game_id) {
     global $_DB_ROUND_TYPES_SELECT;
     global $_DB_ROUND_TYPES_JOINS;
+	// The LIMIT is the maximum number of solo bid winner rows
     $sql = <<<EOS
 SELECT 
 	g.attachments AS attachments,
@@ -197,7 +198,7 @@ LEFT OUTER JOIN game_rounds AS gr ON g.id = gr.game_id
 $_DB_ROUND_TYPES_JOINS
 WHERE g.id = ?
 ORDER BY gr.round DESC
-LIMIT 1
+LIMIT 4
 EOS;
     $params = array($game_id);
     list(,, $rows) = _db_prepare_execute_fetchAll($sql, $params);
@@ -219,12 +220,17 @@ EOS;
     printf("Rounds: ");
     var_dump($rounds);
     printf("Rounds done");
-    if (count($rounds) !== 1) {
+    if (count($rounds) < 1) {
         // Hmmm, Invalid number of rounds
         assert(FALSE);
         return NULL;
     }
-    $game['active_round'] = $rounds[0];
+	$most_recent_round = $rounds[0];
+	if($most_recent_round['ended_at']===NULL) {
+	    $game['active_round'] = $most_recent_round;
+	} else {
+		$game['active_round'] = NULL;
+	}
     return $game;
 }
 
@@ -243,8 +249,9 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
             if ($expected_round !== NULL) {
                 $expected_round++;
             }
-            _db_build_game_rounds_from_statement_commit_solo_round($solo_data, $round_data, $rounds);
+            _db_build_game_rounds_from_traversable_commit_solo_round($solo_data, $round_data, $rounds);
             $round_data = array(
+				'id' => $row['id'],
                 'round' => $round,
                 'bid_type' => $bid_type,
                 'started_at' => $row['started_at'],
@@ -258,13 +265,15 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
         assert($expected_round === NULL || $round === $expected_round);
         if ($bid_type === "normal") {
             assert($round !== $last_round);
-            $round_data['bid_data'] = array_filter_entries($row, 'normal_', array(
+            $bid_data = array_filter_entries($row, 'normal_', array(
                 'bid_winner_position',
                 'bid_winner_mate_position',
                 'bid_tricks',
                 'bid_attachment',
                 'tricks',
                 'tips'));
+			array_convert_numerics_to_ints($bid_data);
+			$round_data['bid_data'] = $bid_data;
             // Commit round data
             $rounds[] = $round_data;
         } else if ($bid_type === "solo") {
@@ -287,12 +296,12 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
         $last_round = $round;
         $last_bid_type = $bid_type;
     }
-    _db_build_game_rounds_from_statement_commit_solo_round($solo_data, $round_data, $rounds);
+    _db_build_game_rounds_from_traversable_commit_solo_round($solo_data, $round_data, $rounds);
     return $rounds;
 }
 
 
-function _db_build_game_rounds_from_statement_commit_solo_round($solo_data, $round_data, &$rounds) {
+function _db_build_game_rounds_from_traversable_commit_solo_round($solo_data, $round_data, &$rounds) {
     if ($solo_data !== NULL) {
         $round_data['bid_data'] = $solo_data;
         $rounds[] = $round_data;

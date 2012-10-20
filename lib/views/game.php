@@ -5,6 +5,11 @@ function rewrite_null($e) {
 	return $e === NULL ? "?" : $e;
 }
 ?>
+
+<?php
+render_view('controls/' . $controls_view, $controls_view_data);
+?>
+<h2>Score board</h2>
 <table>
 	<thead>
 		<tr>
@@ -14,6 +19,7 @@ function rewrite_null($e) {
 			<?php foreach ($players as $player): ?>
 				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
 			<?php endforeach ?>
+			<th>Bid winner(s)</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -24,11 +30,20 @@ function rewrite_null($e) {
 				$bid_winner_tricks_by_position = array_map_nulls($round['bid_winner_tricks_by_position'], "?");
 				$bid_winner_positions = array_keys($bid_winner_tricks_by_position);
 				$bid_winner_mate_position = $round['bid_winner_mate_position'];
+				$bid_winner_names = array();
+				var_dump($bid_winner_tricks_by_position);
+				foreach ($bid_winner_positions as $bid_winner_position) {
+					$bid_winner_names[] = $players[$bid_winner_position]['nickname'];
+				}
+				
+				if ($bid_winner_mate_position !== NULL) {
+					$bid_winner_names[0] .= " (" . $players[$bid_winner_mate_position]['nickname'] . ")";
+				}
 				?>
 				<td><?php echo $round['index'] ?></td>
 				<td><?php echo $round['bid'] ?> </td>
 				<td><?php echo implode(", ", $bid_winner_tricks_by_position) ?></td>
-				<?php foreach ($round['players'] as $position => $player_data): ?>
+				<?php foreach ($round['player_data'] as $position => $player_data): ?>
 					<?php
 					$player_round_points = $player_data['round_points'];
 					$player_total_points = $player_data['total_points'];
@@ -45,16 +60,18 @@ function rewrite_null($e) {
 					<td class="<?php echo $class ?>"><?php echo rewrite_null($player_round_points) ?></td>
 					<td><?php echo rewrite_null($player_total_points) ?></td>
 				<?php endforeach ?>
+				<td><?php echo implode(", ", $bid_winner_names) ?></td>
 			</tr>
 		<?php endforeach ?>
 	</tbody>
 	<tfoot>
 		<tr>
-			<td>#</td>
-			<td colspan="2">Total:</td>
+			<th>#</th>
+			<th colspan="2">Total:</th>
 			<?php foreach ($total_points as $points): ?>
-				<td colspan="2"><?php echo $points ?></td>
+				<th colspan="2"><?php echo $points ?></th>
 			<?php endforeach ?>
+			<th>Bid winner(s)</th>
 		</tr>
 	</tfoot>
 </table>

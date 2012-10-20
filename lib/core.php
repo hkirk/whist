@@ -9,6 +9,9 @@ define('MAX_BID_TRICKS', MAX_TRICKS);
 define('MIN_TIPS', 1);
 define('MAX_TIPS', 3);
 
+define('MIN_PLAYER_POSITION', 0);
+define('MAX_PLAYER_POSITION', 3);
+
 define('POINT_RULE_REALLYBAD', 'reallybad');
 define('POINT_RULE_TIPS', 'tips');
 define('POINT_RULE_SOLOTRICKS', 'solotricks');

@@ -6,7 +6,7 @@ if (request_method() !== 'POST') {
 	return;
 }
 
-$valid_player_positions = array('0', '1', '2', '3');
+$VALID_PLAYER_POSITIONS = array('0', '1', '2', '3');
 
 // Basic input validation:
 $game_id = check_get_uint($_POST, 'game_id');
@@ -14,7 +14,7 @@ $tricks = check_get_uint($_POST, 'tricks', TRUE);
 $attachment_key = check_get_enum($_POST, 'attachment', $ATTACHMENTS, TRUE);
 $solo_game_key = check_get_enum($_POST, 'solo', $SOLO_GAMES, TRUE);
 $tips = check_get_uint($_POST, 'tips', TRUE);
-$bid_winner_positions = check_get_multi_checkbox_array($_POST, 'bid_winner_positions', $valid_player_positions);
+$bid_winner_positions = check_get_multi_checkbox_array($_POST, 'bid_winner_positions', $VALID_PLAYER_POSITIONS);
 check_input($game_id, $tricks, $attachment_key, $solo_game_key, $tips, $bid_winner_positions);
 
 $n_bid_winner_positions = count($bid_winner_positions);
@@ -27,6 +27,7 @@ foreach ($bid_winner_positions as $index => $bid_winner_position) {
 		render_unexpected_input_page_and_exit("Bid winner position occurs twice");
 	}
 	$used_bid_winner_position[$bid_winner_position] = TRUE;
+	// Convert position to an integer
 	$bid_winner_positions[$index] = (int) $bid_winner_position;
 }
 

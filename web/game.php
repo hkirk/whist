@@ -35,15 +35,41 @@ foreach ($db_game['players'] as $player) {
 	$total_points[] = $player['total_points'];
 }
 
-// beginround only:
-$legal_attachment_keys = array();
-foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
-	if (in_array($attachment_key, $REQUIRED_ATTACHMENT_KEYS_ORDER) || in_array($attachment_key, $db_game['attachments'])) {
-		$legal_attachment_keys[] = $attachment_key;
+$db_game_with_active_round = db_get_game_type_with_active_round($id);
+
+
+$active_round = $db_game_with_active_round['active_round'];
+printf("Active round:");
+var_dump($active_round);
+
+if($active_round===NULL) {
+	$controls_view = 'beginround';
+	$legal_attachment_keys = array();
+	foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
+		if (in_array($attachment_key, $REQUIRED_ATTACHMENT_KEYS_ORDER) || in_array($attachment_key, $db_game['attachments'])) {
+			$legal_attachment_keys[] = $attachment_key;
+		}
 	}
+	$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
+	$controls_view_data = array(
+		'is_tips_legal' => $is_tips_legal,
+		'legal_attachment_keys' => $legal_attachment_keys
+	);	
+} else {
+	$controls_view = 'endround';
+	$bid_type = $active_round['bid_type'];
+	$bid_data = $active_round['bid_data'];
+	if($bid_type==='normal') {
+		$bid_winner_positions = array($bid_data['bid_winner_position']);
+	} else {
+		$bid_winner_positions = array_keys($bid_data['bid_winner_tricks_by_position']);
+	}
+	$controls_view_data = array(
+		'bid_type' => $bid_type,
+		'bid_winner_positions' => $bid_winner_positions
+	);
 }
-$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
-// /beginround
+
 
 
 $db_rounds = db_get_game_rounds($id);
@@ -55,6 +81,9 @@ $acc_total_points = array_fill(0, 4, 0);
 
 $rounds = array();
 
+//
+// Build round information for each round
+//
 foreach ($db_rounds as $r) {
 	$bid_type = $r['bid_type'];
 	$data = $r['bid_data'];
@@ -82,14 +111,15 @@ foreach ($db_rounds as $r) {
 	$round = array(
 		'index' => $r['round'],
 		'dealer_position' => $r['round'] % 4,
-		'players' => $player_data,
+		'player_data' => $player_data,
+		'bid_type' => $bid_type,
 		'bid' => $bid,
 		'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
 		'bid_winner_mate_position' => $bid_winner_mate_position
 	);
 	$rounds[] = $round;
 }
-
+/*
 printf("DB:");
 var_dump($db_rounds);
 printf("<p>View:");
@@ -101,33 +131,25 @@ printf("</p>");
 printf("<p>ACC TP:");
 var_dump($acc_total_points);
 printf("</p>");
+*/
 
+// TODO reactivate
 // Consistency check
-if ($acc_total_points !== $total_points) {
-	game_render_error('inconsistent_points');
-}
+//if ($acc_total_points !== $total_points) {
+//	game_render_error('inconsistent_points');
+//}
+
+$controls_view_data['game_id'] = &$id;
+$controls_view_data['players'] = &$players;
+
 
 $data = array(
-	'game_id' => $id,
-	'players' => $players,
-	'rounds' => $rounds,
-	'total_points' => $total_points,
-//	'controls_view' => 'endround',
-//	'controls_view_data' => array(
-//		'game_id' => $id,
-//		'players' => $players,
-//		'bid_type' => 'solo',
-//		'bid_winner_positions' => array(
-//			0, 2, 3
-//		)
-//	)
-	'controls_view' => 'beginround',
-	'controls_view_data' => array(
-		'game_id' => $id,
-		'players' => $players,
-		'legal_attachment_keys' => $legal_attachment_keys,
-		'is_tips_legal' => $is_tips_legal
-	)
+	'game_id' => &$id,
+	'players' => &$players,
+	'rounds' => &$rounds,
+	'total_points' => &$total_points,
+	'controls_view' => &$controls_view,
+	'controls_view_data' => &$controls_view_data
 );
 
 render_page("Game", "Game", "game", $data);

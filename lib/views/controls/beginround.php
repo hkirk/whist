@@ -3,6 +3,7 @@ global $ATTACHMENTS, $ATTACHMENT_KEY_ORDER;
 global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 ?>
 <form action="beginround.php" method="post">
+	<h2>Begin round</h2>
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
 	<fieldset>
 		<legend>Solo game bid</legend>
