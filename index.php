@@ -63,7 +63,6 @@
 		</div>
 		<div id="buttons-container">
 			<button id="addRound">Add round</button>
-			<button id="calculatePoints">Calculate latest round</button>
 		</div>
 	</body>
 </html>
