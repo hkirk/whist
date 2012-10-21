@@ -2,9 +2,8 @@
 
 require("lib.php");
 
-if (request_method() !== "GET") {
-	return;
-}
+check_request_method("GET");
+
 
 $id = check_get_uint($_GET, 'id');
 

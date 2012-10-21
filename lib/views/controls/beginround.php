@@ -12,7 +12,7 @@ global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 			option('', 'Solo Type');
 			foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
 				$solo_game = $SOLO_GAMES[$solo_game_key];
-				$content = sprintf('%s (%s)', $solo_game['name'], solo_game_points($solo_game));
+				$content = sprintf('%s (%s)', $solo_game['name'], solo_game_bid_base_points($solo_game));
 				option($solo_game_key, $content);
 			}
 			?>

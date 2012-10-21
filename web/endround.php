@@ -2,11 +2,7 @@
 
 require("lib.php");
 
-if (request_method() !== 'POST') {
-	return;
-}
-
-$VALID_PLAYER_POSITIONS = array('0', '1', '2', '3');
+check_request_method("POST");
 
 // Basic input validation:
 $game_id = check_get_uint($_POST, 'game_id');

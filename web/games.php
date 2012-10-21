@@ -2,9 +2,7 @@
 
 require("lib.php");
 
-if (request_method() !== "GET") {
-	return;
-}
+check_request_method("GET");
 
 
 $subtitle = "Games";

@@ -59,19 +59,33 @@ function multi_checkbox_label($name, $value, $content) {
 }
 
 
+function check_request_method($expected_method) {
+	if (request_method() !== $expected_method) {
+		respond_method_not_allowed(array($expected_method));
+	}
+}
+
+
+function respond_method_not_allowed($allowed_methods) {
+	header("Status: 405 Method Not Allowed");
+	header("Allow: " . implode(", ", $allowed_methods));
+	exit;
+}
+
+
 function check_get_multi_checkbox_array($map, $param, &$valid_values) {
 	if (!isset($map[$param])) {
-		// No checkboxes are checked
+// No checkboxes are checked
 		return array();
 	}
 	$param = $map[$param];
 	if (!is_array($param)) {
-		// Error - not an array
+// Error - not an array
 		return NULL;
 	}
 	foreach ($param as $value) {
 		if (!isset($valid_values[$value])) {
-			// Invalid value
+// Invalid value
 			return NULL;
 		}
 	}
@@ -81,7 +95,7 @@ function check_get_multi_checkbox_array($map, $param, &$valid_values) {
 
 function check_get_enum($map, $param, &$valid_values, $allow_blank) {
 	if (!isset($map[$param])) {
-		// Missing input
+// Missing input
 		return NULL;
 	}
 	$param = $map[$param];
@@ -89,7 +103,7 @@ function check_get_enum($map, $param, &$valid_values, $allow_blank) {
 		return $param;
 	}
 	if (!isset($valid_values[$param])) {
-		// Invalid value
+// Invalid value
 		return NULL;
 	}
 	return $param;
@@ -98,12 +112,12 @@ function check_get_enum($map, $param, &$valid_values, $allow_blank) {
 
 function check_get_string($map, $param) {
 	if (!isset($map[$param])) {
-		// Missing input
+// Missing input
 		return NULL;
 	}
 	$param = $map[$param];
 	if (!is_string($param)) {
-		// Error - not a string
+// Error - not a string
 		return NULL;
 	}
 	return $param;
@@ -131,16 +145,16 @@ function check_get_indexed_array($map, $param, $length = NULL, $value_validator 
 
 function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL) {
 	if (!isset($map[$param])) {
-		// Missing input
+// Missing input
 		return NULL;
 	}
 	$param = $map[$param];
 	if (!is_array($param)) {
-		// Error - not a string
+// Error - not a string
 		return NULL;
 	}
 	if ($length != NULL && count($param) != $length) {
-		// Invalid length
+// Invalid length
 		return NULL;
 	}
 	if ($valid_indices !== NULL) {
