@@ -1,6 +1,7 @@
 <?php
-global $ATTACHMENTS, $ATTACHMENT_KEY_ORDER;
+global $ATTACHMENTS;
 global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
+global $TIPS_COUNT_MULTIPLIERS;
 ?>
 <form action="beginround.php" method="post">
 	<h2>Begin round</h2>
@@ -12,7 +13,7 @@ global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 			option('', 'Solo Type');
 			foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
 				$solo_game = $SOLO_GAMES[$solo_game_key];
-				$content = sprintf('%s (%s)', $solo_game['name'], solo_game_bid_base_points($solo_game));
+				$content = sprintf('%s (%s)', $solo_game['name'], solo_game_bid_base_points($point_rules, $solo_game));
 				option($solo_game_key, $content);
 			}
 			?>
@@ -25,7 +26,7 @@ global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 			<?php
 			option('', 'Tricks');
 			for ($tricks = MIN_BID_TRICKS; $tricks <= MAX_BID_TRICKS; $tricks++) {
-				$content = sprintf('%s (%s)', $tricks, normal_game_bid_base_points($tricks));
+				$content = sprintf('%s (%s)', $tricks, normal_game_bid_base_points($point_rules, $tricks));
 				option($tricks, $content);
 			}
 			?>
@@ -35,7 +36,13 @@ global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 			option('', 'Attachment');
 			foreach ($legal_attachment_keys as $attachment_key) {
 				$attachment = $ATTACHMENTS[$attachment_key];
-				$content = sprintf('%s (x%s)', $attachment['name'], $attachment['multiplier']);
+				if ($attachment_key === TIPS && $tips_count) {
+					//$multiplier = implode(",", $TIPS_COUNT_MULTIPLIERS);
+					$multiplier = "?";
+				} else {
+					$multiplier = $attachment['multiplier'];
+				}
+				$content = sprintf('%s (x%s)', $attachment['name'], $multiplier);
 				option($attachment_key, $content);
 			}
 			?>
@@ -45,7 +52,12 @@ global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 				<?php
 				option('', 'Tips');
 				for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
-					option($tips, $tips);
+					if ($tips_count) {
+						$content = sprintf('%s (x%s)', $tips, $TIPS_COUNT_MULTIPLIERS[$tips]);
+					} else {
+						$content = $tips . "ost";
+					}
+					option($tips, $content);
 				}
 				?>
 			</select>

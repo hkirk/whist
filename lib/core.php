@@ -24,7 +24,7 @@ $POINT_RULES = array(
 	POINT_RULE_TIPS => array('name' => 'Tips counts', 'description' => 'The base bid points depends on the number of tips.')
 );
 
-$TIPS_COUNTS_MULTIPLIERS = array(
+$TIPS_COUNT_MULTIPLIERS = array(
 	1 => 1.5,
 	2 => 2,
 	3 => 3
@@ -91,38 +91,38 @@ $SOLO_GAME_KEY_ORDER = array(
 // The points calculated be these methods are the bidder points
 //
 
-function normal_game_bid_base_points($bid_tricks, $point_rules, $bid_attachment = NULL, $tips = NULL) {
+function normal_game_bid_base_points($point_rules, $bid_tricks, $bid_attachment = NULL, $tips = NULL) {
 	if ($bid_attachment === NULL) {
 		global $ATTACHMENTS;
 		$bid_attachment = $ATTACHMENTS[NONE];
 	}
 	if ($bid_attachment === TIPS && $tips !== NULL && in_array(POINT_RULE_TIPS, $point_rules)) {
-		global $TIPS_COUNTS_MULTIPLIERS;
-		$attachment_multiplier = $TIPS_COUNTS_MULTIPLIERS[$tips];
+		global $TIPS_COUNT_MULTIPLIERS;
+		$attachment_multiplier = $TIPS_COUNT_MULTIPLIERS[$tips];
 	} else {
 		$attachment_multiplier = $bid_attachment['multiplier'];
 	}
-	$bid_base_points = GROUND_POINTS * pow(2, $bid_tricks - 7) * $attachment_multiplier;
-	return $bid_base_points;
+	return GROUND_POINTS * pow(2, $bid_tricks - 7) * $attachment_multiplier;
 }
 
 
-function normal_game_points($bid_tricks, $bid_attachment, $tricks, $point_rules, $tips = NULL) {
+function normal_game_points($point_rules, $bid_tricks, $bid_attachment, $tricks, $tips = NULL) {
 	$displacement = $bid_tricks > $tricks ? 0 : 1; // Lost?
 	$multiplier = $bid_tricks > $tricks ? 2 : 1; // Lost?
-	$bid_base_points = normal_game_bid_base_poins($bid_tricks, $point_rules, $bid_attachment, $tips);
-	$reallybad_points = get_really_bad_points($tricks, $point_rules);
+	$bid_base_points = normal_game_bid_base_points($point_rules, $bid_tricks, $bid_attachment, $tips);
+	$reallybad_points = get_really_bad_points($point_rules, $tricks);
+	printf("mul: %s, base: %s", $multiplier, $bid_base_points);
 	return $bid_base_points * ($tricks - $bid_tricks + $displacement) * $multiplier + $reallybad_points;
 }
 
 
-function solo_game_bid_base_points($solo_game) {
+function solo_game_bid_base_points($point_rules, $solo_game) {
 	// pow(2, 9-7)*1.5 = 6
 	return GROUND_POINTS * 6 * $solo_game['multiplier'];
 }
 
 
-function solo_game_points($solo_game, $point_rules, $tricks) {
+function solo_game_points($point_rules, $solo_game, $tricks) {
 	$max_tricks = $solo_game['max_tricks'];
 	if (!in_array(POINT_RULE_SOLOTRICKS)) {
 		// Number of tricks does not count
@@ -131,13 +131,13 @@ function solo_game_points($solo_game, $point_rules, $tricks) {
 	$displacement = $max_tricks < $tricks ? 0 : 1; // Lost?
 	$multiplier = $max_tricks < $tricks ? 2 : 1; // Lost?
 	$bid_base_points = solo_game_bid_base_points($solo_game);
-	$reallybad_points = -get_really_bad_points($tricks, $point_rules);  // negate points
+	$reallybad_points = -get_really_bad_points($point_rules, $tricks);  // negate points
 	return $bid_base_points * ($max_tricks - $tricks + $displacement) * $multiplier + $reallybad_points;
 }
 
 
 // TODO lower limit for solo games
-function get_really_bad_points($tricks, $point_rules) {
+function get_really_bad_points($point_rules, $tricks) {
 	if ($tricks === MAX_TRICKS && in_array(POINT_RULE_REALLYBAD, $point_rules)) {
 		global $REALLYBAD_POINTS;
 		return $REALLYBAD_POINTS;

@@ -102,13 +102,38 @@ if ($input_error) {
 $round_id = $active_round['id'];
 if ($bid_type === 'normal') {
 	$tricks = $tricks_array[$bid_winner_position];
-	$player_points = array(1, 2, 3, 4); // TODO
+	// TODO extract parameters
+	//$bidder_points = normal_game_points($point_rules, $bid_tricks, $bid_attachment, $tricks, $tips);
+	$bidder_points = normal_game_points(array(), 8, $ATTACHMENTS[NONE], 8, NULL);
+	// Initialize all player points to the negation of the bid winner points (opponents)
+	$player_points = array_fill(0, 4, -$bidder_points);
+	if ($bid_winner_mate_position === $bid_winner_position) {
+		$player_points[$bid_winner_position] = $bidder_points * 3;
+	} else {
+		$player_points[$bid_winner_position] = $bidder_points;
+		$player_points[$bid_winner_mate_position] = $bidder_points;
+	}
+	var_dump($player_points);
 	db_end_normal_round($game_id, $round_id, $bid_winner_mate_position, $tricks, $player_points);
 } else {
 	$bid_winner_tricks_by_position = $tricks_array;
-	$player_points = array(1, 2, 3, 4); // TODO
+	// Initialize all player points to zero
+	$player_points = array_fill(0, 4, 0);
+	foreach ($bid_winner_tricks_by_position as $position => $tricks) {
+		// TODO extract parameters
+		//$bidder_points = solo_game_points($point_rules, $solo_game, $tricks);
+		$bidder_points = solo_game_points(array(), $SOLO_GAMES['solo'], $tricks);
+		for ($i = MIN_PLAYER_POSITION; $i <= MAX_PLAYER_POSITION; $i++) {
+			if ($i === $position) {
+				$player_points[$i] += $bidder_points * 3;
+			} else {
+				$player_points[$i] -= $bidder_points;
+			}
+		}
+	}
 	db_end_solo_round($game_id, $round_id, $bid_winner_tricks_by_position, $player_points);
 }
+
 
 // Redirect back to the game
 redirect_path("/game.php?id=" . $game_id);

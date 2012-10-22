@@ -6,7 +6,6 @@ check_request_method("GET");
 
 
 $id = check_get_uint($_GET, 'id');
-
 check_input($id);
 
 
@@ -33,6 +32,7 @@ foreach ($db_game['players'] as $player) {
 	$players[] = array_filter_entries($player, "", array("nickname", "fullname"));
 	$total_points[] = $player['total_points'];
 }
+$point_rules = &$db_game['point_rules'];
 
 $db_game_with_active_round = db_get_game_type_with_active_round($id);
 
@@ -41,7 +41,7 @@ $active_round = $db_game_with_active_round['active_round'];
 printf("Active round:");
 var_dump($active_round);
 
-if($active_round===NULL) {
+if ($active_round === NULL) {
 	$controls_view = 'beginround';
 	$legal_attachment_keys = array();
 	foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
@@ -50,15 +50,18 @@ if($active_round===NULL) {
 		}
 	}
 	$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
+	$tips_count = in_array(POINT_RULE_TIPS, $point_rules);
+	printf("Tips count: %s",$tips_count);
 	$controls_view_data = array(
 		'is_tips_legal' => $is_tips_legal,
+		'tips_count' => $tips_count,
 		'legal_attachment_keys' => $legal_attachment_keys
-	);	
+	);
 } else {
 	$controls_view = 'endround';
 	$bid_type = $active_round['bid_type'];
 	$bid_data = $active_round['bid_data'];
-	if($bid_type==='normal') {
+	if ($bid_type === 'normal') {
 		$bid_winner_positions = array($bid_data['bid_winner_position']);
 	} else {
 		$bid_winner_positions = array_keys($bid_data['bid_winner_tricks_by_position']);
@@ -119,18 +122,18 @@ foreach ($db_rounds as $r) {
 	$rounds[] = $round;
 }
 /*
-printf("DB:");
-var_dump($db_rounds);
-printf("<p>View:");
-var_dump($rounds);
-printf("</p>");
-printf("<p>TP:");
-var_dump($total_points);
-printf("</p>");
-printf("<p>ACC TP:");
-var_dump($acc_total_points);
-printf("</p>");
-*/
+  printf("DB:");
+  var_dump($db_rounds);
+  printf("<p>View:");
+  var_dump($rounds);
+  printf("</p>");
+  printf("<p>TP:");
+  var_dump($total_points);
+  printf("</p>");
+  printf("<p>ACC TP:");
+  var_dump($acc_total_points);
+  printf("</p>");
+ */
 
 // TODO reactivate
 // Consistency check
@@ -138,8 +141,11 @@ printf("</p>");
 //	game_render_error('inconsistent_points');
 //}
 
-$controls_view_data['game_id'] = &$id;
-$controls_view_data['players'] = &$players;
+$controls_view_data = array_merge($controls_view_data, array(
+	'game_id' => &$id,
+	'players' => &$players,
+	'point_rules' => &$point_rules
+));
 
 
 $data = array(
