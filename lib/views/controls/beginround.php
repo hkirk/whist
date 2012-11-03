@@ -11,10 +11,12 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<select name="solo">
 			<?php
 			option('', 'Solo Type');
+			$beats = FIRST_SOLO_GAME_BEATS;
 			foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
 				$solo_game = $SOLO_GAMES[$solo_game_key];
-				$content = sprintf('%s (%s)', $solo_game['name'], solo_game_bid_base_points($point_rules, $solo_game));
+				$content = sprintf('%s (%s) - beats %s', $solo_game['name'], solo_game_bid_base_points($point_rules, $solo_game), $beats);
 				option($solo_game_key, $content);
+				$beats++;
 			}
 			?>
 		</select>
@@ -55,7 +57,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 					if ($tips_count) {
 						$content = sprintf('%s (x%s)', $tips, $TIPS_COUNT_MULTIPLIERS[$tips]);
 					} else {
-						$content = $tips . "ost";
+						$content = $tips;
 					}
 					option($tips, $content);
 				}
@@ -74,4 +76,8 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<?php endforeach; ?>
 	</fieldset>
 	<button type="submit">Begin round</button>
+	<div>
+		<label>Point rules:</label>
+		<?php echo implode(',', $point_rules) ?>
+	</div>
 </form>

@@ -188,8 +188,8 @@ function db_get_game_type_with_active_round($game_id) {
 SELECT 
 	g.attachments AS attachments,
 	g.point_rules AS point_rules,
-    gr.id AS gr_id,
-    $_DB_ROUND_TYPES_SELECT
+	gr.id AS gr_id,
+	$_DB_ROUND_TYPES_SELECT
 FROM games AS g 
 LEFT OUTER JOIN game_rounds AS gr ON g.id = gr.game_id
 $_DB_ROUND_TYPES_JOINS

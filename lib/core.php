@@ -74,6 +74,7 @@ define('SOLO_SOLO', "solo");
 define('SOLO_CLEANSOLO', "cleansolo");
 define('SOLO_TABLE', "table");
 define('SOLO_CLEANTABLE', "cleantable");
+define('FIRST_SOLO_GAME_BEATS', 9);
 
 $SOLO_GAMES = array(
 	SOLO_SOLO => array('multiplier' => 1, 'max_tricks' => 1, 'name' => 'Solo'),
@@ -124,20 +125,24 @@ function solo_game_bid_base_points($point_rules, $solo_game) {
 
 function solo_game_points($point_rules, $solo_game, $tricks) {
 	$max_tricks = $solo_game['max_tricks'];
-	if (!in_array(POINT_RULE_SOLOTRICKS)) {
+	$lost = $max_tricks < $tricks;
+	if (in_array(POINT_RULE_SOLOTRICKS, $point_rules)) {
+		$justified_tricks = $tricks;
+	} else {
 		// Number of tricks does not count
-		$tricks = $max_tricks < $tricks ? $max_tricks + 1 : $max_tricks; // Lost?
+		$justified_tricks = $lost ? $max_tricks + 1 : $max_tricks;
 	}
-	$displacement = $max_tricks < $tricks ? 0 : 1; // Lost?
-	$multiplier = $max_tricks < $tricks ? 2 : 1; // Lost?
-	$bid_base_points = solo_game_bid_base_points($solo_game);
+	$displacement = $lost ? 0 : 1;
+	$multiplier = $lost ? 2 : 1;
+	$bid_base_points = solo_game_bid_base_points($point_rules, $solo_game);
 	$reallybad_points = -get_really_bad_points($point_rules, $tricks);  // negate points
-	return $bid_base_points * ($max_tricks - $tricks + $displacement) * $multiplier + $reallybad_points;
+	return $bid_base_points * ($max_tricks - $justified_tricks + $displacement) * $multiplier + $reallybad_points;
 }
 
 
 // TODO lower limit for solo games
 function get_really_bad_points($point_rules, $tricks) {
+	error_log("Tricks: " . $tricks);
 	if ($tricks === MAX_TRICKS && in_array(POINT_RULE_REALLYBAD, $point_rules)) {
 		global $REALLYBAD_POINTS;
 		return $REALLYBAD_POINTS;

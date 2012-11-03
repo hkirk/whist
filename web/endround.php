@@ -30,11 +30,11 @@ function endround_render_page_and_exit($data) {
 
 
 $data = array(
-	'unknown_game' => FALSE,
-	'no_active_round' => FALSE,
-	'missing_tricks' => FALSE,
-	'bad_tricks_sum' => FALSE,
-	'missing_bid_winner_mate_position' => FALSE
+		'unknown_game' => FALSE,
+		'no_active_round' => FALSE,
+		'missing_tricks' => FALSE,
+		'bad_tricks_sum' => FALSE,
+		'missing_bid_winner_mate_position' => FALSE
 );
 $input_error = FALSE;
 
@@ -99,12 +99,15 @@ if ($input_error) {
 // End of validation
 
 
+$point_rules = $game_with_active_round['point_rules'];
 $round_id = $active_round['id'];
 if ($bid_type === 'normal') {
+	$bid_tricks = $bid_data['bid_tricks'];
+	$bid_attachment = $ATTACHMENTS[$bid_data['bid_attachment']];
 	$tricks = $tricks_array[$bid_winner_position];
-	// TODO extract parameters
-	//$bidder_points = normal_game_points($point_rules, $bid_tricks, $bid_attachment, $tricks, $tips);
-	$bidder_points = normal_game_points(array(), 8, $ATTACHMENTS[NONE], 8, NULL);
+	$tips = $bid_data['tips'];
+	//printf("Bid tricks: %s, Bid att: %s, Tricks: %s, Tips: %s",$bid_tricks, $bid_attachment['name'], $tricks, $tips);
+	$bidder_points = normal_game_points($point_rules, $bid_tricks, $bid_attachment, $tricks, $tips);
 	// Initialize all player points to the negation of the bid winner points (opponents)
 	$player_points = array_fill(0, 4, -$bidder_points);
 	if ($bid_winner_mate_position === $bid_winner_position) {
@@ -120,9 +123,9 @@ if ($bid_type === 'normal') {
 	// Initialize all player points to zero
 	$player_points = array_fill(0, 4, 0);
 	foreach ($bid_winner_tricks_by_position as $position => $tricks) {
-		// TODO extract parameters
-		//$bidder_points = solo_game_points($point_rules, $solo_game, $tricks);
-		$bidder_points = solo_game_points(array(), $SOLO_GAMES['solo'], $tricks);
+		$solo_game = $SOLO_GAMES[$bid_data['type']];
+		//printf("Solo game: %s, tricks: %s", $solo_game['name'], $tricks);
+		$bidder_points = solo_game_points($point_rules, $solo_game, $tricks);
 		for ($i = MIN_PLAYER_POSITION; $i <= MAX_PLAYER_POSITION; $i++) {
 			if ($i === $position) {
 				$player_points[$i] += $bidder_points * 3;

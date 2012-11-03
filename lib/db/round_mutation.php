@@ -144,7 +144,7 @@ function db_end_normal_round($game_id, $game_round_id, $bid_winner_mate_position
 UPDATE normal_game_rounds
 SET
 bid_winner_mate_position = ?,
-bid_tricks = ?
+tricks = ?
 WHERE game_round_id = ?
 EOS;
 	$params = array(

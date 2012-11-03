@@ -38,8 +38,10 @@ $db_game_with_active_round = db_get_game_type_with_active_round($id);
 
 
 $active_round = $db_game_with_active_round['active_round'];
+printf("<pre>");
 printf("Active round:");
 var_dump($active_round);
+printf("</pre>");
 
 if ($active_round === NULL) {
 	$controls_view = 'beginround';
