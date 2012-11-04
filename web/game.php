@@ -38,10 +38,10 @@ $db_game_with_active_round = db_get_game_type_with_active_round($id);
 
 
 $active_round = $db_game_with_active_round['active_round'];
-printf("<pre>");
-printf("Active round:");
-var_dump($active_round);
-printf("</pre>");
+//printf("<pre>");
+//printf("Active round:");
+//var_dump($active_round);
+//printf("</pre>");
 
 if ($active_round === NULL) {
 	$controls_view = 'beginround';
@@ -53,7 +53,7 @@ if ($active_round === NULL) {
 	}
 	$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
 	$tips_count = in_array(POINT_RULE_TIPS, $point_rules);
-	printf("Tips count: %s",$tips_count);
+	//printf("Tips count: %s",$tips_count);
 	$controls_view_data = array(
 		'is_tips_legal' => $is_tips_legal,
 		'tips_count' => $tips_count,

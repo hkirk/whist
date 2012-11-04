@@ -20,7 +20,7 @@ global $ATTACHMENTS;
 			<div>
 				<?php
 				multi_checkbox($name, $point_rule_key);
-				multi_checkbox_label($name, $point_rule_key, $point_rule['name'] . '?');
+				multi_element_label($name, $point_rule_key, $point_rule['name'] . '?');
 				?>
 				<?php if (isset($point_rule['description'])) : ?>
 					<p><?php echo $point_rule['description'] ?></p>
@@ -38,7 +38,7 @@ global $ATTACHMENTS;
 				<?php
 				$attachment = $ATTACHMENTS[$attachment_key];
 				multi_checkbox($name, $attachment_key);
-				multi_checkbox_label($name, $attachment_key, $attachment['name'] . '?');
+				multi_element_label($name, $attachment_key, $attachment['name'] . '?');
 				?>
 				<?php if (isset($attachment['description'])) : ?>
 					<p><?php echo $attachment['description'] ?></p>

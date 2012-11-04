@@ -39,23 +39,40 @@ function option($value, $content) {
 }
 
 
-function checkbox($name_and_id) {
+function name_value_id($name, $value, $id_qualifier = NULL) {
+	$id = ($id_qualifier === NULL) ? "" : $id_qualifier . "-";
+	$id .= $name . "-" . $value;
+	return $id;
+}
+
+
+function radio_button($name, $value, $id_qualifier = NULL) {
+	$id = name_value_id($name, $value, $id_qualifier);
+	?><input type="radio" name="<?php echo $name ?>" value="<?php echo $value ?>" id="<?php echo $id ?>" /><?php
+}
+
+
+/*
+  function checkbox($name_and_id) {
+  ?>
+  <input type="hidden" name="<?php echo $name_and_id ?>" value="off" />
+  <input type="checkbox" name="<?php echo $name_and_id ?>" value="on" id="<?php echo $name_and_id ?>" />
+  <?php
+  }
+ */
+
+
+function multi_checkbox($name, $value, $id_qualifier = NULL) {
+	$id = name_value_id($name, $value, $id_qualifier);
 	?>
-	<input type="hidden" name="<?php echo $name_and_id ?>" value="off" />
-	<input type="checkbox" name="<?php echo $name_and_id ?>" value="on" id="<?php echo $name_and_id ?>" />
+	<input type="checkbox" name="<?php echo $name ?>[]" value="<?php echo $value ?>" id="<?php echo $id ?>" />
 	<?php
 }
 
 
-function multi_checkbox($name, $value) {
-	?>
-	<input type="checkbox" name="<?php echo $name ?>[]" value="<?php echo $value ?>" id="<?php echo $name . "-" . $value ?>" />
-	<?php
-}
-
-
-function multi_checkbox_label($name, $value, $content) {
-	?><label for="<?php echo $name . "-" . $value ?>"><?php echo $content ?></label><?php
+function multi_element_label($name, $value, $content, $id_qualifier = NULL) {
+	$id = name_value_id($name, $value, $id_qualifier);
+	?><label for="<?php echo $id ?>"><?php echo $content ?></label><?php
 }
 
 
@@ -93,20 +110,55 @@ function check_get_multi_checkbox_array($map, $param, &$valid_values) {
 }
 
 
-function check_get_enum($map, $param, &$valid_values, $allow_blank) {
+/**
+ * 
+ * @param type $map
+ * @param type $param
+ * @param type $valid_values
+ * @param type $allow_blank
+ * @param type $unset_value Set to something, like the empty string, for radio buttons
+ * @return null
+ */
+function check_get_enum($map, $param, &$valid_values, $allow_blank, $unset_value = NULL) {
 	if (!isset($map[$param])) {
-// Missing input
-		return NULL;
+		// Missing input
+		return $unset_value;
 	}
 	$param = $map[$param];
 	if ($allow_blank && $param === '') {
 		return $param;
 	}
 	if (!isset($valid_values[$param])) {
-// Invalid value
+		// Invalid value
 		return NULL;
 	}
 	return $param;
+}
+
+
+/**
+ * An unset value is returned as the empty string 
+ * @param type $map
+ * @param type $param
+ * @param type $valid_values
+ * @return type
+ */
+function check_get_radio_enum($map, $param, &$valid_values) {
+	return check_get_enum($map, $param, $valid_values, FALSE, '');
+}
+
+
+/**
+ * An unset value is not accepted.
+ * 
+ * @param type $map
+ * @param type $param
+ * @param type $valid_values
+ * @param type $allow_blank
+ * @return type
+ */
+function check_get_select_enum($map, $param, &$valid_values, $allow_blank) {
+	return check_get_enum($map, $param, $valid_values, $allow_blank, NULL);
 }
 
 
@@ -143,18 +195,18 @@ function check_get_indexed_array($map, $param, $length = NULL, $value_validator 
 }
 
 
-function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL) {
+function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL, $unset_value = NULL) {
 	if (!isset($map[$param])) {
-// Missing input
-		return NULL;
+		// Missing input
+		return $unset_value;
 	}
 	$param = $map[$param];
 	if (!is_array($param)) {
-// Error - not a string
+		// Error - not a string
 		return NULL;
 	}
 	if ($length != NULL && count($param) != $length) {
-// Invalid length
+		// Invalid length
 		return NULL;
 	}
 	if ($valid_indices !== NULL) {
@@ -168,10 +220,15 @@ function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL) {
 }
 
 
-function check_get_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = NULL) {
+function check_get_radio_array($map, $param, $length = NULL, &$valid_indices = NULL) {
+	return check_get_array($map, $param, $length, $valid_indices, array());
+}
+
+
+function check_get_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = NULL, $unset_value = NULL) {
 	$param = check_get_string($map, $param);
 	if ($param === NULL) {
-		return NULL;
+		return $unset_value;
 	}
 	if ($param === '') {
 		if ($allow_blank) {
@@ -188,6 +245,11 @@ function check_get_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = 
 		return NULL;
 	}
 	return $int;
+}
+
+
+function check_get_radio_uint($map, $param, $allow_blank = FALSE, $min = NULL, $max = NULL) {
+	return check_get_uint($map, $param, $allow_blank, $min, $max, '');
 }
 
 

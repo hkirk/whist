@@ -6,22 +6,9 @@ check_request_method("POST");
 
 // Basic input validation:
 $game_id = check_get_uint($_POST, 'game_id');
-$tricks_array = check_get_array($_POST, 'tricks', NULL, $VALID_PLAYER_POSITIONS);
-$bid_winner_mate_position = check_get_uint($_POST, 'bid_winner_mate_position', TRUE, MIN_PLAYER_POSITION, MAX_PLAYER_POSITION);
+$tricks_array = check_get_radio_array($_POST, 'tricks', NULL, $VALID_PLAYER_POSITIONS);
+$bid_winner_mate_position = check_get_radio_uint($_POST, 'bid_winner_mate_position', FALSE, MIN_PLAYER_POSITION, MAX_PLAYER_POSITION);
 check_input($game_id, $tricks_array, $bid_winner_mate_position);
-
-$tricks_array_size = count($tricks_array);
-if ($tricks_array_size < 1 || $tricks_array_size > MAX_PLAYER_POSITION) {
-	render_unexpected_input_page_and_exit("Bad number of tricks in array!");
-}
-foreach ($tricks_array as $index => $dummy) {
-	$tricks = check_get_uint($tricks_array, $index, TRUE, MIN_TRICKS, MAX_TRICKS);
-	if ($tricks === NULL) {
-		render_unexpected_input_page_and_exit("Bad tricks");
-	}
-	// Update with integer key and value (or blank)
-	$tricks_array[(int) $index] = $tricks;
-}
 
 
 function endround_render_page_and_exit($data) {
@@ -30,13 +17,28 @@ function endround_render_page_and_exit($data) {
 
 
 $data = array(
-		'unknown_game' => FALSE,
-		'no_active_round' => FALSE,
-		'missing_tricks' => FALSE,
-		'bad_tricks_sum' => FALSE,
-		'missing_bid_winner_mate_position' => FALSE
+	'unknown_game' => FALSE,
+	'no_active_round' => FALSE,
+	'missing_tricks' => FALSE,
+	'bad_tricks_sum' => FALSE,
+	'missing_bid_winner_mate_position' => FALSE
 );
 $input_error = FALSE;
+
+$tricks_array_size = count($tricks_array);
+if ($tricks_array_size < 1 || $tricks_array_size > N_PLAYERS) {
+	$input_error = $data['missing_tricks'] = TRUE;
+	endround_render_page_and_exit($data);	
+}
+foreach ($tricks_array as $index => $dummy) {
+	$tricks = check_get_uint($tricks_array, $index, FALSE, MIN_TRICKS, MAX_TRICKS);
+	if ($tricks === NULL) {
+		render_unexpected_input_page_and_exit("Bad tricks");
+	}
+	// Update with integer key and value (or blank)
+	$tricks_array[(int) $index] = $tricks;
+}
+
 
 $game_with_active_round = db_get_game_type_with_active_round($game_id);
 
@@ -82,11 +84,7 @@ if (count($tricks_array) !== $n_bid_winners) {
 
 $tricks_sum = 0;
 foreach ($tricks_array as $tricks) {
-	if ($tricks === '') {
-		$input_error = $data['missing_tricks'] = TRUE;
-	} else {
-		$tricks_sum += $tricks;
-	}
+	$tricks_sum += $tricks;
 }
 if ($tricks_sum > MAX_TRICKS) {
 	$input_error = $data['bad_tricks_sum'] = TRUE;
@@ -122,8 +120,8 @@ if ($bid_type === 'normal') {
 	$bid_winner_tricks_by_position = $tricks_array;
 	// Initialize all player points to zero
 	$player_points = array_fill(0, 4, 0);
+	$solo_game = $SOLO_GAMES[$bid_data['type']];
 	foreach ($bid_winner_tricks_by_position as $position => $tricks) {
-		$solo_game = $SOLO_GAMES[$bid_data['type']];
 		//printf("Solo game: %s, tricks: %s", $solo_game['name'], $tricks);
 		$bidder_points = solo_game_points($point_rules, $solo_game, $tricks);
 		for ($i = MIN_PLAYER_POSITION; $i <= MAX_PLAYER_POSITION; $i++) {

@@ -7,6 +7,7 @@ function rewrite_null($e) {
 ?>
 
 <?php
+$controls_view_data['id_qualifier'] = 'top';
 render_view('controls/' . $controls_view, $controls_view_data);
 ?>
 <h2>Score board</h2>
@@ -31,7 +32,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 				$bid_winner_positions = array_keys($bid_winner_tricks_by_position);
 				$bid_winner_mate_position = $round['bid_winner_mate_position'];
 				$bid_winner_names = array();
-				var_dump($bid_winner_tricks_by_position);
+				//var_dump($bid_winner_tricks_by_position);
 				foreach ($bid_winner_positions as $bid_winner_position) {
 					$bid_winner_names[] = $players[$bid_winner_position]['nickname'];
 				}
@@ -76,5 +77,6 @@ render_view('controls/' . $controls_view, $controls_view_data);
 	</tfoot>
 </table>
 <?php
+$controls_view_data['id_qualifier'] = 'bottom';
 render_view('controls/' . $controls_view, $controls_view_data);
 ?>

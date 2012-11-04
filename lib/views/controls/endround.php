@@ -5,28 +5,32 @@
 	<?php foreach ($bid_winner_positions as $position): ?>
 		<?php $bid_winner = $players[$position]; ?>
 		<fieldset>
-			<legend><?php echo $bid_winner['nickname'] ?></legend>
-			<select name="tricks[<?php echo $position ?>]">
+			<legend>Outcome for <?php echo $bid_winner['nickname'] ?></legend>
+			<div>
+				Tricks:
 				<?php
-				option('', 'Tricks');
+				$name = 'tricks[' . $position . ']';
 				for ($tricks = MIN_TRICKS; $tricks <= MAX_TRICKS; $tricks++) {
-					option($tricks, $tricks);
+					radio_button($name, $tricks, $id_qualifier);
+					multi_element_label($name, $tricks, $tricks, $id_qualifier);
 				}
 				?>
-			</select>
+			</div>
 			<?php if ($bid_type === "normal"): ?>
-				<select name="bid_winner_mate_position">
+				<div>
+					Mate:
 					<?php
-					option('', 'Mate');
+					$name = "bid_winner_mate_position";
 					foreach ($players as $position => $player) {
-						$content = $player['nickname'];
+						$label = $player['nickname'];
 						if ($position === $bid_winner_positions[0]) {
-							$content .= ' (Self mate)';
+							$label .= ' (Self mate)';
 						}
-						option($position, $content);
+						radio_button($name, $position, $id_qualifier);
+						multi_element_label($name, $position, $label, $id_qualifier);
 					}
 					?>
-				</select>
+				</div>
 			<?php else: ?>
 				<input type="hidden" name="bid_winner_mate_position" value="" />
 			<?php endif; ?>

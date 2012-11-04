@@ -4,14 +4,29 @@ require("lib.php");
 
 check_request_method("POST");
 
+// Build valid bid input values
+$VALID_BID_VALUES = array();
+for ($tricks = MIN_BID_TRICKS; $tricks <= MAX_TRICKS; $tricks++) {
+	$VALID_BID_VALUES[BID_PREFIX_NORMAL . $tricks] = TRUE;
+}
+foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
+	$VALID_BID_VALUES[BID_PREFIX_SOLO . $solo_game_key] = TRUE;
+}
+
+// Build valid attachment input values
+$VALID_ATTACHMENT_VALUES = $ATTACHMENTS;
+unset($VALID_ATTACHMENT_VALUES[TIPS]);
+for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
+	$VALID_ATTACHMENT_VALUES[TIPS . "-" . $tips] = TRUE;
+}
+
+
 // Basic input validation:
 $game_id = check_get_uint($_POST, 'game_id');
-$tricks = check_get_uint($_POST, 'tricks', TRUE);
-$attachment_key = check_get_enum($_POST, 'attachment', $ATTACHMENTS, TRUE);
-$solo_game_key = check_get_enum($_POST, 'solo', $SOLO_GAMES, TRUE);
-$tips = check_get_uint($_POST, 'tips', TRUE);
+$input_bid = check_get_radio_enum($_POST, 'bid', $VALID_BID_VALUES);
+$input_attachment = check_get_radio_enum($_POST, 'attachment', $VALID_ATTACHMENT_VALUES);
 $bid_winner_positions = check_get_multi_checkbox_array($_POST, 'bid_winner_positions', $VALID_PLAYER_POSITIONS);
-check_input($game_id, $tricks, $attachment_key, $solo_game_key, $tips, $bid_winner_positions);
+check_input($game_id, $input_bid, $input_attachment, $bid_winner_positions);
 
 $n_bid_winner_positions = count($bid_winner_positions);
 if ($n_bid_winner_positions > 4) {
@@ -36,18 +51,21 @@ function beginround_render_page_and_exit($data) {
 
 
 $data = array(
-	'unknown_game' => FALSE,
-	'has_active_round' => FALSE,
-	'missing_bid_type' => FALSE,
-	'multiple_bid_types' => FALSE,
-	'missing_solo_bid_winners' => FALSE,
-	'missing_attachment' => FALSE,
-	'missing_tips' => FALSE,
-	'tips_chosen' => FALSE,
-	'illegal_attachment' => FALSE,
-	'missing_normal_bid_winner' => FALSE
+		'unknown_game' => FALSE,
+		'has_active_round' => FALSE,
+		'missing_bid' => FALSE,
+		'solo_and_attachment' => FALSE,
+		'missing_solo_bid_winners' => FALSE,
+		'missing_normal_bid_winner' => FALSE,
+		'missing_attachment' => FALSE,
+		'illegal_attachment' => FALSE
 );
 $input_error = FALSE;
+
+if ($input_bid === '') {
+	$input_error = $data['missing_bid'] = TRUE;
+	beginround_render_page_and_exit($data);
+}
 
 
 $game = db_get_game_type_with_active_round($game_id);
@@ -60,53 +78,45 @@ if ($game === NULL) {
 if ($game['active_round'] !== NULL) {
 	$input_error = $data['has_active_round'] = TRUE;
 }
-var_dump($game);
+//var_dump($game);
 
 
-if ($tricks === '') {
+$solo_bid = strpos($input_bid, 'solo-') !== FALSE;
+
+if ($solo_bid) {
 	// Solo game...
-	if ($solo_game_key === '') {
-		$input_error = $data['missing_bid_type'] = TRUE;
-	}
-	if ($attachment_key !== '' || $tips !== '') {
-		$input_error = $data['multiple_bid_types'] = TRUE;
+	$solo_game_key = substr($input_bid, strlen(BID_PREFIX_SOLO));
+	if ($input_attachment !== '') {
+		$input_error = $data['solo_and_attachment'] = TRUE;
 	}
 	if ($n_bid_winner_positions < 1) {
 		$input_error = $data['missing_solo_bid_winners'] = TRUE;
 	}
-	$solo_bid = TRUE;
 } else {
 	// Normal game...
-	if ($solo_game_key !== '') {
-		$input_error = $data['multiple_bid_types'] = TRUE;
-	}
-	if ($attachment_key === '') {
+	$tricks = (int) substr($input_bid, strlen(BID_PREFIX_NORMAL));
+	if ($input_attachment === '') {
 		$input_error = $data['missing_attachment'] = TRUE;
-	}
-	if ($attachment_key === TIPS) {
-		if ($tips === '') {
-			$input_error = $data['missing_tips'] = TRUE;
-		}
 	} else {
-		if ($tips !== '') {
-			$input_error = $data['tips_chosen'] = TRUE;
+		$dash_pos = strpos($input_attachment, "-");
+		if ($dash_pos === FALSE) {
+			$attachment_key = $input_attachment;
+			$tips = NULL;
+			assert($attachment_key !== TIPS);
+		} else {
+			$attachment_key = substr($input_attachment, 0, $dash_pos);
+			$tips = (int) substr($input_attachment, $dash_pos + 1);
+			assert($attachment_key === TIPS);
 		}
-	}
-	printf("Attachments: ");
-	var_dump($game['attachments']);
-	if (!(in_array($attachment_key, $game['attachments']) || in_array($attachment_key, $REQUIRED_ATTACHMENT_KEYS_ORDER))) {
-		$input_error = $data['illegal_attachment'] = TRUE;
-	}
-	if ($tricks < MIN_BID_TRICKS || $tricks > MAX_BID_TRICKS) {
-		render_unexpected_input_page_and_exit("Invalid number of tricks!");
-	}
-	if ($tips !== '' && ($tips < MIN_TIPS || $tips > MAX_TIPS)) {
-		render_unexpected_input_page_and_exit("Invalid number of tips!");
+//		printf("Attachments: ");
+//		var_dump($game['attachments']);
+		if (!(in_array($attachment_key, $game['attachments']) || in_array($attachment_key, $REQUIRED_ATTACHMENT_KEYS_ORDER))) {
+			$input_error = $data['illegal_attachment'] = TRUE;
+		}
 	}
 	if ($n_bid_winner_positions !== 1) {
 		$input_error = $data['missing_normal_bid_winner'] = TRUE;
 	}
-	$solo_bid = FALSE;
 }
 
 if ($input_error) {
@@ -118,9 +128,6 @@ if ($input_error) {
 if ($solo_bid) {
 	$id = db_create_solo_round($game_id, $solo_game_key, $bid_winner_positions);
 } else {
-	if ($tips === '') {
-		$tips = NULL;
-	}
 	$id = db_create_normal_round($game_id, $tricks, $attachment_key, $bid_winner_positions[0], $tips);
 }
 

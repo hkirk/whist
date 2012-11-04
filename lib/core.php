@@ -13,6 +13,10 @@ define('MAX_TIPS', 3);
 
 define('MIN_PLAYER_POSITION', 0);
 define('MAX_PLAYER_POSITION', 3);
+define('N_PLAYERS', 4);
+
+define('BID_PREFIX_SOLO', 'solo-');
+define('BID_PREFIX_NORMAL', 'normal-');
 
 define('POINT_RULE_REALLYBAD', 'reallybad');
 define('POINT_RULE_TIPS', 'tips');

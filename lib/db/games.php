@@ -160,7 +160,7 @@ EOS;
     }
     $players = array();
     foreach ($rows as $index => $row) {
-        printf("pos: %s", $row['player_position']);
+        //printf("pos: %s", $row['player_position']);
         assert((string) $index === $row['player_position']);
         $player = array_filter_entries($row, 'player_', array('nickname', 'fullname'));
         $player['total_points'] = (int) $row['player_total_points'];
@@ -214,9 +214,9 @@ EOS;
         return $game;
     }
     $rounds = _db_build_game_rounds_from_traversable($rows, NULL);
-    printf("Rounds: ");
-    var_dump($rounds);
-    printf("Rounds done");
+//    printf("Rounds: ");
+//    var_dump($rounds);
+//    printf("Rounds done");
     if (count($rounds) < 1) {
         // Hmmm, Invalid number of rounds
         assert(FALSE);
