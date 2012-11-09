@@ -3,6 +3,7 @@
 	<head>
 		<title>WhistCalc - <?php echo $subtitle; ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="styles/style.css" />
 	</head>
 	<body>
 		<nav>
