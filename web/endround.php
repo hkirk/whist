@@ -7,7 +7,7 @@ check_request_method("POST");
 // Basic input validation:
 $game_id = check_get_uint($_POST, 'game_id');
 $tricks_array = check_get_radio_array($_POST, 'tricks', NULL, $VALID_PLAYER_POSITIONS);
-$bid_winner_mate_position = check_get_radio_uint($_POST, 'bid_winner_mate_position', FALSE, MIN_PLAYER_POSITION, MAX_PLAYER_POSITION);
+$bid_winner_mate_position = check_get_radio_uint($_POST, 'bid_winner_mate_position', TRUE, MIN_PLAYER_POSITION, MAX_PLAYER_POSITION);
 check_input($game_id, $tricks_array, $bid_winner_mate_position);
 
 

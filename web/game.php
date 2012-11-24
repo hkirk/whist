@@ -92,16 +92,22 @@ foreach ($db_rounds as $r) {
 	$bid_type = $r['bid_type'];
 	$data = $r['bid_data'];
 	if ($bid_type === "normal") {
-		$bid = "${data['bid_tricks']} ${data['bid_attachment']}";
+		$bid = array(
+			'tricks' => $data['bid_tricks'],
+			'attachment' => $data['bid_attachment']
+		);
 		$bid_winner_tricks_by_position = array($data['bid_winner_position'] => $data['tricks']);
 		$bid_winner_mate_position = $data['bid_winner_mate_position'];
 	} else if ($bid_type === "solo") {
-		$bid = $data['type'];
+		$bid = array(
+			'solo_type' => $data['type']
+		);
 		$bid_winner_tricks_by_position = $data['bid_winner_tricks_by_position'];
 		$bid_winner_mate_position = NULL;
 	} else {
 		assert(FALSE);
 	}
+	$bid['type'] = $bid_type;
 	$player_data = array();
 	foreach ($r['player_points'] as $position => $player_points) {
 		if ($player_points !== NULL) {
@@ -116,7 +122,6 @@ foreach ($db_rounds as $r) {
 		'index' => $r['round'],
 		'dealer_position' => $r['round'] % 4,
 		'player_data' => $player_data,
-		'bid_type' => $bid_type,
 		'bid' => $bid,
 		'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
 		'bid_winner_mate_position' => $bid_winner_mate_position
@@ -147,7 +152,7 @@ $controls_view_data = array_merge($controls_view_data, array(
 	'game_id' => &$id,
 	'players' => &$players,
 	'point_rules' => &$point_rules
-));
+		));
 
 
 $data = array(
