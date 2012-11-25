@@ -31,6 +31,14 @@ function redirect_path($path) {
 	exit;
 }
 
+function value_or($value, $null_value) {
+	if($value===NULL) {
+		return $null_value;
+	} else {
+		return $value;
+	}
+}
+
 
 function option($value, $content) {
 	?>

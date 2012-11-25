@@ -4,6 +4,7 @@ $db_dir = dirname(__FILE__);
 require($db_dir . "/games.php");
 require($db_dir . "/players.php");
 require($db_dir . "/round_mutation.php");
+require($db_dir . "/locations.php");
 
 
 $_db = NULL;
@@ -23,10 +24,11 @@ function _db_force_connect() {
 	$s = $SETTINGS['database'];
 	$host = $s['host'];
 	$name = $s['name'];
-	$dsn = "mysql:host=$host;dbname=$name;charset=UTF-8";
+	$dsn = "mysql:host=$host;dbname=$name";
 	$attributes = array(
 		PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
-		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+		PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
 	);
 	$_db = new PDO($dsn, $s['username'], $s['password'], $attributes);
 	return $_db;

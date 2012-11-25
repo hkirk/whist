@@ -6,8 +6,13 @@ global $ATTACHMENTS;
 <form action="" method="post">
 	<fieldset>
 		<legend>Informations</legend>
-		<label for="location">Location?</label>
-		<input type="text" id="location" name="location" />
+		<label for="location_id">Location?</label>
+		<select id="location_id" name="location_id">
+			<option value=""></option>
+			<?php foreach ($locations as $id => $name): ?>
+			<option value="<?php echo $id ?>"><?php echo htmlspecialchars($name) ?></option>
+			<?php endforeach; ?>
+		</select>
 		<label for="description">Description</label>
 		<textarea id="description" name="description" rows="5" cols="50"></textarea>
 	</fieldset>

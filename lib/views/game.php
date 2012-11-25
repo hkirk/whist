@@ -28,6 +28,8 @@ render_view('controls/' . $controls_view, $controls_view_data);
 	</thead>
 	<tbody>
 		<?php
+		$bid_winner_count_by_position = array_fill(0, N_PLAYERS, 0);
+		$bid_winner_mate_count_by_position = array_fill(0, N_PLAYERS, 0);
 		$tricks_diff_sum = 0;
 		$tricks_diff_count = 0;
 		?>
@@ -65,9 +67,11 @@ render_view('controls/' . $controls_view, $controls_view_data);
 						$tricks_diff_sum += $diff;
 						$tricks_diff_count++;
 					}
+					$bid_winner_count_by_position[$position]++;
 				}
 				if ($bid_winner_mate_position !== NULL) {
 					$bid_winner_names[0] .= " (" . $players[$bid_winner_mate_position]['nickname'] . ")";
+					$bid_winner_mate_count_by_position[$bid_winner_mate_position]++;
 				}
 				?>
 				<td><?php echo $round['index'] ?></td>
@@ -95,6 +99,9 @@ render_view('controls/' . $controls_view, $controls_view_data);
 			</tr>
 		<?php endforeach ?>
 		<?php
+		for($p=0;$p<N_PLAYERS;$p++) {
+			$bid_winner_count_text[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
+		}
 		if ($tricks_diff_count === 0) {
 			$tricks_diff_avg = "?";
 		} else {
@@ -109,7 +116,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 			<?php foreach ($total_points as $points): ?>
 				<th colspan="2"><?php echo $points ?></th>
 			<?php endforeach ?>
-			<th>Bid winner(s)</th>
+			<th><?php echo implode(", ", $bid_winner_count_text) ?></th>
             <th><?php echo $tricks_diff_sum ?> (<?php echo $tricks_diff_avg ?>)</th>
 		</tr>
 	</tfoot>

@@ -11,5 +11,8 @@
 	<?php if ($unknown_player): ?>
 		<li>Unknown player!</li>
 	<?php endif; ?>
+	<?php if ($unknown_location): ?>
+		<li>Unknown location!</li>
+	<? endif; ?>
 </ul>
 <p>Try again.</p>
