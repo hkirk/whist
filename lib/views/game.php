@@ -117,7 +117,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 				<th colspan="2"><?php echo $points ?></th>
 			<?php endforeach ?>
 			<th><?php echo implode(", ", $bid_winner_count_text) ?></th>
-            <th><?php echo $tricks_diff_sum ?> (<?php echo $tricks_diff_avg ?>)</th>
+            <th><?php printf("%d (%.2f)", $tricks_diff_sum, $tricks_diff_avg)?></th>
 		</tr>
 	</tfoot>
 </table>

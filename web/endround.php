@@ -101,11 +101,11 @@ $point_rules = $game_with_active_round['point_rules'];
 $round_id = $active_round['id'];
 if ($bid_type === 'normal') {
 	$bid_tricks = $bid_data['bid_tricks'];
-	$bid_attachment = $ATTACHMENTS[$bid_data['bid_attachment']];
+	$bid_attachment_key = $bid_data['bid_attachment'];
 	$tricks = $tricks_array[$bid_winner_position];
 	$tips = $bid_data['tips'];
 	//printf("Bid tricks: %s, Bid att: %s, Tricks: %s, Tips: %s",$bid_tricks, $bid_attachment['name'], $tricks, $tips);
-	$bidder_points = normal_game_points($point_rules, $bid_tricks, $bid_attachment, $tricks, $tips);
+	$bidder_points = normal_game_points($point_rules, $bid_tricks, $bid_attachment_key, $tricks, $tips);
 	// Initialize all player points to the negation of the bid winner points (opponents)
 	$player_points = array_fill(0, 4, -$bidder_points);
 	if ($bid_winner_mate_position === $bid_winner_position) {

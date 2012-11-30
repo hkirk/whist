@@ -8,7 +8,10 @@
 	<body>
 		<header>
 			<nav>
-				<a href="games.php">Games</a>
+				<ul>
+					<li><a href="games.php">Games</a></li>
+					<li><a href="newgame.php">New game</a></li>
+				</ul>
 			</nav>
 		</header>
 		<hr />

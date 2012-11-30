@@ -8,7 +8,7 @@ global $ATTACHMENTS;
 		<legend>Informations</legend>
 		<label for="location_id">Location?</label>
 		<select id="location_id" name="location_id">
-			<option value=""></option>
+			<option value="">Pick location</option>
 			<?php foreach ($locations as $id => $name): ?>
 			<option value="<?php echo $id ?>"><?php echo htmlspecialchars($name) ?></option>
 			<?php endforeach; ?>
