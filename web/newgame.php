@@ -46,7 +46,7 @@ switch (request_method()) {
 			exit;
 		}
 		$game_id = db_create_game($location_id, $description, $player_ids, $attachments, $point_rules);
-		redirect_path("/game.php?id=" . $game_id);
+		redirect_to_game($game_id);
 		return;
 
 	case "GET" :

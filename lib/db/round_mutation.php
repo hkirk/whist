@@ -91,6 +91,53 @@ EOS;
 }
 
 
+function db_delete_round($game_round_id) {
+	_db_connect();
+	$sql_round_players = <<<EOS
+DELETE FROM game_round_players
+WHERE game_round_id = ?
+EOS;
+	$sql_rounds = <<<EOS
+DELETE FROM game_rounds
+WHERE id = ?
+EOS;
+	$params = array($game_round_id);
+	_db_prepare_execute($sql_round_players, $params);
+	_db_prepare_execute($sql_rounds, $params);
+}
+
+
+function db_delete_normal_round($game_round_id) {
+	_db_beginTransaction();
+	$sql = <<<EOS
+DELETE FROM normal_game_rounds
+WHERE game_round_id = ?
+EOS;
+	$params = array($game_round_id);
+	_db_prepare_execute($sql, $params);
+	db_delete_round($game_round_id);
+	_db_commit();
+}
+
+
+function db_delete_solo_round($game_round_id) {
+	_db_beginTransaction();
+	$sql_round_bid_winners = <<<EOS
+DELETE FROM solo_game_round_bid_winners
+WHERE game_round_id = ?
+EOS;
+	$sql_rounds = <<<EOS
+DELETE FROM solo_game_rounds
+WHERE game_round_id = ?
+EOS;
+	$params = array($game_round_id);
+	_db_prepare_execute($sql_round_bid_winners, $params);
+	_db_prepare_execute($sql_rounds, $params);
+	db_delete_round($game_round_id);
+	_db_commit();
+}
+
+
 function db_end_round($game_id, $game_round_id, $player_points) {
 	assert(is_array($player_points));
 	assert(count($player_points) === 4);
@@ -134,6 +181,14 @@ updated_at = NOW()
 WHERE id = ?
 EOS;
 	$params = array($game_round_id);
+	_db_prepare_execute($sql, $params);
+	// Game table row:
+	$sql = <<<EOS
+UPDATE games
+SET update_id = NOW()
+WHERE id = ?
+EOS;
+	$params = array($game_id);
 	_db_prepare_execute($sql, $params);
 }
 

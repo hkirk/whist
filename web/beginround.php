@@ -132,4 +132,4 @@ if ($solo_bid) {
 }
 
 
-redirect_path("/game.php?id=" . $game_id);
+redirect_to_game($game_id);

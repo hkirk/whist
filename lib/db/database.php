@@ -104,6 +104,17 @@ function _db_prepare_execute($sql, $params = array()) {
 }
 
 
+function _db_prepare_execute_rowCount($sql, $params = array()) {
+	list($stm, $result) = _db_prepare_execute($sql, $params);
+	if($result) {
+		$rows_affected = $stm->rowCount();
+	} else {
+		$rows_affected = NULL;
+	}
+	return array($stm, $result, $rows_affected);
+}
+
+
 function _db_prepare_execute_fetch($sql, $params = array()) {
 	list($stm, $result) = _db_prepare_execute($sql, $params);
 	if ($result) {

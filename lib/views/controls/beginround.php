@@ -8,7 +8,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
 	<fieldset class="bid">
 		<legend>Game bid</legend>
-		<div>Please choose a bid, normal (min tricks), or a solo game (max tricks).</div>
+		<div>Please choose a bid. Either a normal (min tricks), or a solo game [max tricks]. The base points are shown in brackets.</div>
 		<ol>
 			<?php
 			$beats = FIRST_SOLO_GAME_BEATS;

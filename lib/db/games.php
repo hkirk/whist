@@ -25,7 +25,7 @@ EOS;
  * Creates a new game.
  *
  * @global DBO $_db The DBO connection
- * @param string $location
+ * @param int $location_id
  * @param string $description
  * @param array#4(int) $player_ids
  * @param array(string) $attachments
@@ -83,7 +83,7 @@ $_DB_ROUND_TYPES_SELECT = <<<EOS
 EOS;
 
 $_DB_ROUND_TYPES_JOINS = <<<EOS
-LEFT OUTER JOIN normal_game_rounds ngr ON ngr.game_round_id = gr.id
+LEFT OUTER JOIN normal_game_rounds AS ngr ON ngr.game_round_id = gr.id
 LEFT OUTER JOIN solo_game_rounds AS sgr ON sgr.game_round_id = gr.id
 LEFT OUTER JOIN solo_game_round_bid_winners AS sgrbw ON sgrbw.game_round_id = sgr.game_round_id            
 EOS;
@@ -163,11 +163,13 @@ function db_get_game_with_players($game_id) {
 	$sql = <<<EOS
 SELECT 
 	g.*,
+	l.name             AS location,
 	gp.player_position AS player_position,
 	gp.total_points    AS player_total_points,
 	p.nickname         AS player_nickname,
 	p.fullname         AS player_fullname
-FROM games AS g 
+FROM games AS g
+LEFT OUTER JOIN locations AS l ON l.id = g.location_id
 INNER JOIN game_players AS gp ON gp.game_id = g.id
 LEFT OUTER JOIN players AS p ON p.id = gp.player_id 
 WHERE g.id = ?

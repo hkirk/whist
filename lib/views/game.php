@@ -9,6 +9,9 @@ function rewrite_null($e) {
 ?>
 
 <?php
+if($cancel_view!==NULL) {
+	render_view('controls/' . $cancel_view, $cancel_view_data);
+}
 $controls_view_data['id_qualifier'] = 'top';
 render_view('controls/' . $controls_view, $controls_view_data);
 ?>

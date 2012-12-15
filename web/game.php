@@ -26,6 +26,8 @@ if ($db_game === NULL) {
 	game_render_error('unknown_game');
 }
 
+$location = $db_game['location'];
+
 $players = array();
 $total_points = array();
 foreach ($db_game['players'] as $player) {
@@ -45,6 +47,7 @@ $active_round = $db_game_with_active_round['active_round'];
 
 if ($active_round === NULL) {
 	$controls_view = 'beginround';
+	$cancel_view = NULL;
 	$legal_attachment_keys = array();
 	foreach ($ATTACHMENT_KEY_ORDER as $attachment_key) {
 		if (in_array($attachment_key, $REQUIRED_ATTACHMENT_KEYS_ORDER) || in_array($attachment_key, $db_game['attachments'])) {
@@ -54,6 +57,7 @@ if ($active_round === NULL) {
 	$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
 	$tips_count = in_array(POINT_RULE_TIPS, $point_rules);
 	//printf("Tips count: %s",$tips_count);
+	$cancel_view_data = NULL;
 	$controls_view_data = array(
 		'is_tips_legal' => $is_tips_legal,
 		'tips_count' => $tips_count,
@@ -61,6 +65,7 @@ if ($active_round === NULL) {
 	);
 } else {
 	$controls_view = 'endround';
+	$cancel_view = 'cancelactiveround';
 	$bid_type = $active_round['bid_type'];
 	$bid_data = $active_round['bid_data'];
 	if ($bid_type === 'normal') {
@@ -68,6 +73,9 @@ if ($active_round === NULL) {
 	} else {
 		$bid_winner_positions = array_keys($bid_data['bid_winner_tricks_by_position']);
 	}
+	$cancel_view_data = array(
+		'game_id' => &$id
+	);
 	$controls_view_data = array(
 		'bid_type' => $bid_type,
 		'bid_winner_positions' => $bid_winner_positions
@@ -157,11 +165,16 @@ $controls_view_data = array_merge($controls_view_data, array(
 
 $data = array(
 	'game_id' => &$id,
+	'location' => &$location,
 	'players' => &$players,
 	'rounds' => &$rounds,
 	'total_points' => &$total_points,
+	'cancel_view' => &$cancel_view,
+	'cancel_view_data' => &$cancel_view_data,
 	'controls_view' => &$controls_view,
 	'controls_view_data' => &$controls_view_data
 );
 
-render_page("Game", "Game", "game", $data);
+$title = "Whist game at " . $location;
+
+render_page($title, $title, "game", $data);
