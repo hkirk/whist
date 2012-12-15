@@ -19,6 +19,7 @@ unset($VALID_ATTACHMENT_VALUES[TIPS]);
 for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
 	$VALID_ATTACHMENT_VALUES[TIPS . "-" . $tips] = TRUE;
 }
+$VALID_ATTACHMENT_VALUES[''] = TRUE; // The "null" / "solo" value
 
 
 // Basic input validation:

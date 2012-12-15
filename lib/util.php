@@ -54,9 +54,10 @@ function name_value_id($name, $value, $id_qualifier = NULL) {
 }
 
 
-function radio_button($name, $value, $id_qualifier = NULL) {
+function radio_button($name, $value, $id_qualifier = NULL, $checked=FALSE) {
 	$id = name_value_id($name, $value, $id_qualifier);
-	?><input type="radio" name="<?php echo $name ?>" value="<?php echo $value ?>" id="<?php echo $id ?>" /><?php
+	$checked_html = $checked ? 'checked="checked" ' : '';
+	?><input type="radio" name="<?php echo $name ?>" value="<?php echo $value ?>" id="<?php echo $id ?>" <?php echo $checked_html?>/><?php
 }
 
 

@@ -147,7 +147,7 @@ function solo_game_points($point_rules, $solo_game, $tricks) {
 
 // TODO lower limit for solo games
 function get_really_bad_points($point_rules, $tricks) {
-	error_log("Tricks: " . $tricks);
+	error_log("Really bad, tricks: " . $tricks);
 	if ($tricks === MAX_TRICKS && in_array(POINT_RULE_REALLYBAD, $point_rules)) {
 		global $REALLYBAD_POINTS;
 		return $REALLYBAD_POINTS;

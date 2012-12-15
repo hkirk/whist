@@ -50,11 +50,11 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<ol>
 			<?php
 			// As a lambda function, because this file is included twice, and "normal" functions cannot be redeclared
-			$beginround_attachment = function ($value, $label, $id_qualifier) {
-						radio_button('attachment', $value, $id_qualifier);
+			$beginround_attachment = function ($value, $label, $id_qualifier, $checked=FALSE) {
+						radio_button('attachment', $value, $id_qualifier, $checked);
 						multi_element_label('attachment', $value, $label, $id_qualifier);
 					};
-			foreach ($legal_attachment_keys as $attachment_key) {
+			foreach ($legal_attachment_keys as $attachment_key):
 				?>
 				<li>
 					<?php
@@ -90,21 +90,27 @@ global $TIPS_COUNT_MULTIPLIERS;
 					}
 					?>
 				</li>
-				<?php
-			}
-			?>
+			<?php endforeach; ?>
+				<li>
+					<?php
+						// The "null" attachment for solo games
+						$attachment_key = '';
+						$label = '[Solo game]';
+						$beginround_attachment($attachment_key, $label, $id_qualifier, TRUE);					
+					?>
+				</li>
 		</ol>
 	</fieldset>
 	<fieldset class="bid_winners">
 		<legend>Bid winner(s)</legend>
 		<div>One player for normal games. One or more players for solo games</div>
 		<ol>
-		<?php foreach ($players as $position => $player): ?>
-			<li>
-				<?php multi_checkbox("bid_winner_positions", $position, $id_qualifier) ?>
-				<?php multi_element_label("bid_winner_positions", $position, $player['nickname'], $id_qualifier) ?>
-			</li>
-		<?php endforeach; ?>
+			<?php foreach ($players as $position => $player): ?>
+				<li>
+					<?php multi_checkbox("bid_winner_positions", $position, $id_qualifier) ?>
+					<?php multi_element_label("bid_winner_positions", $position, $player['nickname'], $id_qualifier) ?>
+				</li>
+			<?php endforeach; ?>
 		</ol>
 	</fieldset>
 	<button type="submit">Begin round</button>

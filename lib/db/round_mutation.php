@@ -91,8 +91,20 @@ EOS;
 }
 
 
-function db_delete_round($game_round_id) {
+function db_delete_round($game_round_id, $game_id) {
 	_db_connect();
+	$sql_round_players_select = <<<EOS
+SELECT player_position, points
+FROM game_round_players
+WHERE game_round_id = ?
+ORDER BY player_position
+EOS;
+	$sql_game_players = <<<EOS
+UPDATE game_players AS gp
+SET total_points = total_points - ?
+WHERE game_id = ?
+AND player_position = ?
+EOS;
 	$sql_round_players = <<<EOS
 DELETE FROM game_round_players
 WHERE game_round_id = ?
@@ -102,12 +114,23 @@ DELETE FROM game_rounds
 WHERE id = ?
 EOS;
 	$params = array($game_round_id);
+	list(,, $rows) = _db_prepare_execute_fetchAll($sql_round_players_select, $params);
+	$n_rows = count($rows);
+	if ($n_rows === N_PLAYERS) {
+		error_log("Removing points from users...");
+		foreach ($rows as $row) {
+			$params_game_players = array($row['points'], $game_id, $row['player_position']);
+			_db_prepare_execute($sql_game_players, $params_game_players);
+		}
+	} else if ($n_rows !== 0) { // Zero for active rounds
+		error_log("Unexpected number of players for game round $game_round_id");
+	}
 	_db_prepare_execute($sql_round_players, $params);
 	_db_prepare_execute($sql_rounds, $params);
 }
 
 
-function db_delete_normal_round($game_round_id) {
+function db_delete_normal_round($game_round_id, $game_id) {
 	_db_beginTransaction();
 	$sql = <<<EOS
 DELETE FROM normal_game_rounds
@@ -115,12 +138,12 @@ WHERE game_round_id = ?
 EOS;
 	$params = array($game_round_id);
 	_db_prepare_execute($sql, $params);
-	db_delete_round($game_round_id);
+	db_delete_round($game_round_id, $game_id);
 	_db_commit();
 }
 
 
-function db_delete_solo_round($game_round_id) {
+function db_delete_solo_round($game_round_id, $game_id) {
 	_db_beginTransaction();
 	$sql_round_bid_winners = <<<EOS
 DELETE FROM solo_game_round_bid_winners
@@ -133,7 +156,7 @@ EOS;
 	$params = array($game_round_id);
 	_db_prepare_execute($sql_round_bid_winners, $params);
 	_db_prepare_execute($sql_rounds, $params);
-	db_delete_round($game_round_id);
+	db_delete_round($game_round_id, $game_id);
 	_db_commit();
 }
 
@@ -185,7 +208,7 @@ EOS;
 	// Game table row:
 	$sql = <<<EOS
 UPDATE games
-SET update_id = NOW()
+SET updated_at = NOW()
 WHERE id = ?
 EOS;
 	$params = array($game_id);
