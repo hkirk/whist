@@ -67,7 +67,7 @@ CREATE TABLE `game_rounds` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `game_id` (`game_id`,`round`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -89,7 +89,7 @@ CREATE TABLE `games` (
   PRIMARY KEY  (`id`),
   KEY `started_at` (`started_at`),
   KEY `location_id` (`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -103,7 +103,22 @@ CREATE TABLE `groups` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` tinytext collate utf8_danish_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `groups_locations`
+--
+
+DROP TABLE IF EXISTS `groups_locations`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `groups_locations` (
+  `group_id` int(10) unsigned NOT NULL,
+  `location_id` int(10) unsigned NOT NULL,
+  KEY `location_id` (`location_id`),
+  KEY `group_id` (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci COMMENT='Group and location relations';
 SET character_set_client = @saved_cs_client;
 
 --
@@ -115,7 +130,9 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `groups_players` (
   `group_id` int(10) unsigned NOT NULL,
-  `player_id` int(10) unsigned NOT NULL
+  `player_id` int(10) unsigned NOT NULL,
+  KEY `group_id` (`group_id`),
+  KEY `player_id` (`player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 SET character_set_client = @saved_cs_client;
 
@@ -164,7 +181,7 @@ CREATE TABLE `players` (
   `nickname` tinytext collate utf8_danish_ci NOT NULL,
   `fullname` tinytext collate utf8_danish_ci NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -205,4 +222,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-11-25 21:46:21
+-- Dump completed on 2013-02-19 19:25:29
