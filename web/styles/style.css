@@ -1,0 +1,55 @@
+nav ul {
+	list-style-type: none;
+}
+
+nav li {
+	display: inline;
+	padding: 10px;
+}
+
+form.beginround ol, form.endround ol {
+	list-style-type: none;
+	margin: 1px;
+	padding: 0;
+}
+form.beginround ol li, form.endround ol li {
+	display: inline;
+	margin-right: 10pt;
+	border: 1px solid #DDD;
+}
+
+form.beginround div.tips ol {
+	display: inline;
+}
+
+form.beginround div.tips ol li {
+	border-style: none;
+}
+
+
+form.beginround div.tips {
+	display: inline;
+}
+
+form.endround ol {
+	display: inline;
+}
+
+table {
+	border-collapse: collapse;
+	border: 2px solid black;
+}
+
+
+table td, table th {
+	border: 1px solid black;
+	padding: 3pt;
+}
+
+table tfoot, table thead {
+	border: 2px solid black;
+}
+
+table th {
+	background-color: #CCC;
+}
