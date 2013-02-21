@@ -23,11 +23,13 @@ global $ATTACHMENTS;
 		?>
 		<?php foreach ($POINT_RULES as $point_rule_key => $point_rule): ?>
 			<div>
-				<?php
+                <label class="checkbox">
+                <?php
 				multi_checkbox($name, $point_rule_key);
 				multi_element_label($name, $point_rule_key, $point_rule['name'] . '?');
 				?>
-				<?php if (isset($point_rule['description'])) : ?>
+                </label>
+                <?php if (isset($point_rule['description'])) : ?>
 					<p><?php echo $point_rule['description'] ?></p>
 				<?php endif; ?>
 			</div>
@@ -40,7 +42,8 @@ global $ATTACHMENTS;
 		?>
 		<?php foreach ($OPTIONAL_ATTACHMENT_KEYS_ORDER as $attachment_key) : ?>
 			<div>
-				<?php
+                <label class="checkbox">
+                <?php
 				$attachment = $ATTACHMENTS[$attachment_key];
 				multi_checkbox($name, $attachment_key);
 				multi_element_label($name, $attachment_key, $attachment['name'] . '?');
@@ -48,6 +51,7 @@ global $ATTACHMENTS;
 				<?php if (isset($attachment['description'])) : ?>
 					<p><?php echo $attachment['description'] ?></p>
 				<?php endif; ?>
+                </label>
 			</div>
 		<?php endforeach; ?>
 	</fieldset>
@@ -74,6 +78,6 @@ global $ATTACHMENTS;
 		<?php endfor; ?>
 	</fieldset>
 	<div>
-		<button type="submit">Create</button>
+		<button type="submit" class="btn btn-success">Create</button>
 	</div>
 </form>

@@ -1,18 +1,20 @@
-<ul>
+<div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <string>Error!</string>
 	<?php if ($missing_location): ?>
-		<li>Missing location!</li>
+		Missing location!
 	<? endif; ?>
 	<?php if ($missing_player): ?>
-		<li>Missing player!</li>
+		Missing player!
 	<?php endif; ?>
 	<?php if ($multi_player): ?>
-		<li>Player choosed multiple times!</li>
+		Player choosed multiple times!
 	<?php endif; ?>
 	<?php if ($unknown_player): ?>
-		<li>Unknown player!</li>
+		Unknown player!
 	<?php endif; ?>
 	<?php if ($unknown_location): ?>
-		<li>Unknown location!</li>
+		Unknown location!
 	<? endif; ?>
-</ul>
+</div>
 <p>Try again.</p>

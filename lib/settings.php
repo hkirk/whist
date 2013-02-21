@@ -1,18 +1,18 @@
 <?php
 
 $SETTINGS = array(
-	"base_url" => "http://ca-it.dk/~can/whist-dev",
+	"base_url" => "http://localhost:8888/whist/web/",
 	"database" => array(
 		"host" => "localhost",
 		"name" => "whist_calc",
-		"username" => "whist_calc",
-		"password" => "whist_calc_password"
+		"username" => "root",
+		"password" => "root"
 	)
 );
 
 define("DB_HOST", "localhost");
 define("DB_PORT", "");
 define("DB_NAME", "whist_calc");
-define("DB_USERNAME", "whist_calc");
-define("DB_PASSWORD", "whist_calc_password");
+define("DB_USERNAME", "root");
+define("DB_PASSWORD", "root");
 

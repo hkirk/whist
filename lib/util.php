@@ -74,7 +74,7 @@ function radio_button($name, $value, $id_qualifier = NULL, $checked=FALSE) {
 function multi_checkbox($name, $value, $id_qualifier = NULL) {
 	$id = name_value_id($name, $value, $id_qualifier);
 	?>
-	<input type="checkbox" name="<?php echo $name ?>[]" value="<?php echo $value ?>" id="<?php echo $id ?>" />
+    <input type="checkbox" name="<?php echo $name ?>[]" value="<?php echo $value ?>" id="<?php echo $id ?>" />
 	<?php
 }
 

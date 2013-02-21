@@ -1,4 +1,4 @@
-<table>
+<table class="table">
 	<head>
 	<tr>
 		<th>Link</th><th>Started</th><th>Ended</th><th>Last update</th><th>Location</th>
