@@ -22,13 +22,25 @@ EOS;
 
 /**
  * TODO move out of games.php
+ * @param $name The name of the location.
+ */
+function db_create_location($name) {
+    _db_beginTransaction();
+    $sql = "INSERT INTO locations (name) VALUES (?)";
+    $params = array($name);
+    _db_prepare_execute($sql, $params);
+    _db_commit();
+}
+
+/**
+ * TODO move out of games.php
  *
  * @param $name The full name.
  * @param $nickname The players nickname,
  */
 function db_create_player($name, $nickname) {
     _db_beginTransaction();
-    $sql = "INSERT INTO players (nickname, fullname) VALUES (?, ?)";
+    $sql = "INSERT INTO players (fullname, nickname) VALUES (?, ?)";
     $params = array($name, $nickname);
     _db_prepare_execute($sql, $params);
     _db_commit();
