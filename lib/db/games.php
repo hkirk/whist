@@ -20,6 +20,19 @@ EOS;
 	return $rows;
 }
 
+/**
+ * TODO move out of games.php
+ *
+ * @param $name The full name.
+ * @param $nickname The players nickname,
+ */
+function db_create_player($name, $nickname) {
+    _db_beginTransaction();
+    $sql = "INSERT INTO players (nickname, fullname) VALUES (?, ?)";
+    $params = array($name, $nickname);
+    _db_prepare_execute($sql, $params);
+    _db_commit();
+}
 
 /**
  * Creates a new game.

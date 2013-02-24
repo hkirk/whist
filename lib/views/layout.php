@@ -60,8 +60,8 @@
                             <ul class="nav nav-pills" data-tabs="tabs">
                                 <li <?php echo ($view == "games" ? "class=\"active\"" : "") ?>><a href="games.php">Games</a></li>
                                 <li <?php echo ($view == "newgame" ? "class=\"active\"" : "") ?>><a href="newgame.php">New game</a></li>
-                                <li <?php echo ($view == "createplayer" ? "class=\"active\"" : "") ?>><a href=createplayer.php">Create player</a></li>
-                                <li <?php echo ($view == "createlocation" ? "class=\"active\"" : "") ?>><a href=createlocation.php">Create location</a></li>
+                                <li <?php echo ($view == "createplayer" ? "class=\"active\"" : "") ?>><a href="createplayer.php">Create player</a></li>
+                                <li <?php echo ($view == "createlocation" ? "class=\"active\"" : "") ?>><a href="createlocation.php">Create location</a></li>
                             </ul>
                         </nav>
                     </header>
