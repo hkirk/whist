@@ -3,14 +3,14 @@ global $POINT_RULES;
 global $OPTIONAL_ATTACHMENT_KEYS_ORDER;
 global $ATTACHMENTS;
 ?>
-<form action="" method="post">
+<form action="newgame.php" method="post">
 	<fieldset>
 		<legend>Informations</legend>
 		<label for="location_id">Location?</label>
 		<select id="location_id" name="location_id">
 			<option value="">Pick location</option>
 			<?php foreach ($locations as $id => $name): ?>
-			<option value="<?php echo $id ?>"><?php echo htmlspecialchars($name) ?></option>
+				<option value="<?php echo $id ?>"><?php echo htmlspecialchars($name) ?></option>
 			<?php endforeach; ?>
 		</select>
 		<label for="description">Description</label>
@@ -23,13 +23,11 @@ global $ATTACHMENTS;
 		?>
 		<?php foreach ($POINT_RULES as $point_rule_key => $point_rule): ?>
 			<div>
-                <label class="checkbox">
-                <?php
+				<?php
 				multi_checkbox($name, $point_rule_key);
 				multi_element_label($name, $point_rule_key, $point_rule['name'] . '?');
 				?>
-                </label>
-                <?php if (isset($point_rule['description'])) : ?>
+				<?php if (isset($point_rule['description'])) : ?>
 					<p><?php echo $point_rule['description'] ?></p>
 				<?php endif; ?>
 			</div>
@@ -42,8 +40,7 @@ global $ATTACHMENTS;
 		?>
 		<?php foreach ($OPTIONAL_ATTACHMENT_KEYS_ORDER as $attachment_key) : ?>
 			<div>
-                <label class="checkbox">
-                <?php
+				<?php
 				$attachment = $ATTACHMENTS[$attachment_key];
 				multi_checkbox($name, $attachment_key);
 				multi_element_label($name, $attachment_key, $attachment['name'] . '?');
@@ -51,7 +48,6 @@ global $ATTACHMENTS;
 				<?php if (isset($attachment['description'])) : ?>
 					<p><?php echo $attachment['description'] ?></p>
 				<?php endif; ?>
-                </label>
 			</div>
 		<?php endforeach; ?>
 	</fieldset>

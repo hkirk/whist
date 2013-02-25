@@ -1,6 +1,5 @@
 <div class="alert alert-error">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <string>Error!</string>
+	<button type="button" class="close" data-dismiss="alert">&times;</button>
 	<?php if ($missing_location): ?>
 		Missing location!
 	<? endif; ?>

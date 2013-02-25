@@ -9,7 +9,7 @@ function rewrite_null($e) {
 ?>
 
 <?php
-if($cancel_view!==NULL) {
+if ($cancel_view !== NULL) {
 	render_view('controls/' . $cancel_view, $cancel_view_data);
 }
 $controls_view_data['id_qualifier'] = 'top';
@@ -26,7 +26,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
 			<?php endforeach ?>
 			<th>Bid winner(s)</th>
-            <th>Diff.</th>
+			<th>Diff.</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -102,7 +102,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 			</tr>
 		<?php endforeach ?>
 		<?php
-		for($p=0;$p<N_PLAYERS;$p++) {
+		for ($p = 0; $p < N_PLAYERS; $p++) {
 			$bid_winner_count_text[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
 		}
 		if ($tricks_diff_count === 0) {
@@ -120,7 +120,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 				<th colspan="2"><?php echo $points ?></th>
 			<?php endforeach ?>
 			<th><?php echo implode(", ", $bid_winner_count_text) ?></th>
-            <th><?php printf("%d (%.2f)", $tricks_diff_sum, $tricks_diff_avg)?></th>
+			<th><?php printf("%d (%.2f)", $tricks_diff_sum, $tricks_diff_avg) ?></th>
 		</tr>
 	</tfoot>
 </table>
