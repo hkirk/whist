@@ -46,60 +46,42 @@ global $TIPS_COUNT_MULTIPLIERS;
 	</fieldset>
 	<fieldset class="attachment">
 		<legend>Attachment</legend>
-		<div>A normal non-solo game requires an attachment. If the attachment is "Tips", then also choose the number of tips, please.</div>
-		<ol>
+		<?php label('attachment', 'Attachment:', $id_qualifier); ?>
+		<select name="attachment" id="<?php echo name_id('attachment', $id_qualifier) ?>">
 			<?php
-			// As a lambda function, because this file is included twice, and "normal" functions cannot be redeclared
-			$beginround_attachment = function ($value, $label, $id_qualifier, $checked = FALSE) {
-								radio_button('attachment', $value, $id_qualifier, $checked);
-								multi_element_label('attachment', $value, $label, $id_qualifier);
-							};
+			// The "null" attachment for solo games:
+			$attachment_key = '';
+			$text = '[Solo game]';
+			option($attachment_key, $text);
+			// The actual attachments:
 			foreach ($legal_attachment_keys as $attachment_key):
-				?>
-				<li>
-					<?php
-					$attachment = $ATTACHMENTS[$attachment_key];
-					$name = $attachment['name'];
-					$multiplier = $attachment['multiplier'];
-					if ($attachment_key === TIPS) {
-						?>
-						<div class="tips"><?php echo $name ?>:
-							<ol>
-								<?php
-								for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
-									if ($tips_count) {
-										$multiplier = $TIPS_COUNT_MULTIPLIERS[$tips];
-									}
-									$value = $attachment_key . '-' . $tips;
-									$label = sprintf('%s (x%s)', $tips, $multiplier);
-									?>
-									<li>
-										<?php
-										$beginround_attachment($value, $label, $id_qualifier);
-										?>
-									</li>
-									<?php
-								}
-								?>
-							</ol>
-						</div>
-						<?php
-					} else {
-						$label = sprintf('%s (x%s)', $name, $multiplier);
-						$beginround_attachment($attachment_key, $label, $id_qualifier);
-					}
+				$attachment = $ATTACHMENTS[$attachment_key];
+				$name = $attachment['name'];
+				$multiplier = $attachment['multiplier'];
+				if ($attachment_key === TIPS) {
 					?>
-				</li>
-			<?php endforeach; ?>
-			<li>
-				<?php
-				// The "null" attachment for solo games
-				$attachment_key = '';
-				$label = '[Solo game]';
-				$beginround_attachment($attachment_key, $label, $id_qualifier, TRUE);
-				?>
-			</li>
-		</ol>
+					<optgroup label="<?php echo $name ?>" class="tips">
+						<?php
+						for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
+							if ($tips_count) {
+								$multiplier = $TIPS_COUNT_MULTIPLIERS[$tips];
+							}
+							$value = $attachment_key . '-' . $tips;
+							$noun = $tips === 1 ? "Tip" : "Tips";
+							$text = sprintf('%s %s (x%s)', $tips, $noun, $multiplier);
+							option($value, $text);
+						}
+						?>
+					</optgroup>
+					<?php
+				} else {
+					$text = sprintf('%s (x%s)', $name, $multiplier);
+					option($attachment_key, $text);
+				}
+			endforeach;
+			?>
+		</select>
+		<div class="description">A normal non-solo game requires an attachment. If the attachment is "Tips", then also choose the number of tips, please.</div>
 	</fieldset>
 	<fieldset class="bid_winners">
 		<legend>Bid winner(s)</legend>
