@@ -4,7 +4,7 @@ require("lib.php");
 
 check_request_method("POST");
 
-$game_id = check_get_uint($_GET, 'game_id');
+$game_id = check_get_uint($_POST, 'game_id');
 check_input($game_id);
 
 $game = db_get_game_type_with_active_round($game_id);
