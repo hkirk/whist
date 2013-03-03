@@ -31,8 +31,9 @@ function redirect_path($path) {
 	exit;
 }
 
+
 function value_or($value, $null_value) {
-	if($value===NULL) {
+	if ($value === NULL) {
 		return $null_value;
 	} else {
 		return $value;
@@ -47,6 +48,13 @@ function option($value, $content) {
 }
 
 
+function name_id($name, $id_qualifier = NULL) {
+	$id = ($id_qualifier === NULL) ? "" : $id_qualifier . "-";
+	$id .= $name;
+	return $id;
+}
+
+
 function name_value_id($name, $value, $id_qualifier = NULL) {
 	$id = ($id_qualifier === NULL) ? "" : $id_qualifier . "-";
 	$id .= $name . "-" . $value;
@@ -54,10 +62,10 @@ function name_value_id($name, $value, $id_qualifier = NULL) {
 }
 
 
-function radio_button($name, $value, $id_qualifier = NULL, $checked=FALSE) {
+function radio_button($name, $value, $id_qualifier = NULL, $checked = FALSE) {
 	$id = name_value_id($name, $value, $id_qualifier);
 	$checked_html = $checked ? 'checked="checked" ' : '';
-	?><input type="radio" name="<?php echo $name ?>" value="<?php echo $value ?>" id="<?php echo $id ?>" <?php echo $checked_html?>/><?php
+	?><input type="radio" name="<?php echo $name ?>" value="<?php echo $value ?>" id="<?php echo $id ?>" <?php echo $checked_html ?>/><?php
 }
 
 
@@ -74,14 +82,25 @@ function radio_button($name, $value, $id_qualifier = NULL, $checked=FALSE) {
 function multi_checkbox($name, $value, $id_qualifier = NULL) {
 	$id = name_value_id($name, $value, $id_qualifier);
 	?>
-    <input type="checkbox" name="<?php echo $name ?>[]" value="<?php echo $value ?>" id="<?php echo $id ?>" class="checkbox" />
+	<input type="checkbox" name="<?php echo $name ?>[]" value="<?php echo $value ?>" id="<?php echo $id ?>" class="checkbox" />
 	<?php
 }
 
 
 function multi_element_label($name, $value, $content, $id_qualifier = NULL) {
-	$id = name_value_id($name, $value, $id_qualifier);
-	?><label for="<?php echo $id ?>"><?php echo $content ?></label><?php
+	$for_id = name_value_id($name, $value, $id_qualifier);
+	raw_label($for_id, $content);
+}
+
+
+function label($name, $content, $id_qualifier = NULL) {
+	$for_id = name_id($name, $id_qualifier);
+	raw_label($for_id, $content);
+}
+
+
+function raw_label($for_id, $content) {
+	?><label for="<?php echo $for_id ?>"><?php echo $content ?></label><?php
 }
 
 
@@ -320,3 +339,5 @@ function array_map_nulls($array, $null_replacement) {
 function nonnull_index($array, $key) {
 	return isset($array[$key]) && $array[$key] !== NULL;
 }
+
+

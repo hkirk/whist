@@ -1,4 +1,16 @@
 <?php
+/* * *
+ * Input:
+ * 
+ * $id_qualifier (string) (from parent view)
+ * $game_id
+ * $players (array)
+ * $point_rules (array)
+ * $is_tips_legal (bool)
+ * $tips_count (bool)
+ * $legal_attachment_keys (array)
+ * 
+ */
 global $ATTACHMENTS;
 global $SOLO_GAMES, $SOLO_GAME_KEY_ORDER;
 global $TIPS_COUNT_MULTIPLIERS;
@@ -8,41 +20,29 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
 	<fieldset class="bid">
 		<legend>Game bid</legend>
-		<div>Please choose a bid. Either a normal (min tricks), or a solo game [max tricks]. The base points are shown in brackets.</div>
-		<ol>
+		<?php label('bid', 'Base bid:', $id_qualifier); ?>
+		<select name="bid" id="<?php echo name_id('bid', $id_qualifier) ?>">
 			<?php
+			option('', "Choose a base bid");
 			$beats = FIRST_SOLO_GAME_BEATS;
 			reset($SOLO_GAME_KEY_ORDER);
 			$solo_game_key = current($SOLO_GAME_KEY_ORDER);
 			for ($tricks = MIN_BID_TRICKS; $tricks <= MAX_BID_TRICKS; $tricks++) {
-				$label = sprintf('%s (%s)', $tricks, normal_game_bid_base_points($point_rules, $tricks));
+				$text = sprintf('%s (%s pts)', $tricks, normal_game_bid_base_points($point_rules, $tricks));
 				$value = BID_PREFIX_NORMAL . $tricks;
-				?>
-				<li>
-					<?php
-					radio_button('bid', $value, $id_qualifier);
-					multi_element_label('bid', $value, $label, $id_qualifier);
-					?>
-				</li>
-				<?php
+				option($value, $text);
 				if ($tricks === $beats && $solo_game_key !== FALSE) {
 					$solo_game = $SOLO_GAMES[$solo_game_key];
-					$label = sprintf('%s[%s] (%s)', $solo_game['name'], $solo_game['max_tricks'], solo_game_bid_base_points($point_rules, $solo_game));
+					$text = sprintf('[%s] %s (%s pts)', $solo_game['max_tricks'], $solo_game['name'], solo_game_bid_base_points($point_rules, $solo_game));
 					$value = BID_PREFIX_SOLO . $solo_game_key;
-					?>
-					<li>
-						<?php
-						radio_button('bid', $value, $id_qualifier);
-						multi_element_label('bid', $value, $label, $id_qualifier);
-						?>
-					</li>
-					<?php
+					option($value, $text);
 					$beats++;
 					$solo_game_key = next($SOLO_GAME_KEY_ORDER);
 				}
 			}
 			?>
-		</ol>
+		</select>
+		<div class="description">Please choose a bid. Either a normal game with minimum tricks, or a solo game [with maximum tricks in square brackets]. The base points are shown in soft brackets.</div>
 	</fieldset>
 	<fieldset class="attachment">
 		<legend>Attachment</legend>
@@ -50,10 +50,10 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<ol>
 			<?php
 			// As a lambda function, because this file is included twice, and "normal" functions cannot be redeclared
-			$beginround_attachment = function ($value, $label, $id_qualifier, $checked=FALSE) {
-						radio_button('attachment', $value, $id_qualifier, $checked);
-						multi_element_label('attachment', $value, $label, $id_qualifier);
-					};
+			$beginround_attachment = function ($value, $label, $id_qualifier, $checked = FALSE) {
+								radio_button('attachment', $value, $id_qualifier, $checked);
+								multi_element_label('attachment', $value, $label, $id_qualifier);
+							};
 			foreach ($legal_attachment_keys as $attachment_key):
 				?>
 				<li>
@@ -91,14 +91,14 @@ global $TIPS_COUNT_MULTIPLIERS;
 					?>
 				</li>
 			<?php endforeach; ?>
-				<li>
-					<?php
-						// The "null" attachment for solo games
-						$attachment_key = '';
-						$label = '[Solo game]';
-						$beginround_attachment($attachment_key, $label, $id_qualifier, TRUE);					
-					?>
-				</li>
+			<li>
+				<?php
+				// The "null" attachment for solo games
+				$attachment_key = '';
+				$label = '[Solo game]';
+				$beginround_attachment($attachment_key, $label, $id_qualifier, TRUE);
+				?>
+			</li>
 		</ol>
 	</fieldset>
 	<fieldset class="bid_winners">
