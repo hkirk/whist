@@ -13,8 +13,8 @@ switch (request_method()) {
 		$location_id = check_get_uint($_POST, 'location_id', true);
 		$description = check_get_string($_POST, 'description');
 		$player_ids = check_get_indexed_array($_POST, 'player_ids', 4, $player_id_validator);
-		$attachments = check_get_multi_checkbox_array($_POST, 'attachments', $OPTIONAL_ATTACHMENTS);
-		$point_rules = check_get_multi_checkbox_array($_POST, 'point_rules', $POINT_RULES);
+		$attachments = check_get_multi_input_array($_POST, 'attachments', $OPTIONAL_ATTACHMENTS);
+		$point_rules = check_get_multi_input_array($_POST, 'point_rules', $POINT_RULES);
 		check_input($location_id, $description, $player_ids, $attachments, $point_rules);
 		$used_player_ids = array();
 		$data = array(

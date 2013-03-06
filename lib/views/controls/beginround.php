@@ -85,15 +85,15 @@ global $TIPS_COUNT_MULTIPLIERS;
 	</fieldset>
 	<fieldset class="bid_winners">
 		<legend>Bid winner(s)</legend>
-		<div>One player for normal games. One or more players for solo games</div>
-		<ol>
-			<?php foreach ($players as $position => $player): ?>
-				<li>
-					<?php multi_checkbox("bid_winner_positions", $position, $id_qualifier) ?>
-					<?php multi_element_label("bid_winner_positions", $position, $player['nickname'], $id_qualifier) ?>
-				</li>
-			<?php endforeach; ?>
-		</ol>
+		<?php $name = "bid_winner_positions"; ?>
+		<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier)?>">
+			<?php 
+			foreach ($players as $position => $player): 
+				option($position, $player['nickname']);
+			endforeach; 
+			?>
+		</select>
+		<div class="description">One player for normal games. One or more players for solo games</div>
 	</fieldset>
 	<button type="submit">Begin round</button>
 	<div>

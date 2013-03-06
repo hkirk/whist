@@ -118,7 +118,7 @@ function respond_method_not_allowed($allowed_methods) {
 }
 
 
-function check_get_multi_checkbox_array($map, $param, &$valid_values) {
+function check_get_multi_input_array($map, $param, &$valid_values) {
 	if (!isset($map[$param])) {
 // No checkboxes are checked
 		return array();
