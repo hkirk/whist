@@ -16,25 +16,26 @@ $controls_view_data['id_qualifier'] = 'top';
 render_view('controls/' . $controls_view, $controls_view_data);
 ?>
 <h2>Score board</h2>
-<table>
+<table class="scoreboard">
 	<thead>
 		<tr>
 			<th>#</th>
+			<th>Bid winner(s)</th>
 			<th>Bid</th>
 			<th>Tricks</th>
+			<th>&Delta;</th>
 			<?php foreach ($players as $player): ?>
 				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
 			<?php endforeach ?>
-			<th>Bid winner(s)</th>
-			<th>Diff.</th>
 		</tr>
 	</thead>
 	<tbody>
 		<?php
 		$bid_winner_count_by_position = array_fill(0, N_PLAYERS, 0);
 		$bid_winner_mate_count_by_position = array_fill(0, N_PLAYERS, 0);
+		$tricks_sum = 0;
 		$tricks_diff_sum = 0;
-		$tricks_diff_count = 0;
+		$bid_winners_with_tricks_count = 0;
 		?>
 		<?php foreach ($rounds as $round): ?>
 			<tr>
@@ -43,7 +44,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 				$bid = $round['bid'];
 				if ($bid['type'] === "solo") {
 					$solo_game = $SOLO_GAMES[$bid['solo_type']];
-					$bid_text = sprintf('%s (%d)', $solo_game['name'], $solo_game['max_tricks']);
+					$bid_text = sprintf('[%d] %s', $solo_game['max_tricks'], $solo_game['name']);
 					$target_tricks = $solo_game['max_tricks'];
 					$tricks_diff_sign = -1;
 				} else {
@@ -65,10 +66,11 @@ render_view('controls/' . $controls_view, $controls_view_data);
 					if ($tricks === NULL) {
 						$bid_winner_tricks_diff[] = "?";
 					} else {
+						$tricks_sum += $tricks;
 						$diff = $tricks_diff_sign * ($tricks - $target_tricks);
 						$bid_winner_tricks_diff[] = $diff;
 						$tricks_diff_sum += $diff;
-						$tricks_diff_count++;
+						$bid_winners_with_tricks_count++;
 					}
 					$bid_winner_count_by_position[$position]++;
 				}
@@ -78,8 +80,10 @@ render_view('controls/' . $controls_view, $controls_view_data);
 				}
 				?>
 				<td><?php echo $round['index'] ?></td>
+				<td><?php echo implode(", ", $bid_winner_names) ?></td>
 				<td><?php echo $bid_text ?> </td>
 				<td><?php echo implode(", ", $bid_winner_tricks_or_unknown_by_position) ?></td>
+				<td><?php echo implode(", ", $bid_winner_tricks_diff) ?></td>
 				<?php foreach ($round['player_data'] as $position => $player_data): ?>
 					<?php
 					$player_round_points = $player_data['round_points'];
@@ -97,30 +101,38 @@ render_view('controls/' . $controls_view, $controls_view_data);
 					<td class="<?php echo $class ?>"><?php echo rewrite_null($player_round_points) ?></td>
 					<td><?php echo rewrite_null($player_total_points) ?></td>
 				<?php endforeach ?>
-				<td><?php echo implode(", ", $bid_winner_names) ?></td>
-				<td><?php echo implode(", ", $bid_winner_tricks_diff) ?></td>
 			</tr>
 		<?php endforeach ?>
 		<?php
 		for ($p = 0; $p < N_PLAYERS; $p++) {
-			$bid_winner_count_text[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
+			$bid_winner_count_texts[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
 		}
-		if ($tricks_diff_count === 0) {
+		if ($bid_winners_with_tricks_count === 0) {
+			$tricks_avg = "?";
 			$tricks_diff_avg = "?";
 		} else {
-			$tricks_diff_avg = $tricks_diff_sum / $tricks_diff_count;
+			$tricks_avg = $tricks_sum / $bid_winners_with_tricks_count;
+			$tricks_diff_avg = $tricks_diff_sum / $bid_winners_with_tricks_count;
 		}
 		?>
 	</tbody>
 	<tfoot>
 		<tr>
-			<th>#</th>
+			<th rowspan="2">#</th>
 			<th colspan="2">Total:</th>
+			<th><?php printf("%d", $tricks_sum) ?></th>
+			<th><?php printf("%d", $tricks_diff_sum) ?></th>
 			<?php foreach ($total_points as $points): ?>
 				<th colspan="2"><?php echo $points ?></th>
 			<?php endforeach ?>
-			<th><?php echo implode(", ", $bid_winner_count_text) ?></th>
-			<th><?php printf("%d (%.2f)", $tricks_diff_sum, $tricks_diff_avg) ?></th>
+		</tr>
+		<tr>
+			<th colspan="2">Avg. / bid winner count:</th>
+			<th><?php printf("%.2f", $tricks_avg) ?></th>
+			<th><?php printf("%.2f", $tricks_diff_avg) ?></th>
+			<?php foreach ($bid_winner_count_texts as $bid_winner_count_text): ?>
+				<th colspan="2"><?php echo $bid_winner_count_text ?></th>
+			<?php endforeach ?>
 		</tr>
 	</tfoot>
 </table>

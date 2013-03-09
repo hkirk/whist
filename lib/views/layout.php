@@ -4,50 +4,13 @@
     <title>WhistCalc - <?php echo $subtitle; ?></title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" />
+		<link rel="stylesheet" type="text/css" href="styles/style.css" />
 
     <script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap.min.js"></script>
-
-    <style type="text/css">
-			html,
-			body {
-				height: 100%;
-				/* The html and body elements cannot have any padding or margin. */
-			}
-
-			/* Wrapper for page content to push down footer */
-			#wrap {
-				min-height: 100%;
-				height: auto !important;
-				height: 100%;
-				/* Negative indent footer by it's height */
-				padding-bottom:60px;
-				margin: 0 auto -60px;
-			}
-
-			/* Set the fixed height of the footer here */
-			#footer {
-				height: 60px;
-				background-color: #f5f5f5;
-			}
-
-			/* Lastly, apply responsive CSS fixes as necessary */
-			@media (max-width: 767px) {
-				#footer {
-					margin-left: -20px;
-					margin-right: -20px;
-					padding-left: 20px;
-					padding-right: 20px;
-				}
-			}
-			#wrap > .container-fluid {
-				padding-top: 60px;
-			}
-
-    </style>
 	</head>
 	<body>
 

@@ -1,3 +1,41 @@
+html,
+body {
+	height: 100%;
+	/* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	/* Negative indent footer by it's height */
+	padding-bottom:60px;
+	margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+	height: 60px;
+	background-color: #f5f5f5;
+}
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+	#footer {
+		margin-left: -20px;
+		margin-right: -20px;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+}
+#wrap > .container-fluid {
+	padding-top: 60px;
+}
+
+
+
+
 nav ul {
 	list-style-type: none;
 }
@@ -35,11 +73,11 @@ form.endround ol {
 	display: inline;
 }
 
+/*** Tables, general **/
 table {
 	border-collapse: collapse;
 	border: 2px solid black;
 }
-
 
 table td, table th {
 	border: 1px solid black;
@@ -51,5 +89,46 @@ table tfoot, table thead {
 }
 
 table th {
-	background-color: #CCC;
+	background-color: #fff;
+	font-size: 10pt;
+	font-weight: normal;
+}
+
+table th {
+	background-color: #bbb;
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+/*** Score board table **/
+table.scoreboard, table.scoreboard tbody {
+	border: 3px solid black;
+}
+
+table.scoreboard td,
+table.scoreboard th {
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+}
+
+table.scoreboard td:first-child, 
+table.scoreboard tr:first-child th:first-child {
+	border-right: 3px solid black;
+}
+
+table.scoreboard td:nth-last-child(-2n+8),
+table.scoreboard th:nth-last-child(-n+4) {
+	border-left: 2px solid black;
+}
+
+table.scoreboard td:nth-last-child(8),
+table.scoreboard th:nth-last-child(4) {
+	border-left: 3px solid black;
+}
+
+table.scoreboard tbody tr:nth-child(odd) {
+	background-color: #fff;
+}
+table.scoreboard tbody tr:nth-child(even) {
+	background-color: #eee;
 }
