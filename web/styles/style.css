@@ -132,3 +132,27 @@ table.scoreboard tbody tr:nth-child(odd) {
 table.scoreboard tbody tr:nth-child(even) {
 	background-color: #eee;
 }
+
+table.scoreboard td.negative,
+table.scoreboard th.negative {
+	color: red;
+}
+
+table.scoreboard td.positive,
+table.scoreboard th.positive {
+	color: green;
+}
+
+table.scoreboard td.dealer {
+	background-color: #ffffc0;
+}
+
+table.scoreboard td.bidwinner {
+	text-decoration: underline;
+	font-style: italic;
+}
+
+table.scoreboard td.bidwinnermate {
+	text-decoration: none;
+	font-style: italic;
+}

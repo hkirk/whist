@@ -91,15 +91,27 @@ render_view('controls/' . $controls_view, $controls_view_data);
 					$is_dealer = $position === $dealer_position;
 					$is_bid_winner = in_array($position, $bid_winner_positions);
 					$is_bid_winner_mate = $position === $bid_winner_mate_position;
-					$class = $player_round_points < 0 ? "negative" : "positive";
-					if ($is_dealer) {
-						$class .= " dealer";
+					$round_points_class = array();
+					$total_points_class = array();
+					if ($player_round_points !== NULL) {
+						if ($player_round_points < 0) {
+							$player_round_points = "" . $player_round_points;
+							$round_points_class[] = "negative";
+						} else {
+							// Explicit plus
+							$player_round_points = "+" . $player_round_points;
+							$round_points_class[] = "positive";
+						}
 					}
-					$is_bid_winner && $class .= " bidwinner";
-					$is_bid_winner_mate && $class .= " bidwinnermate";
+					if ($is_dealer) {
+						$round_points_class[] = "dealer";
+						$total_points_class[] = "dealer";
+					}
+					$is_bid_winner && $round_points_class[] = "bidwinner";
+					$is_bid_winner_mate && $round_points_class[] = "bidwinnermate";
 					?>
-					<td class="<?php echo $class ?>"><?php echo rewrite_null($player_round_points) ?></td>
-					<td><?php echo rewrite_null($player_total_points) ?></td>
+					<td class="<?php echo implode(" ", $round_points_class) ?>"><?php echo rewrite_null($player_round_points) ?></td>
+					<td class="<?php echo implode(" ", $total_points_class) ?>"><?php echo rewrite_null($player_total_points) ?></td>
 				<?php endforeach ?>
 			</tr>
 		<?php endforeach ?>
@@ -118,12 +130,30 @@ render_view('controls/' . $controls_view, $controls_view_data);
 	</tbody>
 	<tfoot>
 		<tr>
-			<th rowspan="2">#</th>
+			<th rowspan="3">#</th>
+			<th>Bid winner(s)</th>
+			<th>Bid</th>
+			<th>Tricks</th>
+			<th>&Delta;</th>
+			<?php foreach ($players as $player): ?>
+				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
+			<?php endforeach ?>
+		</tr>
+		<tr>
 			<th colspan="2">Total:</th>
 			<th><?php printf("%d", $tricks_sum) ?></th>
 			<th><?php printf("%d", $tricks_diff_sum) ?></th>
 			<?php foreach ($total_points as $points): ?>
-				<th colspan="2"><?php echo $points ?></th>
+				<?php
+				if ($points < 0) {
+					$class = "negative";
+				} else if ($points > 0) {
+					$class = "positive";
+				} else {
+					$class = "zero";
+				}
+				?>
+				<th colspan="2" class="<?php echo $class ?>"><?php echo $points ?></th>
 			<?php endforeach ?>
 		</tr>
 		<tr>
