@@ -126,6 +126,11 @@ table.scoreboard th:nth-last-child(4) {
 	border-left: 3px solid black;
 }
 
+table.scoreboard td:first-child, 
+table.scoreboard td:nth-last-child(-n+8) {
+	text-align: right;
+}
+
 table.scoreboard tbody tr:nth-child(odd) {
 	background-color: #fff;
 }
