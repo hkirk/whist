@@ -60,8 +60,4 @@
 	<div>
 		<button type="submit">End round</button>
 	</div>
-	<div>
-		<label>Point rules:</label>
-		<?php echo implode(',', $point_rules) ?>
-	</div>
 </form>

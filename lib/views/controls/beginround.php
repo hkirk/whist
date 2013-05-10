@@ -96,8 +96,4 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<div class="description">One player for normal games. One or more players for solo games</div>
 	</fieldset>
 	<button type="submit">Begin round</button>
-	<div>
-		<label>Point rules:</label>
-		<?php echo implode(',', $point_rules) ?>
-	</div>
 </form>

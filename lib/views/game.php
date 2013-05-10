@@ -9,11 +9,17 @@ function rewrite_null($e) {
 ?>
 
 <?php
+$render_controls = function($position) use($controls_positions, $controls_view, $controls_view_data) {
+					//global $controls_positions;
+					if (in_array($position, $controls_positions)) {
+						$controls_view_data['id_qualifier'] = $position;
+						render_view('controls/' . $controls_view, $controls_view_data);
+					}
+				};
 if ($cancel_view !== NULL) {
 	render_view('controls/' . $cancel_view, $cancel_view_data);
 }
-$controls_view_data['id_qualifier'] = 'top';
-render_view('controls/' . $controls_view, $controls_view_data);
+$render_controls('top');
 ?>
 <h2>Score board</h2>
 <table class="scoreboard">
@@ -166,7 +172,10 @@ render_view('controls/' . $controls_view, $controls_view_data);
 		</tr>
 	</tfoot>
 </table>
+<div class="point-rules">
+	<label>Point rules:</label>
+	<?php echo implode(',', $point_rules) ?>
+</div>
 <?php
-$controls_view_data['id_qualifier'] = 'bottom';
-render_view('controls/' . $controls_view, $controls_view_data);
+$render_controls('bottom');
 ?>

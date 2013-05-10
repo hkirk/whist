@@ -161,3 +161,8 @@ table.scoreboard td.bidwinnermate {
 	text-decoration: none;
 	font-style: italic;
 }
+
+div.point-rules label {
+	display: inline;
+	font-weight: bold;
+}

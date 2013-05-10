@@ -8,12 +8,22 @@ check_request_method("GET");
 $id = check_get_uint($_GET, 'id');
 check_input($id);
 
+$controls_positions = check_get_array($_GET, 'cp');
+if ($controls_positions === NULL) {
+	// Default positions
+	$controls_positions = array('bottom');
+} else {
+	if (count($controls_positions) > 2) {
+		render_unexpected_input_page_and_exit("Too many controls positions!");
+	}
+}
+
 
 function game_render_error($key) {
 	$data = array(
-		'unknown_game' => FALSE,
-		'bad_rounds' => FALSE,
-		'inconsistent_points' => FALSE
+			'unknown_game' => FALSE,
+			'bad_rounds' => FALSE,
+			'inconsistent_points' => FALSE
 	);
 	$data[$key] = TRUE;
 	render_page("Error", "Error", 'game_error', $data);
@@ -59,9 +69,9 @@ if ($active_round === NULL) {
 	//printf("Tips count: %s",$tips_count);
 	$cancel_view_data = NULL;
 	$controls_view_data = array(
-		'is_tips_legal' => $is_tips_legal,
-		'tips_count' => $tips_count,
-		'legal_attachment_keys' => $legal_attachment_keys
+			'is_tips_legal' => $is_tips_legal,
+			'tips_count' => $tips_count,
+			'legal_attachment_keys' => $legal_attachment_keys
 	);
 } else {
 	$controls_view = 'endround';
@@ -74,11 +84,11 @@ if ($active_round === NULL) {
 		$bid_winner_positions = array_keys($bid_data['bid_winner_tricks_by_position']);
 	}
 	$cancel_view_data = array(
-		'game_id' => &$id
+			'game_id' => &$id
 	);
 	$controls_view_data = array(
-		'bid_type' => $bid_type,
-		'bid_winner_positions' => $bid_winner_positions
+			'bid_type' => $bid_type,
+			'bid_winner_positions' => $bid_winner_positions
 	);
 }
 
@@ -101,14 +111,14 @@ foreach ($db_rounds as $r) {
 	$data = $r['bid_data'];
 	if ($bid_type === "normal") {
 		$bid = array(
-			'tricks' => $data['bid_tricks'],
-			'attachment' => $data['bid_attachment']
+				'tricks' => $data['bid_tricks'],
+				'attachment' => $data['bid_attachment']
 		);
 		$bid_winner_tricks_by_position = array($data['bid_winner_position'] => $data['tricks']);
 		$bid_winner_mate_position = $data['bid_winner_mate_position'];
 	} else if ($bid_type === "solo") {
 		$bid = array(
-			'solo_type' => $data['type']
+				'solo_type' => $data['type']
 		);
 		$bid_winner_tricks_by_position = $data['bid_winner_tricks_by_position'];
 		$bid_winner_mate_position = NULL;
@@ -122,17 +132,17 @@ foreach ($db_rounds as $r) {
 			$acc_total_points[$position] += $player_points;
 		}
 		$player_data[] = array(
-			'round_points' => $player_points,
-			'total_points' => $acc_total_points[$position]
+				'round_points' => $player_points,
+				'total_points' => $acc_total_points[$position]
 		);
 	}
 	$round = array(
-		'index' => $r['round'],
-		'dealer_position' => ($r['round']-1) % 4, // The first round index is 1 and the first player most be the dealer of the first round
-		'player_data' => $player_data,
-		'bid' => $bid,
-		'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
-		'bid_winner_mate_position' => $bid_winner_mate_position
+			'index' => $r['round'],
+			'dealer_position' => ($r['round'] - 1) % 4, // The first round index is 1 and the first player most be the dealer of the first round
+			'player_data' => $player_data,
+			'bid' => $bid,
+			'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
+			'bid_winner_mate_position' => $bid_winner_mate_position
 	);
 	$rounds[] = $round;
 }
@@ -157,22 +167,24 @@ foreach ($db_rounds as $r) {
 //}
 
 $controls_view_data = array_merge($controls_view_data, array(
-	'game_id' => &$id,
-	'players' => &$players,
-	'point_rules' => &$point_rules
-		));
+		'game_id' => &$id,
+		'players' => &$players,
+		'point_rules' => &$point_rules
+				));
 
 
 $data = array(
-	'game_id' => &$id,
-	'location' => &$location,
-	'players' => &$players,
-	'rounds' => &$rounds,
-	'total_points' => &$total_points,
-	'cancel_view' => &$cancel_view,
-	'cancel_view_data' => &$cancel_view_data,
-	'controls_view' => &$controls_view,
-	'controls_view_data' => &$controls_view_data
+		'game_id' => &$id,
+		'location' => &$location,
+		'players' => &$players,
+		'rounds' => &$rounds,
+		'total_points' => &$total_points,
+		'point_rules' => &$point_rules,
+		'cancel_view' => &$cancel_view,
+		'cancel_view_data' => &$cancel_view_data,
+		'controls_positions' => &$controls_positions,
+		'controls_view' => &$controls_view,
+		'controls_view_data' => &$controls_view_data
 );
 
 $title = "Whist game at " . $location;

@@ -13,7 +13,7 @@
     <script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-
+		
     <div id="wrap">
 			<div class="navbar navbar-fixed-top">
 				<div class="navbar-inner">
