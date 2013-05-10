@@ -6,9 +6,17 @@ global $ATTACHMENTS;
 function rewrite_null($e) {
 	return $e === NULL ? "?" : $e;
 }
-?>
 
-<?php
+
+function avg_string($sum, $n) {
+	if ($n === 0) {
+		return NULL;
+	} else {
+		return sprintf("%.2f", $sum / $n);
+	}
+}
+
+
 $render_controls = function($position) use($controls_positions, $controls_view, $controls_view_data) {
 					//global $controls_positions;
 					if (in_array($position, $controls_positions)) {
@@ -39,10 +47,12 @@ $render_controls('top');
 		<?php
 		$bid_winner_count_by_position = array_fill(0, N_PLAYERS, 0);
 		$bid_winner_mate_count_by_position = array_fill(0, N_PLAYERS, 0);
-		$tricks_sum = 0;
+		$tricks_sum_normal = 0;
+		$tricks_sum_solo = 0;
 		$tricks_diff_sum = 0;
 		$tricks_abs_diff_sum = 0;
-		$bid_winners_with_tricks_count = 0;
+		$bid_winners_with_tricks_count_normal = 0;
+		$bid_winners_with_tricks_count_solo = 0;
 		?>
 		<?php foreach ($rounds as $round): ?>
 			<tr>
@@ -54,6 +64,8 @@ $render_controls('top');
 					$bid_text = sprintf('[%d] %s', $solo_game['max_tricks'], $solo_game['name']);
 					$target_tricks = $solo_game['max_tricks'];
 					$tricks_diff_sign = -1;
+					$tricks_sum_ref = &$tricks_sum_solo;
+					$bid_winners_with_tricks_count_ref = &$bid_winners_with_tricks_count_solo;
 				} else {
 					$bid_text = sprintf('%d', $bid['tricks']);
 					if ($bid['attachment'] !== NONE) {
@@ -61,6 +73,8 @@ $render_controls('top');
 					}
 					$target_tricks = $bid['tricks'];
 					$tricks_diff_sign = 1;
+					$tricks_sum_ref = &$tricks_sum_normal;
+					$bid_winners_with_tricks_count_ref = &$bid_winners_with_tricks_count_normal;
 				}
 				$bid_winner_tricks_or_unknown_by_position = array_map_nulls($round['bid_winner_tricks_by_position'], "?");
 				$bid_winner_positions = array_keys($bid_winner_tricks_or_unknown_by_position);
@@ -73,12 +87,12 @@ $render_controls('top');
 					if ($tricks === NULL) {
 						$bid_winner_tricks_diff[] = "?";
 					} else {
-						$tricks_sum += $tricks;
+						$tricks_sum_ref += $tricks;
 						$diff = $tricks_diff_sign * ($tricks - $target_tricks);
 						$bid_winner_tricks_diff[] = $diff;
 						$tricks_diff_sum += $diff;
 						$tricks_abs_diff_sum += abs($diff);
-						$bid_winners_with_tricks_count++;
+						$bid_winners_with_tricks_count_ref++;
 					}
 					$bid_winner_count_by_position[$position]++;
 				}
@@ -124,17 +138,15 @@ $render_controls('top');
 			</tr>
 		<?php endforeach ?>
 		<?php
+		$tricks_sum = $tricks_sum_normal + $tricks_sum_solo;
+		$bid_winners_with_tricks_count = $bid_winners_with_tricks_count_normal + $bid_winners_with_tricks_count_solo;
+		$tricks_avg_normal_string = avg_string($tricks_sum_normal, $bid_winners_with_tricks_count_normal);
+		$tricks_avg_solo_string = avg_string($tricks_sum_solo, $bid_winners_with_tricks_count_solo);
+		$tricks_avg_string = avg_string($tricks_sum, $bid_winners_with_tricks_count);
+		$tricks_diff_avg_string = avg_string($tricks_diff_sum, $bid_winners_with_tricks_count);
+		$tricks_abs_diff_avg_string = avg_string($tricks_abs_diff_sum, $bid_winners_with_tricks_count);
 		for ($p = 0; $p < N_PLAYERS; $p++) {
 			$bid_winner_count_texts[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
-		}
-		if ($bid_winners_with_tricks_count === 0) {
-			$tricks_avg_string = "?";
-			$tricks_diff_avg_string = "?";
-			$tricks_abs_diff_avg_string = "?";
-		} else {
-			$tricks_avg_string = sprintf("%.2f", $tricks_sum / $bid_winners_with_tricks_count);
-			$tricks_diff_avg_string = sprintf("%.2f", $tricks_diff_sum / $bid_winners_with_tricks_count);
-			$tricks_abs_diff_avg_string = sprintf("%.2f", $tricks_abs_diff_sum / $bid_winners_with_tricks_count);
 		}
 		?>
 	</tbody>
@@ -151,7 +163,7 @@ $render_controls('top');
 		</tr>
 		<tr>
 			<th colspan="2">Total:</th>
-			<th><?php echo $tricks_sum ?></th>
+			<th><?php echo $tricks_sum ?> (<?php echo $tricks_sum_normal ?>, <?php echo $tricks_sum_solo ?>)</th>
 			<th><?php echo $tricks_diff_sum ?> ~ &#x01c0;<?php echo $tricks_abs_diff_sum ?>&#x01c0;</th>
 			<?php foreach ($total_points as $points): ?>
 				<?php
@@ -168,8 +180,8 @@ $render_controls('top');
 		</tr>
 		<tr>
 			<th colspan="2">Avg. / bid winner count:</th>
-			<th><?php echo $tricks_avg_string ?></th>
-			<th><?php echo $tricks_diff_avg_string ?> ~ &#x01c0;<?php echo $tricks_abs_diff_avg_string ?>&#x01c0;</th>
+			<th><?php echo rewrite_null($tricks_avg_string) ?> (<?php echo rewrite_null($tricks_avg_normal_string) ?>, <?php echo rewrite_null($tricks_avg_solo_string) ?>)</th>
+			<th><?php echo rewrite_null($tricks_diff_avg_string) ?> ~ &#x01c0;<?php echo rewrite_null($tricks_abs_diff_avg_string) ?>&#x01c0;</th>
 			<?php foreach ($bid_winner_count_texts as $bid_winner_count_text): ?>
 				<th colspan="2"><?php echo $bid_winner_count_text ?></th>
 			<?php endforeach ?>
