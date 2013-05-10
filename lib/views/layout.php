@@ -43,7 +43,7 @@
     <div id="footer">
 			<div class="container-fluid">
 				<footer>
-					By Clausa, CA-IT, 2012
+					By Clausa @ CA-IT and Hense @ Busywait, 2013
 				</footer>
 			</div>
     </div>
