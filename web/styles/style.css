@@ -2,6 +2,7 @@ html,
 body {
 	height: 100%;
 	/* The html and body elements cannot have any padding or margin. */
+    padding: 5px
 }
 
 /* Wrapper for page content to push down footer */
@@ -10,8 +11,8 @@ body {
 	height: auto !important;
 	height: 100%;
 	/* Negative indent footer by it's height */
-	padding-bottom:60px;
-	margin: 0 auto -60px;
+	padding-bottom:5px;
+	margin: 0 auto -140px;
 }
 
 /* Set the fixed height of the footer here */
