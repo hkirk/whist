@@ -13,6 +13,8 @@ global $ATTACHMENTS;
 				<option value="<?php echo $id ?>"><?php echo htmlspecialchars($name) ?></option>
 			<?php endforeach; ?>
 		</select>
+        <br/>
+
 		<label for="description">Description</label>
 		<textarea id="description" name="description" rows="5" cols="50"></textarea>
 	</fieldset>
@@ -54,7 +56,12 @@ global $ATTACHMENTS;
 	<fieldset>
 		<legend>Players</legend>
 		<?php
-		for ($p = 0; $p < 4; $p++):
+        $player_numbers = 4;
+
+        if (isset($_GET['players'])) {
+            $player_numbers = $_GET['players'];
+        }
+		for ($p = 0; $p < $player_numbers; $p++):
 			?>
 			<?php
 			$id = "player_ids$p";
@@ -70,7 +77,7 @@ global $ATTACHMENTS;
 					?>
 					<option value="<?php echo $value; ?>"><?php echo htmlspecialchars($text) ?></option>
 				<?php endforeach ?>
-			</select>
+			</select><br/>
 		<?php endfor; ?>
 	</fieldset>
 	<div>
