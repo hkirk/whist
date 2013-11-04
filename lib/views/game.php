@@ -18,12 +18,12 @@ function avg_string($sum, $n) {
 
 
 $render_controls = function($position) use($controls_positions, $controls_view, $controls_view_data) {
-					//global $controls_positions;
-					if (in_array($position, $controls_positions)) {
-						$controls_view_data['id_qualifier'] = $position;
-						render_view('controls/' . $controls_view, $controls_view_data);
-					}
-				};
+	//global $controls_positions;
+	if (in_array($position, $controls_positions)) {
+		$controls_view_data['id_qualifier'] = $position;
+		render_view('controls/' . $controls_view, $controls_view_data);
+	}
+};
 if ($cancel_view !== NULL) {
 	render_view('controls/' . $cancel_view, $cancel_view_data);
 }
@@ -162,9 +162,9 @@ $render_controls('top');
 			<?php endforeach ?>
 		</tr>
 		<tr>
-			<th colspan="2">Total:</th>
-			<th><?php echo $tricks_sum ?> (<?php echo $tricks_sum_normal ?>, <?php echo $tricks_sum_solo ?>)</th>
-			<th><?php echo $tricks_diff_sum ?> ~ &#x01c0;<?php echo $tricks_abs_diff_sum ?>&#x01c0;</th>
+			<th colspan="2">Total (&sum;):</th>
+			<th title="(Normal, Solo)"><?php echo "$tricks_sum ($tricks_sum_normal, $tricks_sum_solo)" ?></th>
+			<th title="&#x01c0;Abs&#x01c0;"><?php echo "$tricks_diff_sum ~ &#x01c0;$tricks_abs_diff_sum&#x01c0;" ?></th>
 			<?php foreach ($total_points as $points): ?>
 				<?php
 				if ($points < 0) {
@@ -179,9 +179,9 @@ $render_controls('top');
 			<?php endforeach ?>
 		</tr>
 		<tr>
-			<th colspan="2">Avg. / bid winner count:</th>
-			<th><?php echo rewrite_null($tricks_avg_string) ?> (<?php echo rewrite_null($tricks_avg_normal_string) ?>, <?php echo rewrite_null($tricks_avg_solo_string) ?>)</th>
-			<th><?php echo rewrite_null($tricks_diff_avg_string) ?> ~ &#x01c0;<?php echo rewrite_null($tricks_abs_diff_avg_string) ?>&#x01c0;</th>
+			<th colspan="2">Avg. / bid winner (mate) count:</th>
+			<th title="(Normal, Solo)"><?php echo rewrite_null($tricks_avg_string) . ' (' . rewrite_null($tricks_avg_normal_string) . ', ' . rewrite_null($tricks_avg_solo_string) . ')' ?></th>
+			<th title="&#x01c0;Abs&#x01c0;"><?php echo rewrite_null($tricks_diff_avg_string) . ' ~ &#x01c0;' . rewrite_null($tricks_abs_diff_avg_string) . '&#x01c0;' ?></th>
 			<?php foreach ($bid_winner_count_texts as $bid_winner_count_text): ?>
 				<th colspan="2"><?php echo $bid_winner_count_text ?></th>
 			<?php endforeach ?>
