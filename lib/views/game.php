@@ -32,7 +32,7 @@ $render_controls('top');
 <h2>Score board</h2>
 <table class="scoreboard">
 	<thead>
-		<tr>
+		<tr class="full-row">
 			<th>#</th>
 			<th>Bid winner(s)</th>
 			<th>Bid</th>
@@ -94,11 +94,11 @@ $render_controls('top');
 						$tricks_abs_diff_sum += abs($diff);
 						$bid_winners_with_tricks_count_ref++;
 					}
-					$bid_winner_count_by_position[$position]++;
+					$bid_winner_count_by_position[$position] ++;
 				}
 				if ($bid_winner_mate_position !== NULL) {
 					$bid_winner_names[0] .= " (" . $players[$bid_winner_mate_position]['nickname'] . ")";
-					$bid_winner_mate_count_by_position[$bid_winner_mate_position]++;
+					$bid_winner_mate_count_by_position[$bid_winner_mate_position] ++;
 				}
 				?>
 				<td><?php echo $round['index'] ?></td>
@@ -151,7 +151,7 @@ $render_controls('top');
 		?>
 	</tbody>
 	<tfoot>
-		<tr>
+		<tr class="full-row">
 			<th rowspan="3">#</th>
 			<th>Bid winner(s)</th>
 			<th>Bid</th>
@@ -161,7 +161,7 @@ $render_controls('top');
 				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
 			<?php endforeach ?>
 		</tr>
-		<tr>
+		<tr class="aggregate-row">
 			<th colspan="2">Total (&sum;):</th>
 			<th title="(Normal, Solo)"><?php echo "$tricks_sum ($tricks_sum_normal, $tricks_sum_solo)" ?></th>
 			<th title="&#x01c0;Abs&#x01c0;"><?php echo "$tricks_diff_sum ~ &#x01c0;$tricks_abs_diff_sum&#x01c0;" ?></th>
@@ -178,7 +178,7 @@ $render_controls('top');
 				<th colspan="2" class="<?php echo $class ?>"><?php echo $points ?></th>
 			<?php endforeach ?>
 		</tr>
-		<tr>
+		<tr class="aggregate-row">
 			<th colspan="2">Avg. / bid winner (mate) count:</th>
 			<th title="(Normal, Solo)"><?php echo rewrite_null($tricks_avg_string) . ' (' . rewrite_null($tricks_avg_normal_string) . ', ' . rewrite_null($tricks_avg_solo_string) . ')' ?></th>
 			<th title="&#x01c0;Abs&#x01c0;"><?php echo rewrite_null($tricks_diff_avg_string) . ' ~ &#x01c0;' . rewrite_null($tricks_abs_diff_avg_string) . '&#x01c0;' ?></th>
