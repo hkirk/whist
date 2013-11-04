@@ -12,7 +12,7 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-
+		
     <div id="wrap">
 			<div class="navbar navbar-default">
 				<div class="navbar-inner">
@@ -42,7 +42,7 @@
     <div id="footer">
 			<div class="jumbotron">
 				<footer>
-					By Clausa, CA-IT, 2012
+					By Clausa @ CA-IT and Hense @ Busywait, 2013
 				</footer>
 			</div>
     </div>
