@@ -121,8 +121,4 @@ global $TIPS_COUNT_MULTIPLIERS;
     ?>
 
 	<button type="submit">Begin round</button>
-	<div>
-		<label>Point rules:</label>
-		<?php echo implode(',', $point_rules) ?>
-	</div>
 </form>

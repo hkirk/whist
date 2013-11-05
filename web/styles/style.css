@@ -2,7 +2,7 @@ html,
 body {
 	height: 100%;
 	/* The html and body elements cannot have any padding or margin. */
-    padding: 5px
+	padding: 5px
 }
 
 /* Wrapper for page content to push down footer */
@@ -101,7 +101,7 @@ table th {
 	font-weight: bold;
 }
 
-/*** Score board table **/
+/*** Score board table ***/
 table.scoreboard, table.scoreboard tbody {
 	border: 3px solid black;
 }
@@ -112,22 +112,51 @@ table.scoreboard th {
 	border-bottom: 2px solid black;
 }
 
+/* The round index column */
 table.scoreboard td:first-child, 
 table.scoreboard tr:first-child th:first-child {
 	border-right: 3px solid black;
 }
 
+/* Player header cells and the leftmost column for each player */
 table.scoreboard td:nth-last-child(-2n+8),
 table.scoreboard th:nth-last-child(-n+4) {
 	border-left: 2px solid black;
 }
 
+/* The leftmost player column */
 table.scoreboard td:nth-last-child(8),
 table.scoreboard th:nth-last-child(4) {
 	border-left: 3px solid black;
 }
 
-table.scoreboard td:first-child, 
+/* The tricks and tricks delta columns */
+table.scoreboard td:nth-child(4),
+table.scoreboard td:nth-child(5),
+table.scoreboard tr.full-row th:nth-child(4),
+table.scoreboard tr.full-row th:nth-child(5),
+table.scoreboard tr.aggregate-row th:nth-child(2),
+table.scoreboard tr.aggregate-row th:nth-child(3) {
+	text-align: center;
+}
+
+/* Player names */
+table.scoreboard tr.full-row th:nth-last-child(-n+4) {
+	text-align: center;
+}
+
+/* Player sums and bid winner (mate) count */
+table.scoreboard tr.aggregate-row th:nth-last-child(-n+4) {
+	text-align: center;
+}
+
+/* Round index column */
+table.scoreboard td:first-child,
+table.scoreboard tr.full-row th:first-child {
+	text-align: center;
+}
+
+/* Player points */
 table.scoreboard td:nth-last-child(-n+8) {
 	text-align: right;
 }
@@ -161,4 +190,9 @@ table.scoreboard td.bidwinner {
 table.scoreboard td.bidwinnermate {
 	text-decoration: none;
 	font-style: italic;
+}
+
+div.point-rules label {
+	display: inline;
+	font-weight: bold;
 }
