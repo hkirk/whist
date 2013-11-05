@@ -104,13 +104,15 @@ $_DB_ROUND_TYPES_SELECT = <<<EOS
 	ngr.tips                      AS normal_tips,
 	sgr.solo_type                 AS solo_type,
 	sgrbw.player_position         AS solo_player_position,
-	sgrbw.tricks                  AS solo_tricks
+	sgrbw.tricks                  AS solo_tricks,
+	bgrp.player_position          AS bye_player_positions
 EOS;
 
 $_DB_ROUND_TYPES_JOINS = <<<EOS
 LEFT OUTER JOIN normal_game_rounds AS ngr ON ngr.game_round_id = gr.id
 LEFT OUTER JOIN solo_game_rounds AS sgr ON sgr.game_round_id = gr.id
-LEFT OUTER JOIN solo_game_round_bid_winners AS sgrbw ON sgrbw.game_round_id = sgr.game_round_id            
+LEFT OUTER JOIN solo_game_round_bid_winners AS sgrbw ON sgrbw.game_round_id = sgr.game_round_id
+LEFT OUTER JOIN bye_game_rounds_players AS bgrp ON bgrp.game_round_id = gr.id
 EOS;
 
 
@@ -203,10 +205,10 @@ EOS;
 	$params = array($game_id);
 	list(,, $rows) = _db_prepare_execute_fetchAll($sql, $params);
 	$n_rows = count($rows);
-	if ($n_rows !== 4) {
+	/*if ($n_rows !== 4) {
 		error_log("Invalid number of rows $n_rows");
 		return NULL;
-	}
+	}*/
 	$players = array();
 	foreach ($rows as $index => $row) {
 		//printf("pos: %s", $row['player_position']);
@@ -257,15 +259,12 @@ EOS;
 		'attachments' => _db_set_array_from_string($row['attachments']),
 		'point_rules' => _db_set_array_from_string($row['point_rules']),
 	);
-	if ($rows[0]['gr_id'] === NULL) {
+	if ($row['gr_id'] === NULL) {
 		// No rounds
 		$game['active_round'] = NULL;
 		return $game;
 	}
 	$rounds = _db_build_game_rounds_from_traversable($rows, NULL);
-//    printf("Rounds: ");
-//    var_dump($rounds);
-//    printf("Rounds done");
 	if (count($rounds) < 1) {
 		// Hmmm, Invalid number of rounds
 		assert(FALSE);

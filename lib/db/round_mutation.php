@@ -91,6 +91,19 @@ EOS;
 }
 
 
+function db_create_bye_game_rounds_players($game_round_id, $bye_player_positions) {
+    _db_connect();
+    foreach ($bye_player_positions as $bye_player_position) {
+        $sql_insert_bye_player = <<<EOS
+
+    INSERT INTO bye_game_rounds_players SET game_round_id = ?, player_position = ?
+EOS;
+        $params = array($game_round_id, $bye_player_position);
+        _db_prepare_execute($sql_insert_bye_player, $params);
+    }
+}
+
+
 function db_delete_round($game_round_id, $game_id) {
 	_db_connect();
 	$sql_round_players_select = <<<EOS

@@ -17,6 +17,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 ?>
 <form action="beginround.php" method="post" class="beginround">
 	<h2>Begin round</h2>
+
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
 	<fieldset class="bid">
 		<legend>Game bid</legend>
@@ -83,6 +84,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 		</select>
 		<div class="description">A normal non-solo game requires an attachment. If the attachment is "Tips", then also choose the number of tips, please.</div>
 	</fieldset>
+
 	<fieldset class="bid_winners">
 		<legend>Bid winner(s)</legend>
 		<?php $name = "bid_winner_positions"; ?>
@@ -95,6 +97,29 @@ global $TIPS_COUNT_MULTIPLIERS;
 		</select>
 		<div class="description">One player for normal games. One or more players for solo games</div>
 	</fieldset>
+
+    <?php
+
+    if ($number_of_players > DEFAULT_PLAYERS) {
+    ?>
+        <fieldset class="bye">
+            <legend>Bye(s)</legend>
+            <?php $name = "bye_positions"; ?>
+            <select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier)?>">
+                <?php
+                foreach ($players as $position => $player):
+                    option($position, $player['nickname']);
+                endforeach;
+                ?>
+            </select>
+            <div class="description">Choose players not in this round</div>
+        </fieldset>
+    <?php
+
+    }
+
+    ?>
+
 	<button type="submit">Begin round</button>
 	<div>
 		<label>Point rules:</label>

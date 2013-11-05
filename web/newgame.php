@@ -12,7 +12,9 @@ switch (request_method()) {
 	case "POST" :
 		$location_id = check_get_uint($_POST, 'location_id', true);
 		$description = check_get_string($_POST, 'description');
-		$player_ids = check_get_indexed_array($_POST, 'player_ids', 4, $player_id_validator);
+        $number_of_players = check_get_array_length($_POST, "player_ids");
+        $number_of_players = ($number_of_players < 4) ? 4 : $number_of_players;
+		$player_ids = check_get_indexed_array($_POST, 'player_ids', $number_of_players, $player_id_validator);
 		$attachments = check_get_multi_input_array($_POST, 'attachments', $OPTIONAL_ATTACHMENTS);
 		$point_rules = check_get_multi_input_array($_POST, 'point_rules', $POINT_RULES);
 		check_input($location_id, $description, $player_ids, $attachments, $point_rules);

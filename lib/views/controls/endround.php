@@ -8,6 +8,7 @@
  * $point_rules (array)
  * $bid_type (string)
  * $bid_winner_positions (array)
+ * $bye_positions (array)
  * 
  */
 ?>
@@ -53,10 +54,18 @@
 					</select>
 				</div>
 			<?php else: ?>
-				<input type="hidden" name="bid_winner_mate_position" value="" />
+				<input type="hidden" name="bid_winner_mate_position" value="" /> <!-- FIXME claus why -->
 			<?php endif; ?>
 		</fieldset>
 	<?php endforeach; ?>
+    <p>Bye players
+    <? foreach ($bye_positions as $position) {
+    ?>
+        
+    <?
+    }
+    ?>
+    </p>
 	<div>
 		<button type="submit">End round</button>
 	</div>

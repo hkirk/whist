@@ -26,7 +26,7 @@ $data = array(
 $input_error = FALSE;
 
 $tricks_array_size = count($tricks_array);
-if ($tricks_array_size < 1 || $tricks_array_size > N_PLAYERS) {
+if ($tricks_array_size < 1 || $tricks_array_size > 4) {
 	render_unexpected_input_page_and_exit("Invalid number of tricks entries");
 }
 foreach ($tricks_array as $index => $dummy) {

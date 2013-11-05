@@ -6,14 +6,15 @@ global $ATTACHMENTS;
 function rewrite_null($e) {
 	return $e === NULL ? "?" : $e;
 }
-?>
 
-<?php
+$number_of_players = count($players);
+
 if ($cancel_view !== NULL) {
 	render_view('controls/' . $cancel_view, $cancel_view_data);
 }
 $controls_view_data['id_qualifier'] = 'top';
-render_view('controls/' . $controls_view, $controls_view_data);
+$controls_view_data['number_of_players'] = $number_of_players;
+
 ?>
 <h2>Score board</h2>
 <table class="scoreboard">
@@ -31,8 +32,8 @@ render_view('controls/' . $controls_view, $controls_view_data);
 	</thead>
 	<tbody>
 		<?php
-		$bid_winner_count_by_position = array_fill(0, N_PLAYERS, 0);
-		$bid_winner_mate_count_by_position = array_fill(0, N_PLAYERS, 0);
+		$bid_winner_count_by_position = array_fill(0, $number_of_players, 0);
+		$bid_winner_mate_count_by_position = array_fill(0, $number_of_players, 0);
 		$tricks_sum = 0;
 		$tricks_diff_sum = 0;
 		$bid_winners_with_tricks_count = 0;
@@ -116,7 +117,7 @@ render_view('controls/' . $controls_view, $controls_view_data);
 			</tr>
 		<?php endforeach ?>
 		<?php
-		for ($p = 0; $p < N_PLAYERS; $p++) {
+		for ($p = 0; $p < $number_of_players; $p++) {
 			$bid_winner_count_texts[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
 		}
 		if ($bid_winners_with_tricks_count === 0) {
