@@ -247,17 +247,19 @@ function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL, $
 	return $param;
 }
 
+
 function check_get_array_length($map, $param, $unset_value = NULL) {
-    if (!isset($map[$param])) {
-        // Missing input
-        return $unset_value;
-    }
-    $param = $map[$param];
-    if (is_array($param)) {
-        return count($param);
-    }
-    return 0;
+	if (!isset($map[$param])) {
+		// Missing input
+		return $unset_value;
+	}
+	$param = $map[$param];
+	if (is_array($param)) {
+		return count($param);
+	}
+	return 0;
 }
+
 
 function check_get_radio_array($map, $param, $length = NULL, &$valid_indices = NULL) {
 	return check_get_array($map, $param, $length, $valid_indices, array());
@@ -294,12 +296,12 @@ function check_get_radio_uint($map, $param, $allow_blank = FALSE, $min = NULL, $
 
 function check_input() {
 	$params = func_get_args();
-    $i = 0;
+	$i = 0;
 	foreach ($params as $param) {
 		if (is_null($param)) {
 			render_unexpected_input_page_and_exit("Missing parameter or invalid type/value! $i");
 		}
-        $i++;
+		$i++;
 	}
 }
 
@@ -352,5 +354,4 @@ function array_map_nulls($array, $null_replacement) {
 function nonnull_index($array, $key) {
 	return isset($array[$key]) && $array[$key] !== NULL;
 }
-
 

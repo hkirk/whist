@@ -63,8 +63,7 @@ function db_create_game($location_id, $description, $player_ids, $attachments, $
 	$sql = <<<EOS
 INSERT INTO games
 (location_id, description, attachments, point_rules, started_at, ended_at, updated_at)
-VALUES
-(?, ?, ?, ?, NOW(), NULL, NOW())
+VALUES (?, ?, ?, ?, NOW(), NULL, NOW())
 EOS;
 	$params = array(
 		$location_id,
@@ -77,8 +76,7 @@ EOS;
 	$sql = <<<EOS
 INSERT INTO game_players
 (game_id, player_position, player_id, total_points)
-VALUES
-(?, ?, ?, 0)
+VALUES (?, ?, ?, 0)
 EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($player_ids as $index => $player_id) {
