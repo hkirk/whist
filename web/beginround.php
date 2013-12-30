@@ -20,8 +20,6 @@ for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
 	$VALID_ATTACHMENT_VALUES[TIPS . "-" . $tips] = TRUE;
 }
 $VALID_ATTACHMENT_VALUES[''] = TRUE; // The "null" / "solo" value
-
-
 // Basic input validation:
 $game_id = check_get_uint($_POST, 'game_id');
 $input_bid = check_get_select_enum($_POST, 'bid', $VALID_BID_VALUES, TRUE);
@@ -32,12 +30,12 @@ $bye_positions = check_get_array($_POST, "bye_positions");
 check_input($game_id, $input_bid, $input_attachment, $bid_winner_positions, $bye_positions);
 
 $n_bid_winner_positions = count($bid_winner_positions);
-if ($n_bid_winner_positions > 4) {
+if ($n_bid_winner_positions > DEFAULT_PLAYERS) {
 	render_unexpected_input_page_and_exit("Too many bid winners!");
 }
 $n_bye_players = count($bye_positions);
-if ($number_of_players - $n_bye_players != 4) {
-    render_unexpected_input_page_and_exit("Too few or many 'bye' $number_of_players - $n_bye_players");
+if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
+	render_unexpected_input_page_and_exit("Too few or many 'bye' $number_of_players - $n_bye_players");
 }
 $used_bid_winner_position = array();
 foreach ($bid_winner_positions as $index => $bid_winner_position) {
@@ -131,15 +129,14 @@ if ($input_error) {
 }
 // End of validation
 
-
-$game_round_id;
-if ($solo_bid) {
-    $game_round_id = db_create_solo_round($game_id, $solo_game_key, $bid_winner_positions);
-} else {
-    $game_round_id = db_create_normal_round($game_id, $tricks, $attachment_key, $bid_winner_positions[0], $tips);
+$is_bye_players = array_fill(0, $number_of_players, FALSE);
+foreach ($bye_positions as $bye_position) {
+	$is_bye_players[$bye_position] = TRUE;
 }
-if ($number_of_players > DEFAULT_PLAYERS) {
-    db_create_bye_game_rounds_players($game_round_id, $bye_positions);
+if ($solo_bid) {
+	$game_round_id = db_create_solo_round($game_id, $is_bye_players, $solo_game_key, $bid_winner_positions);
+} else {
+	$game_round_id = db_create_normal_round($game_id, $is_bye_players, $tricks, $attachment_key, $bid_winner_positions[0], $tips);
 }
 
 

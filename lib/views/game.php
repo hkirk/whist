@@ -7,7 +7,6 @@ function rewrite_null($e) {
 	return $e === NULL ? "?" : $e;
 }
 
-$number_of_players = count($players);
 
 function avg_string($sum, $n) {
 	if ($n === 0) {
@@ -17,13 +16,12 @@ function avg_string($sum, $n) {
 	}
 }
 
+$number_of_players = count($players);
+$controls_view_data['number_of_players'] = $number_of_players;
 
 $render_controls = function($position) use($controls_positions, $controls_view, $controls_view_data) {
-    global $number_of_players;
-
 	if (in_array($position, $controls_positions)) {
 		$controls_view_data['id_qualifier'] = $position;
-		$controls_view_data['number_of_players'] = $number_of_players;
 		render_view('controls/' . $controls_view, $controls_view_data);
 	}
 };

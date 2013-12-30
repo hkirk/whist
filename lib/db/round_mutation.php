@@ -1,7 +1,8 @@
 <?php
 
 
-function db_create_round($game_id, $bid_type) {
+function db_create_round($game_id, $is_bye_players, $bid_type) {
+	assert(count($is_bye_players) >= DEFAULT_PLAYERS);
 	global $_db;
 	$sql = <<<EOS
 INSERT INTO game_rounds
@@ -16,17 +17,28 @@ SELECT ?, (
 ),?, NOW(), NULL, NOW()
 EOS;
 	$params = array(
-		$game_id,
-		$game_id,
-		$bid_type
+			$game_id,
+			$game_id,
+			$bid_type
 	);
 	_db_prepare_execute($sql, $params);
 	$id = $_db->lastInsertId();
+	// Bye players:
+	$sql_players = <<<EOS
+INSERT INTO game_round_players
+(game_round_id, player_position, bye, points)
+VALUES(?, ?, ?, NULL)
+EOS;
+	$stm_players = $_db->prepare($sql_players);
+	foreach ($is_bye_players as $player_position => $is_bye_player) {
+		$params = [$id, $player_position, $is_bye_player];
+		$stm_players->execute($params);
+	}
 	return $id;
 }
 
 
-function db_create_normal_round($game_id, $bid_tricks, $bid_attachment, $bid_winner_position, $tips = NULL) {
+function db_create_normal_round($game_id, $is_bye_players, $bid_tricks, $bid_attachment, $bid_winner_position, $tips = NULL) {
 	if ($bid_attachment === 'tips') {
 		assert(is_int($tips) && $tips >= 1 && $tips <= 3);
 	} else {
@@ -34,18 +46,18 @@ function db_create_normal_round($game_id, $bid_tricks, $bid_attachment, $bid_win
 	}
 	_db_assert_player_position($bid_winner_position);
 	_db_beginTransaction();
-	$game_round_id = db_create_round($game_id, 'normal');
+	$game_round_id = db_create_round($game_id, $is_bye_players, 'normal');
 	$sql = <<<EOS
 INSERT INTO normal_game_rounds
 (game_round_id, bid_winner_position, bid_winner_mate_position, bid_tricks, bid_attachment, tricks, tips)
 VALUES(?, ?, NULL, ?, ?, NULL, ?)
 EOS;
 	$params = array(
-		$game_round_id,
-		$bid_winner_position,
-		$bid_tricks,
-		$bid_attachment,
-		$tips
+			$game_round_id,
+			$bid_winner_position,
+			$bid_tricks,
+			$bid_attachment,
+			$tips
 	);
 	_db_prepare_execute($sql, $params);
 	_db_commit();
@@ -53,13 +65,13 @@ EOS;
 }
 
 
-function db_create_solo_round($game_id, $solo_type, $bid_winner_positions) {
+function db_create_solo_round($game_id, $is_bye_players, $solo_type, $bid_winner_positions) {
 	_db_assert_player_positions($bid_winner_positions);
 	assert(count($bid_winner_positions) > 0);
 	global $_db;
 	_db_beginTransaction();
 	// Round row:
-	$game_round_id = db_create_round($game_id, 'solo');
+	$game_round_id = db_create_round($game_id, $is_bye_players, 'solo');
 	// Solo round row:
 	$sql = <<<EOS
 INSERT INTO solo_game_rounds	
@@ -67,8 +79,8 @@ INSERT INTO solo_game_rounds
 VALUES(?, ?)
 EOS;
 	$params = array(
-		$game_round_id,
-		$solo_type
+			$game_round_id,
+			$solo_type
 	);
 	_db_prepare_execute($sql, $params);
 	// Solo round players row(s):
@@ -80,27 +92,14 @@ EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($bid_winner_positions as $bid_winner_position) {
 		$params = array(
-			$game_round_id,
-			$bid_winner_position
+				$game_round_id,
+				$bid_winner_position
 		);
 		$stm->execute($params);
 	}
 	// Commit
 	_db_commit();
 	return $game_round_id;
-}
-
-
-function db_create_bye_game_rounds_players($game_round_id, $bye_player_positions) {
-    _db_connect();
-    foreach ($bye_player_positions as $bye_player_position) {
-        $sql_insert_bye_player = <<<EOS
-
-    INSERT INTO bye_game_rounds_players SET game_round_id = ?, player_position = ?
-EOS;
-        $params = array($game_round_id, $bye_player_position);
-        _db_prepare_execute($sql_insert_bye_player, $params);
-    }
 }
 
 
@@ -129,7 +128,7 @@ EOS;
 	$params = array($game_round_id);
 	list(,, $rows) = _db_prepare_execute_fetchAll($sql_round_players_select, $params);
 	$n_rows = count($rows);
-	if ($n_rows === N_PLAYERS) {
+	if ($n_rows === DEFAULT_PLAYERS) { // TODO support other number of players
 		error_log("Removing points from users...");
 		foreach ($rows as $row) {
 			$params_game_players = array($row['points'], $game_id, $row['player_position']);
@@ -181,9 +180,9 @@ function db_end_round($game_id, $game_round_id, $player_points) {
 	_db_connect();
 	// Round players table rows:
 	$sql_round = <<<EOS
-INSERT INTO game_round_players
-(game_round_id, player_position, points)
-VALUES(?, ?, ?)
+UPDATE game_round_players
+SET points = ?
+WHERE game_round_id = ? AND player_position = ?
 EOS;
 	$sql_game = <<<EOS
 UPDATE game_players
@@ -193,18 +192,18 @@ EOS;
 	$stm_round = $_db->prepare($sql_round);
 	$stm_game = $_db->prepare($sql_game);
 	foreach ($player_points as $position => $points) {
-		// Insert round points
+		// Update round points
 		$params = array(
-			$game_round_id,
-			$position,
-			$points
+				$points,
+				$game_round_id,
+				$position
 		);
 		$stm_round->execute($params);
 		// Update game total points
 		$params = array(
-			$points,
-			$game_id,
-			$position
+				$points,
+				$game_id,
+				$position
 		);
 		$stm_game->execute($params);
 	}
@@ -239,9 +238,9 @@ tricks = ?
 WHERE game_round_id = ?
 EOS;
 	$params = array(
-		$bid_winner_mate_position,
-		$tricks,
-		$game_round_id
+			$bid_winner_mate_position,
+			$tricks,
+			$game_round_id
 	);
 	_db_prepare_execute($sql, $params);
 	db_end_round($game_id, $game_round_id, $player_points);
@@ -261,14 +260,13 @@ EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($bid_winner_tricks_by_position as $position => $tricks) {
 		$params = array(
-			$tricks,
-			$game_round_id,
-			$position
+				$tricks,
+				$game_round_id,
+				$position
 		);
 		$stm->execute($params);
 	}
 	db_end_round($game_id, $game_round_id, $player_points);
 	_db_commit();
 }
-
 

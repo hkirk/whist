@@ -102,15 +102,13 @@ $_DB_ROUND_TYPES_SELECT = <<<EOS
 	ngr.tips                      AS normal_tips,
 	sgr.solo_type                 AS solo_type,
 	sgrbw.player_position         AS solo_player_position,
-	sgrbw.tricks                  AS solo_tricks,
-	bgrp.player_position          AS bye_player_positions
+	sgrbw.tricks                  AS solo_tricks
 EOS;
 
 $_DB_ROUND_TYPES_JOINS = <<<EOS
 LEFT OUTER JOIN normal_game_rounds AS ngr ON ngr.game_round_id = gr.id
 LEFT OUTER JOIN solo_game_rounds AS sgr ON sgr.game_round_id = gr.id
 LEFT OUTER JOIN solo_game_round_bid_winners AS sgrbw ON sgrbw.game_round_id = sgr.game_round_id
-LEFT OUTER JOIN bye_game_rounds_players AS bgrp ON bgrp.game_round_id = gr.id
 EOS;
 
 
