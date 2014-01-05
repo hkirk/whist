@@ -111,10 +111,11 @@ LEFT OUTER JOIN  solo_game_round_bid_winners AS sgrbw  ON sgrbw.game_round_id = 
 EOS;
 
 
-function db_get_game_rounds($game_id) {
+function db_get_game_rounds($game_id, $n_players) {
 	global $_DB_ROUND_TYPES_SELECT;
 	global $_DB_ROUND_TYPES_JOINS;
 	_db_beginTransaction();
+
 	// Round data:
 	$sql = <<<EOS
 SELECT
@@ -127,12 +128,15 @@ EOS;
 	$params = [$game_id];
 	list($stm, ) = _db_prepare_execute($sql, $params);
 	$rounds = _db_build_game_rounds_from_traversable($stm);
+
 	// Player points:
 	$sql = <<<EOS
 SELECT 
 	gr.round             AS round,
+	gr.ended_at          AS ended_at,
 	grp.game_round_id    AS player_game_round_id,
 	grp.player_position  AS player_position,
+	grp.bye              AS player_bye,
 	grp.points           AS player_points
 FROM             game_rounds        AS gr
 LEFT OUTER JOIN  game_round_players AS grp  ON grp.game_round_id = gr.id
@@ -142,39 +146,60 @@ EOS;
 	$params = [$game_id];
 	list($stm, ) = _db_prepare_execute($sql, $params);
 	$index = 0;
-	$player_points = NULL;
+	$player_points = [];
+	$n_non_bye_players = 0;
 	$last_round = NULL;
 	while ($row = $stm->fetch()) {
 		$round = (int) $row['round'];
 		if ($row['player_game_round_id'] === NULL) {
-			// Unfinished round
-			assert($player_points === NULL); // Points are commited
-			assert($round !== $last_round);
-			$player_points = array_fill(0, 4, NULL);
-			$commit = TRUE;
-		} else {
-			if ($player_points === NULL) {
-				assert($round !== $last_round);
-				$expected_player_position = 0;
-				$player_points = [];
-			} else {
-				assert($round === $last_round);
-			}
-			$player_position = (int) $row['player_position'];
-			assert($player_position === $expected_player_position);
-			$player_points[] = $row['player_points'];
-			$commit = $player_position === 3;
-			$expected_player_position++;
+			// No player rows for the round!
+			throw new WhistException("No player rows for round $round!");
 		}
-		if ($commit) {
+		$is_active_round = $row['ended_at'] === NULL;
+		$is_bye = (bool) $row['player_bye'];
+		$points = $row['player_points'];
+		$player_position = (int) $row['player_position'];
+		$expected_player_position = count($player_points);
+		if ($is_active_round && $points !== NULL) {
+			throw new WhistException("Non-null point for active round $round!");
+		}
+		if (!$is_active_round && $points === NULL && !$is_bye) {
+			throw new WhistException("Null points for non-bye player in finished round $round!");
+		}
+		if ($is_bye && $points !== null) {
+			throw new WhistException("Non-null points for bye player for round $round!");
+		}
+		if ($last_round != $round && $expected_player_position != 0) {
+			throw new WhistException("Missing player rows for round $round!");
+		}
+		if ($last_round == $round && $expected_player_position == 0) {
+			throw new WhistException("Too many player rows for round $round!");
+		}
+		if ($player_position != $expected_player_position) {
+			throw new WhistException("Invalid player position $player_position (expected $expected_player_position) for round $round!");
+		}
+
+		if (!$is_bye) {
+			$n_non_bye_players++;
+		}
+
+		$player_points[] = $row['player_points']; // TODO Is NULL for active round, which is find, but is also for bye players. Consider this
+
+		if ($expected_player_position == $n_players - 1) {
+			if ($n_non_bye_players != DEFAULT_PLAYERS) {
+				throw new WhistException("Invalid number of non-bye players $n_non_bye_players for round $round!");
+			}
 			$round_data = &$rounds[$index];
 			assert($round_data['round'] === $round);
 			$round_data['player_points'] = $player_points;
-			$player_points = NULL;
+			$player_points = [];
+			$n_non_bye_players = 0;
 			$index++;
 		}
+
 		$last_round = $round;
 	}
+
 	_db_commit();
 	// Return
 	return $rounds;
