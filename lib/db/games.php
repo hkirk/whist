@@ -20,17 +20,19 @@ EOS;
 	return $rows;
 }
 
+
 /**
  * TODO move out of games.php
  * @param $name The name of the location.
  */
 function db_create_location($name) {
-    _db_beginTransaction();
-    $sql = "INSERT INTO locations (name) VALUES (?)";
-    $params = array($name);
-    _db_prepare_execute($sql, $params);
-    _db_commit();
+	_db_beginTransaction();
+	$sql = "INSERT INTO locations (name) VALUES (?)";
+	$params = array($name);
+	_db_prepare_execute($sql, $params);
+	_db_commit();
 }
+
 
 /**
  * TODO move out of games.php
@@ -39,12 +41,13 @@ function db_create_location($name) {
  * @param $nickname The players nickname,
  */
 function db_create_player($name, $nickname) {
-    _db_beginTransaction();
-    $sql = "INSERT INTO players (fullname, nickname) VALUES (?, ?)";
-    $params = array($name, $nickname);
-    _db_prepare_execute($sql, $params);
-    _db_commit();
+	_db_beginTransaction();
+	$sql = "INSERT INTO players (fullname, nickname) VALUES (?, ?)";
+	$params = array($name, $nickname);
+	_db_prepare_execute($sql, $params);
+	_db_commit();
 }
+
 
 /**
  * Creates a new game.
@@ -52,12 +55,12 @@ function db_create_player($name, $nickname) {
  * @global DBO $_db The DBO connection
  * @param int $location_id
  * @param string $description
- * @param array#4(int) $player_ids
+ * @param array(int) $player_ids
  * @param array(string) $attachments
  * @param array(string) $point_rules
  */
 function db_create_game($location_id, $description, $player_ids, $attachments, $point_rules) {
-	assert(count($player_ids) === 4);
+	assert(count($player_ids) >= DEFAULT_PLAYERS);
 	global $_db;
 	_db_beginTransaction();
 	$sql = <<<EOS
@@ -66,10 +69,10 @@ INSERT INTO games
 VALUES (?, ?, ?, ?, NOW(), NULL, NOW())
 EOS;
 	$params = array(
-		$location_id,
-		$description,
-		_db_set_string_from_array($attachments),
-		_db_set_string_from_array($point_rules)
+			$location_id,
+			$description,
+			_db_set_string_from_array($attachments),
+			_db_set_string_from_array($point_rules)
 	);
 	_db_prepare_execute($sql, $params);
 	$game_id = $_db->lastInsertId();
@@ -80,11 +83,7 @@ VALUES (?, ?, ?, 0)
 EOS;
 	$stm = $_db->prepare($sql);
 	foreach ($player_ids as $index => $player_id) {
-		$params = array(
-			$game_id,
-			$index,
-			$player_id
-		);
+		$params = array($game_id, $index, $player_id);
 		$result = $stm->execute($params);
 	}
 	_db_commit();
@@ -93,7 +92,7 @@ EOS;
 
 
 $_DB_ROUND_TYPES_SELECT = <<<EOS
-    gr.*,
+	gr.*,
 	ngr.bid_winner_position       AS normal_bid_winner_position,
 	ngr.bid_winner_mate_position  AS normal_bid_winner_mate_position,
 	ngr.bid_tricks                AS normal_bid_tricks,
@@ -106,9 +105,9 @@ $_DB_ROUND_TYPES_SELECT = <<<EOS
 EOS;
 
 $_DB_ROUND_TYPES_JOINS = <<<EOS
-LEFT OUTER JOIN normal_game_rounds AS ngr ON ngr.game_round_id = gr.id
-LEFT OUTER JOIN solo_game_rounds AS sgr ON sgr.game_round_id = gr.id
-LEFT OUTER JOIN solo_game_round_bid_winners AS sgrbw ON sgrbw.game_round_id = sgr.game_round_id
+LEFT OUTER JOIN  normal_game_rounds          AS ngr    ON ngr.game_round_id = gr.id
+LEFT OUTER JOIN  solo_game_rounds            AS sgr    ON sgr.game_round_id = gr.id
+LEFT OUTER JOIN  solo_game_round_bid_winners AS sgrbw  ON sgrbw.game_round_id = sgr.game_round_id
 EOS;
 
 
@@ -119,7 +118,7 @@ function db_get_game_rounds($game_id) {
 	// Round data:
 	$sql = <<<EOS
 SELECT
-    $_DB_ROUND_TYPES_SELECT
+$_DB_ROUND_TYPES_SELECT
 FROM game_rounds AS gr
 $_DB_ROUND_TYPES_JOINS
 WHERE gr.game_id = ?
@@ -135,8 +134,8 @@ SELECT
 	grp.game_round_id    AS player_game_round_id,
 	grp.player_position  AS player_position,
 	grp.points           AS player_points
-FROM game_rounds AS gr
-LEFT OUTER JOIN game_round_players AS grp ON grp.game_round_id = gr.id
+FROM             game_rounds        AS gr
+LEFT OUTER JOIN  game_round_players AS grp  ON grp.game_round_id = gr.id
 WHERE gr.game_id = ?
 ORDER BY gr.round, grp.player_position
 EOS;
@@ -191,20 +190,20 @@ SELECT
 	gp.total_points    AS player_total_points,
 	p.nickname         AS player_nickname,
 	p.fullname         AS player_fullname
-FROM games AS g
-LEFT OUTER JOIN locations AS l ON l.id = g.location_id
-INNER JOIN game_players AS gp ON gp.game_id = g.id
-LEFT OUTER JOIN players AS p ON p.id = gp.player_id 
+FROM             games        AS g
+LEFT OUTER JOIN  locations    AS l   ON l.id = g.location_id
+INNER JOIN       game_players AS gp  ON gp.game_id = g.id
+LEFT OUTER JOIN  players      AS p   ON p.id = gp.player_id
 WHERE g.id = ?
 ORDER BY gp.player_position ASC
 EOS;
 	$params = array($game_id);
 	list(,, $rows) = _db_prepare_execute_fetchAll($sql, $params);
 	$n_rows = count($rows);
-	/*if ($n_rows !== 4) {
+	if ($n_rows < DEFAULT_PLAYERS) {
 		error_log("Invalid number of rows $n_rows");
 		return NULL;
-	}*/
+	}
 	$players = array();
 	foreach ($rows as $index => $row) {
 		//printf("pos: %s", $row['player_position']);
@@ -237,8 +236,8 @@ SELECT
 	g.point_rules AS point_rules,
 	gr.id AS gr_id,
 	$_DB_ROUND_TYPES_SELECT
-FROM games AS g 
-LEFT OUTER JOIN game_rounds AS gr ON g.id = gr.game_id
+FROM             games       AS g 
+LEFT OUTER JOIN  game_rounds AS gr  ON g.id = gr.game_id
 $_DB_ROUND_TYPES_JOINS
 WHERE g.id = ?
 ORDER BY gr.round DESC
@@ -252,8 +251,8 @@ EOS;
 	}
 	$row = $rows[0];
 	$game = array(
-		'attachments' => _db_set_array_from_string($row['attachments']),
-		'point_rules' => _db_set_array_from_string($row['point_rules']),
+			'attachments' => _db_set_array_from_string($row['attachments']),
+			'point_rules' => _db_set_array_from_string($row['point_rules']),
 	);
 	if ($row['gr_id'] === NULL) {
 		// No rounds
@@ -292,12 +291,12 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
 			}
 			_db_build_game_rounds_from_traversable_commit_solo_round($solo_data, $round_data, $rounds);
 			$round_data = array(
-				'id' => $row['id'],
-				'round' => $round,
-				'bid_type' => $bid_type,
-				'started_at' => $row['started_at'],
-				'ended_at' => $row['ended_at'],
-				'updated_at' => $row['updated_at']
+					'id' => $row['id'],
+					'round' => $round,
+					'bid_type' => $bid_type,
+					'started_at' => $row['started_at'],
+					'ended_at' => $row['ended_at'],
+					'updated_at' => $row['updated_at']
 			);
 			$solo_data = NULL;
 		} else {
@@ -307,12 +306,12 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
 		if ($bid_type === "normal") {
 			assert($round !== $last_round);
 			$bid_data = array_filter_entries($row, 'normal_', array(
-				'bid_winner_position',
-				'bid_winner_mate_position',
-				'bid_tricks',
-				'bid_attachment',
-				'tricks',
-				'tips'));
+					'bid_winner_position',
+					'bid_winner_mate_position',
+					'bid_tricks',
+					'bid_attachment',
+					'tricks',
+					'tips'));
 			array_convert_numerics_to_ints($bid_data);
 			$round_data['bid_data'] = $bid_data;
 			// Commit round data
@@ -322,8 +321,8 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
 				// First solo player
 				assert($round !== $last_round);
 				$solo_data = array(
-					'type' => $row['solo_type'],
-					'bid_winner_tricks_by_position' => array()
+						'type' => $row['solo_type'],
+						'bid_winner_tricks_by_position' => array()
 				);
 			} else {
 				assert($round === $last_round);
@@ -348,3 +347,4 @@ function _db_build_game_rounds_from_traversable_commit_solo_round($solo_data, $r
 		$rounds[] = $round_data;
 	}
 }
+

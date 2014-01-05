@@ -78,16 +78,16 @@ if ($active_round === NULL) {
 	} else {
 		$bid_winner_positions = array_keys($bid_data['bid_winner_tricks_by_position']);
 	}
-    $bye_positions = $active_round['bye_player_positions'];
+	$bye_positions = $active_round['bye_player_positions'];
 	$cancel_view_data = array(
 			'game_id' => &$id
 	);
 	$controls_view_data = array(
-		'bid_type' => $bid_type,
-		'bid_winner_positions' => $bid_winner_positions,
-        'bye_player_positions' => $bye_positions
+			'bid_type' => $bid_type,
+			'bid_winner_positions' => $bid_winner_positions,
+			'bye_player_positions' => $bye_positions
 	);
-    error_log(print_r($db_game_with_active_round, true));
+	error_log(print_r($db_game_with_active_round, true));
 }
 
 
