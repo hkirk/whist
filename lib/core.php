@@ -1,6 +1,6 @@
 <?
 
-$VALID_PLAYER_POSITIONS = array('0', '1', '2', '3');
+$VALID_PLAYER_POSITIONS = ['0', '1', '2', '3'];
 
 define('GROUND_POINTS', 1);
 
@@ -23,17 +23,17 @@ define('POINT_RULE_REALLYBAD', 'reallybad');
 define('POINT_RULE_TIPS', 'tips');
 define('POINT_RULE_SOLOTRICKS', 'solotricks');
 
-$POINT_RULES = array(
-		POINT_RULE_REALLYBAD => array('name' => 'Really Bad', 'description' => NULL),
-		POINT_RULE_SOLOTRICKS => array('name' => 'Solo tricks counts', 'description' => 'Some description'),
-		POINT_RULE_TIPS => array('name' => 'Tips counts', 'description' => 'The base bid points depends on the number of tips.')
-);
+$POINT_RULES = [
+		POINT_RULE_REALLYBAD => ['name' => 'Really Bad', 'description' => NULL],
+		POINT_RULE_SOLOTRICKS => ['name' => 'Solo tricks counts', 'description' => 'Some description'],
+		POINT_RULE_TIPS => ['name' => 'Tips counts', 'description' => 'The base bid points depends on the number of tips.']
+];
 
-$TIPS_COUNT_MULTIPLIERS = array(
+$TIPS_COUNT_MULTIPLIERS = [
 		1 => 1.5,
 		2 => 2,
 		3 => 3
-); // Or something
+]; // Or something
 
 $REALLYBAD_POINTS = 64;
 
@@ -45,35 +45,35 @@ define('STRONGS', "strongs");
 define('GOODS', "goods");
 define('HALVES', "halves");
 
-$ATTACHMENTS = array(
-		NONE => array('multiplier' => 1, 'name' => 'None'),
-		SANS => array('multiplier' => 1.5, 'name' => 'Sans', 'description' => 'No trump suit.'),
-		TIPS => array('multiplier' => 1.5, 'name' => 'Tips'),
-		STRONGS => array('multiplier' => 1.5, 'name' => 'Strongs', 'description' => 'Spades are trump.'),
-		GOODS => array('multiplier' => 2, 'name' => 'Goods', 'description' => 'Clubs are trump.'),
-		HALVES => array('multiplier' => 2, 'name' => 'Halves', 'description' => 'The mate chooses the trump suit (The mate suit is illegal).')
-);
+$ATTACHMENTS = [
+		NONE => ['multiplier' => 1, 'name' => 'None'],
+		SANS => ['multiplier' => 1.5, 'name' => 'Sans', 'description' => 'No trump suit.'],
+		TIPS => ['multiplier' => 1.5, 'name' => 'Tips'],
+		STRONGS => ['multiplier' => 1.5, 'name' => 'Strongs', 'description' => 'Spades are trump.'],
+		GOODS => ['multiplier' => 2, 'name' => 'Goods', 'description' => 'Clubs are trump.'],
+		HALVES => ['multiplier' => 2, 'name' => 'Halves', 'description' => 'The mate chooses the trump suit (The mate suit is illegal).']
+];
 
 
 
-$ATTACHMENT_KEY_ORDER = array(
+$ATTACHMENT_KEY_ORDER = [
 		NONE, SANS, TIPS, STRONGS, GOODS, HALVES
-);
+];
 
-$OPTIONAL_ATTACHMENTS = array(
+$OPTIONAL_ATTACHMENTS = [
 		SANS => &$ATTACHMENTS[SANS],
 		TIPS => &$ATTACHMENTS[TIPS],
 		STRONGS => &$ATTACHMENTS[STRONGS],
 		HALVES => &$ATTACHMENTS[HALVES]
-);
+];
 
-$OPTIONAL_ATTACHMENT_KEYS_ORDER = array(
+$OPTIONAL_ATTACHMENT_KEYS_ORDER = [
 		SANS, TIPS, STRONGS, HALVES
-);
+];
 
-$REQUIRED_ATTACHMENT_KEYS_ORDER = array(
+$REQUIRED_ATTACHMENT_KEYS_ORDER = [
 		NONE, GOODS
-);
+];
 
 define('SOLO_SOLO', "solo");
 define('SOLO_CLEANSOLO', "cleansolo");
@@ -81,16 +81,16 @@ define('SOLO_TABLE', "table");
 define('SOLO_CLEANTABLE', "cleantable");
 define('FIRST_SOLO_GAME_BEATS', 9);
 
-$SOLO_GAMES = array(
-		SOLO_SOLO => array('multiplier' => 1, 'max_tricks' => 1, 'name' => 'Solo'),
-		SOLO_CLEANSOLO => array('multiplier' => 2, 'max_tricks' => 0, 'name' => 'Clean Solo'),
-		SOLO_TABLE => array('multiplier' => 4, 'max_tricks' => 1, 'name' => 'Table Solo'),
-		SOLO_CLEANTABLE => array('multiplier' => 8, 'max_tricks' => 0, 'name' => 'Clean Table Solo')
-);
+$SOLO_GAMES = [
+		SOLO_SOLO => ['multiplier' => 1, 'max_tricks' => 1, 'name' => 'Solo'],
+		SOLO_CLEANSOLO => ['multiplier' => 2, 'max_tricks' => 0, 'name' => 'Clean Solo'],
+		SOLO_TABLE => ['multiplier' => 4, 'max_tricks' => 1, 'name' => 'Table Solo'],
+		SOLO_CLEANTABLE => ['multiplier' => 8, 'max_tricks' => 0, 'name' => 'Clean Table Solo']
+];
 
-$SOLO_GAME_KEY_ORDER = array(
+$SOLO_GAME_KEY_ORDER = [
 		SOLO_SOLO, SOLO_CLEANSOLO, SOLO_TABLE, SOLO_CLEANTABLE
-);
+];
 
 
 //

@@ -5,7 +5,7 @@ require("lib.php");
 check_request_method("POST");
 
 // Build valid bid input values
-$VALID_BID_VALUES = array();
+$VALID_BID_VALUES = [];
 for ($tricks = MIN_BID_TRICKS; $tricks <= MAX_TRICKS; $tricks++) {
 	$VALID_BID_VALUES[BID_PREFIX_NORMAL . $tricks] = TRUE;
 }
@@ -37,7 +37,7 @@ $n_bye_players = count($bye_positions);
 if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
 	render_unexpected_input_page_and_exit("Too few or many 'bye' $number_of_players - $n_bye_players");
 }
-$used_bid_winner_position = array();
+$used_bid_winner_position = [];
 foreach ($bid_winner_positions as $index => $bid_winner_position) {
 	if (isset($used_bid_winner_position[$bid_winner_position])) {
 		render_unexpected_input_page_and_exit("Bid winner position occurs twice");
@@ -55,7 +55,7 @@ function beginround_render_page_and_exit($data) {
 }
 
 
-$data = array(
+$data = [
 		'unknown_game' => FALSE,
 		'has_active_round' => FALSE,
 		'missing_bid' => FALSE,
@@ -64,7 +64,7 @@ $data = array(
 		'missing_normal_bid_winner' => FALSE,
 		'missing_attachment' => FALSE,
 		'illegal_attachment' => FALSE
-);
+];
 $input_error = FALSE;
 
 if ($input_bid === '') {

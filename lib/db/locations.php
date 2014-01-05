@@ -9,9 +9,9 @@ name
 FROM locations
 ORDER BY name
 EOS;
-	$params = array();
+	$params = [];
 	list($stm,) = _db_prepare_execute($sql, $params);
-	$locations = array();
+	$locations = [];
 	foreach ($stm as $row) {
 		$locations[$row['id']] = $row['name'];
 	}
@@ -25,7 +25,7 @@ SELECT COUNT(*) AS count
 FROM locations
 WHERE id = ?
 EOS;
-	$params = array($id);
+	$params = [$id];
 	list(,, $row) = _db_prepare_execute_fetch($sql, $params);
 	return (int) $row['count'] === 1;
 }

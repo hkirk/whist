@@ -106,7 +106,7 @@ function raw_label($for_id, $content) {
 
 function check_request_method($expected_method) {
 	if (request_method() !== $expected_method) {
-		respond_method_not_allowed(array($expected_method));
+		respond_method_not_allowed([$expected_method]);
 	}
 }
 
@@ -121,7 +121,7 @@ function respond_method_not_allowed($allowed_methods) {
 function check_get_multi_input_array($map, $param, &$valid_values) {
 	if (!isset($map[$param])) {
 // No checkboxes are checked
-		return array();
+		return [];
 	}
 	$param = $map[$param];
 	if (!is_array($param)) {
@@ -262,7 +262,7 @@ function check_get_array_length($map, $param, $unset_value = NULL) {
 
 
 function check_get_radio_array($map, $param, $length = NULL, &$valid_indices = NULL) {
-	return check_get_array($map, $param, $length, $valid_indices, array());
+	return check_get_array($map, $param, $length, $valid_indices, []);
 }
 
 
@@ -307,13 +307,13 @@ function check_input() {
 
 
 function render_unexpected_input_page_and_exit($message = NULL) {
-	$data = array('message' => $message);
+	$data = ['message' => $message];
 	render_page_and_exit("Unexpected input", "Unexpected input", "unexpected_input", $data);
 }
 
 
 function array_filter_entries($array, $source_key_prefix, $keys) {
-	$sub_array = array();
+	$sub_array = [];
 	foreach ($keys as $key) {
 		$sub_array[$key] = $array[$source_key_prefix . $key];
 	}
@@ -331,7 +331,7 @@ function array_convert_numerics_to_ints(&$array) {
 
 
 function array_map_nulls($array, $null_replacement) {
-	$out = array();
+	$out = [];
 	foreach ($array as $key => $value) {
 		if ($value === NULL) {
 			$out[$key] = $null_replacement;

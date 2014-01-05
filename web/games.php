@@ -9,8 +9,8 @@ $games = db_get_game_list(0, 10);
 $subtitle = "Games";
 $headline = "The games";
 $view = "games";
-$data = Array(
+$data = [
 	'games' => $games
-);
+];
 
 render_page($subtitle, $headline, $view, $data);

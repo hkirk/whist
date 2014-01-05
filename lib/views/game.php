@@ -81,8 +81,8 @@ $render_controls('top');
 				$bid_winner_tricks_or_unknown_by_position = array_map_nulls($round['bid_winner_tricks_by_position'], "?");
 				$bid_winner_positions = array_keys($bid_winner_tricks_or_unknown_by_position);
 				$bid_winner_mate_position = $round['bid_winner_mate_position'];
-				$bid_winner_names = array();
-				$bid_winner_tricks_diff = array();
+				$bid_winner_names = [];
+				$bid_winner_tricks_diff = [];
 				//var_dump($bid_winner_tricks_by_position);
 				foreach ($round['bid_winner_tricks_by_position'] as $position => $tricks) {
 					$bid_winner_names[] = $players[$position]['nickname'];
@@ -115,8 +115,8 @@ $render_controls('top');
 					$is_dealer = $position === $dealer_position;
 					$is_bid_winner = in_array($position, $bid_winner_positions);
 					$is_bid_winner_mate = $position === $bid_winner_mate_position;
-					$round_points_class = array();
-					$total_points_class = array();
+					$round_points_class = [];
+					$total_points_class = [];
 					if ($player_round_points !== NULL) {
 						if ($player_round_points < 0) {
 							$player_round_points = "" . $player_round_points;

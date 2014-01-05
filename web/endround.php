@@ -16,13 +16,13 @@ function endround_render_page_and_exit($data) {
 }
 
 
-$data = array(
+$data = [
 		'unknown_game' => FALSE,
 		'no_active_round' => FALSE,
 		'missing_tricks' => FALSE,
 		'bad_tricks_sum' => FALSE,
 		'missing_bid_winner_mate_position' => FALSE
-);
+];
 $input_error = FALSE;
 
 $tricks_array_size = count($tricks_array);
