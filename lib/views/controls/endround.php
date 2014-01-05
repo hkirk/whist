@@ -8,7 +8,7 @@
  * $point_rules (array)
  * $bid_type (string)
  * $bid_winner_positions (array)
- * $bye_positions (array)
+ * $bye_player_positions (array)
  * 
  */
 ?>
@@ -58,14 +58,15 @@
 			<?php endif; ?>
 		</fieldset>
 	<?php endforeach; ?>
-    <p>Bye players
-    <? foreach ($bye_positions as $position) {
-    ?>
-        
-    <?
-    }
-    ?>
-    </p>
+	<div>Bye players:
+		<?php
+		$bye_nicknames = [];
+		foreach ($bye_player_positions as $position) {
+			$bye_nicknames[] = $players[$position]['nickname'];
+		}
+		echo join(", ", $bye_nicknames);
+		?>
+	</div>
 	<div>
 		<button type="submit">End round</button>
 	</div>

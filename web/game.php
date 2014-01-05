@@ -44,6 +44,7 @@ foreach ($db_game['players'] as $player) {
 	$players[] = array_filter_entries($player, "", ["nickname", "fullname"]);
 	$total_points[] = $player['total_points'];
 }
+$n_players = count($players);
 $point_rules = &$db_game['point_rules'];
 
 $db_game_with_active_round = db_get_game_type_with_active_round($id);
@@ -78,7 +79,7 @@ if ($active_round === NULL) {
 	} else {
 		$bid_winner_positions = array_keys($bid_data['bid_winner_tricks_by_position']);
 	}
-	$bye_positions = $active_round['bye_player_positions'];
+	$bye_positions = array_fill(0, 1, 0); // TODO implement $active_round['bye_player_positions'];
 	$cancel_view_data = [
 			'game_id' => &$id
 	];
@@ -92,12 +93,14 @@ if ($active_round === NULL) {
 
 
 
-$db_rounds = db_get_game_rounds($id);
-if ($db_rounds === NULL) {
+try {
+	$db_rounds = db_get_game_rounds($id, $n_players);
+} catch (WhistException $ex) {
+	error_log($ex);
 	game_render_error('bad_rounds');
 }
 
-$acc_total_points = array_fill(0, 4, 0);
+$acc_total_points = array_fill(0, $n_players, 0);
 
 $rounds = [];
 
