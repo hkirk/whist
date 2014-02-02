@@ -230,7 +230,7 @@ function check_get_array($map, $param, $length = NULL, &$valid_indices = NULL, $
 	}
 	$param = $map[$param];
 	if (!is_array($param)) {
-		// Error - not a string
+		// Error - not an array
 		return NULL;
 	}
 	if ($length != NULL && count($param) != $length) {

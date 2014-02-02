@@ -103,7 +103,7 @@ EOS;
 }
 
 
-function db_delete_round($game_round_id, $game_id) {
+function db_delete_round($game_round_id, $game_id, $n_players) {
 	_db_connect();
 	$sql_round_players_select = <<<EOS
 SELECT player_position, points
@@ -128,21 +128,21 @@ EOS;
 	$params = [$game_round_id];
 	list(,, $rows) = _db_prepare_execute_fetchAll($sql_round_players_select, $params);
 	$n_rows = count($rows);
-	if ($n_rows === DEFAULT_PLAYERS) { // TODO support other number of players
+	if ($n_rows == $n_players) {
 		error_log("Removing points from users...");
 		foreach ($rows as $row) {
 			$params_game_players = [$row['points'], $game_id, $row['player_position']];
 			_db_prepare_execute($sql_game_players, $params_game_players);
 		}
-	} else if ($n_rows !== 0) { // Zero for active rounds
-		error_log("Unexpected number of players for game round $game_round_id");
+	} else {
+		error_log("Unexpected number of players for game round $game_round_id ($n_rows, expected $n_players)");
 	}
 	_db_prepare_execute($sql_round_players, $params);
 	_db_prepare_execute($sql_rounds, $params);
 }
 
 
-function db_delete_normal_round($game_round_id, $game_id) {
+function db_delete_normal_round($game_round_id, $game_id, $nplayers) {
 	_db_beginTransaction();
 	$sql = <<<EOS
 DELETE FROM normal_game_rounds
@@ -150,12 +150,12 @@ WHERE game_round_id = ?
 EOS;
 	$params = [$game_round_id];
 	_db_prepare_execute($sql, $params);
-	db_delete_round($game_round_id, $game_id);
+	db_delete_round($game_round_id, $game_id, $nplayers);
 	_db_commit();
 }
 
 
-function db_delete_solo_round($game_round_id, $game_id) {
+function db_delete_solo_round($game_round_id, $game_id, $nplayers) {
 	_db_beginTransaction();
 	$sql_round_bid_winners = <<<EOS
 DELETE FROM solo_game_round_bid_winners
@@ -168,14 +168,14 @@ EOS;
 	$params = [$game_round_id];
 	_db_prepare_execute($sql_round_bid_winners, $params);
 	_db_prepare_execute($sql_rounds, $params);
-	db_delete_round($game_round_id, $game_id);
+	db_delete_round($game_round_id, $game_id, $nplayers);
 	_db_commit();
 }
 
 
 function db_end_round($game_id, $game_round_id, $player_points) {
 	assert(is_array($player_points));
-	assert(count($player_points) === 4);
+	assert(count($player_points) >= DEFAULT_PLAYERS);
 	global $_db;
 	_db_connect();
 	// Round players table rows:

@@ -1,6 +1,4 @@
-<?
-
-$VALID_PLAYER_POSITIONS = ['0', '1', '2', '3'];
+<?php
 
 define('GROUND_POINTS', 1);
 
@@ -13,8 +11,10 @@ define('MAX_TIPS', 3);
 
 define('MIN_PLAYER_POSITION', 0);
 define('MAX_PLAYER_POSITION', 3);
-define('DEFAULT_PLAYERS', 4);
-define('MAX_PLAYERS', 8);
+define('DEFAULT_PLAYERS', 4); // TODO rename this to something more expressive
+define('MAX_PLAYERS', 8); // Just some reasonable number greater than 4 - can be changed
+define('MIN_BID_WINNERS', 1);
+define('MAX_BID_WINNERS', DEFAULT_PLAYERS);
 
 define('BID_PREFIX_SOLO', 'solo-');
 define('BID_PREFIX_NORMAL', 'normal-');
@@ -93,6 +93,40 @@ $SOLO_GAME_KEY_ORDER = [
 ];
 
 
+function build_valid_player_position_input_values($n_players) {
+	$valid_player_positions = [];
+	for ($i = 0; $i < $n_players; $i++) {
+		$valid_player_positions[] = "$i"; // Input values are strings
+	}
+	return $valid_player_positions;
+}
+
+
+function build_valid_bid_input_values() {
+	global $SOLO_GAME_KEY_ORDER;
+	$valid_bid_values = [];
+	for ($tricks = MIN_BID_TRICKS; $tricks <= MAX_TRICKS; $tricks++) {
+		$valid_bid_values[BID_PREFIX_NORMAL . $tricks] = TRUE;
+	}
+	foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
+		$valid_bid_values[BID_PREFIX_SOLO . $solo_game_key] = TRUE;
+	}
+	return $valid_bid_values;
+}
+
+
+function build_valid_attachment_input_values() {
+	global $ATTACHMENTS;
+	$valid_attachment_values = $ATTACHMENTS;
+	unset($valid_attachment_values[TIPS]);
+	for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
+		$valid_attachment_values[TIPS . "-" . $tips] = TRUE;
+	}
+	$valid_attachment_values[''] = TRUE; // The "null" / "solo" value
+	return $valid_attachment_values;
+}
+
+
 //
 // The points calculated be these methods are the bidder points
 //
@@ -156,5 +190,4 @@ function get_really_bad_points($point_rules, $tricks) {
 		return 0;
 	}
 }
-
 

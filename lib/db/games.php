@@ -251,7 +251,7 @@ EOS;
  * @param type $game_id
  * @return Game array with keys 'attachments', 'point_rules', and 'active_round'. The latter is NULL, if there is no active game round.
  */
-function db_get_game_type_with_active_round($game_id) {
+function db_get_game_type_with_active_round($game_id, $number_of_players) {
 	global $_DB_ROUND_TYPES_SELECT;
 	global $_DB_ROUND_TYPES_JOINS;
 	// The LIMIT is the maximum number of solo bid winner rows
@@ -259,14 +259,13 @@ function db_get_game_type_with_active_round($game_id) {
 SELECT 
 	g.attachments AS attachments,
 	g.point_rules AS point_rules,
-	gr.id AS gr_id,
 	$_DB_ROUND_TYPES_SELECT
 FROM             games       AS g 
 LEFT OUTER JOIN  game_rounds AS gr  ON g.id = gr.game_id
 $_DB_ROUND_TYPES_JOINS
 WHERE g.id = ?
 ORDER BY gr.round DESC
-LIMIT 4
+LIMIT $number_of_players
 EOS;
 	$params = [$game_id];
 	list(,, $rows) = _db_prepare_execute_fetchAll($sql, $params);
@@ -279,7 +278,7 @@ EOS;
 			'attachments' => _db_set_array_from_string($row['attachments']),
 			'point_rules' => _db_set_array_from_string($row['point_rules']),
 	];
-	if ($row['gr_id'] === NULL) {
+	if ($row['id'] === NULL) {
 		// No rounds
 		$game['active_round'] = NULL;
 		return $game;

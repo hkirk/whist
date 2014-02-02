@@ -4,39 +4,54 @@ require("lib.php");
 
 check_request_method("POST");
 
-// Build valid bid input values
-$VALID_BID_VALUES = [];
-for ($tricks = MIN_BID_TRICKS; $tricks <= MAX_TRICKS; $tricks++) {
-	$VALID_BID_VALUES[BID_PREFIX_NORMAL . $tricks] = TRUE;
-}
-foreach ($SOLO_GAME_KEY_ORDER as $solo_game_key) {
-	$VALID_BID_VALUES[BID_PREFIX_SOLO . $solo_game_key] = TRUE;
+$data = [
+		'unknown_game' => FALSE,
+		'has_active_round' => FALSE,
+		'missing_bid' => FALSE,
+		'solo_and_attachment' => FALSE,
+		'missing_solo_bid_winners' => FALSE,
+		'missing_normal_bid_winner' => FALSE,
+		'missing_attachment' => FALSE,
+		'illegal_attachment' => FALSE
+];
+$input_error = FALSE;
+
+
+/* Basic input validation: */
+$game_id = check_get_uint($_POST, 'game_id');
+check_input($game_id);
+
+$number_of_players = db_get_number_of_players($game_id);
+if ($number_of_players < DEFAULT_PLAYERS) {
+	$data['unknown_game'] = TRUE;
+	endround_render_page_and_exit($data);
 }
 
-// Build valid attachment input values
-$VALID_ATTACHMENT_VALUES = $ATTACHMENTS;
-unset($VALID_ATTACHMENT_VALUES[TIPS]);
-for ($tips = MIN_TIPS; $tips <= MAX_TIPS; $tips++) {
-	$VALID_ATTACHMENT_VALUES[TIPS . "-" . $tips] = TRUE;
-}
-$VALID_ATTACHMENT_VALUES[''] = TRUE; // The "null" / "solo" value
-// Basic input validation:
-$game_id = check_get_uint($_POST, 'game_id');
+/* Build valid bid input values */
+$VALID_BID_VALUES = build_valid_bid_input_values();
+
+/* Build valid attachment input values */
+$VALID_ATTACHMENT_VALUES = build_valid_attachment_input_values();
+
+/* Build valid player positions */
+$VALID_PLAYER_POSITIONS = build_valid_player_position_input_values($number_of_players);
+
 $input_bid = check_get_select_enum($_POST, 'bid', $VALID_BID_VALUES, TRUE);
 $input_attachment = check_get_select_enum($_POST, 'attachment', $VALID_ATTACHMENT_VALUES, TRUE);
 $bid_winner_positions = check_get_multi_input_array($_POST, 'bid_winner_positions', $VALID_PLAYER_POSITIONS);
-$number_of_players = db_get_number_of_players($game_id);
-$bye_positions = check_get_array($_POST, "bye_positions");
-check_input($game_id, $input_bid, $input_attachment, $bid_winner_positions, $bye_positions);
+$bye_positions = check_get_multi_input_array($_POST, 'bye_positions', $VALID_PLAYER_POSITIONS);
+check_input($input_bid, $input_attachment, $bid_winner_positions, $bye_positions);
 
 $n_bid_winner_positions = count($bid_winner_positions);
 if ($n_bid_winner_positions > DEFAULT_PLAYERS) {
 	render_unexpected_input_page_and_exit("Too many bid winners!");
 }
+
 $n_bye_players = count($bye_positions);
 if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
-	render_unexpected_input_page_and_exit("Too few or many 'bye' $number_of_players - $n_bye_players");
+	render_unexpected_input_page_and_exit("Too few or many 'bye' players ($number_of_players - $n_bye_players)");
 }
+
 $used_bid_winner_position = [];
 foreach ($bid_winner_positions as $index => $bid_winner_position) {
 	if (isset($used_bid_winner_position[$bid_winner_position])) {
@@ -55,25 +70,13 @@ function beginround_render_page_and_exit($data) {
 }
 
 
-$data = [
-		'unknown_game' => FALSE,
-		'has_active_round' => FALSE,
-		'missing_bid' => FALSE,
-		'solo_and_attachment' => FALSE,
-		'missing_solo_bid_winners' => FALSE,
-		'missing_normal_bid_winner' => FALSE,
-		'missing_attachment' => FALSE,
-		'illegal_attachment' => FALSE
-];
-$input_error = FALSE;
-
 if ($input_bid === '') {
 	$input_error = $data['missing_bid'] = TRUE;
 	beginround_render_page_and_exit($data);
 }
 
 
-$game = db_get_game_type_with_active_round($game_id);
+$game = db_get_game_type_with_active_round($game_id, $number_of_players);
 
 if ($game === NULL) {
 	$input_error = $data['unknown_game'] = TRUE;
@@ -86,7 +89,7 @@ if ($game['active_round'] !== NULL) {
 //var_dump($game);
 
 
-$solo_bid = strpos($input_bid, 'solo-') !== FALSE;
+$solo_bid = strpos($input_bid, BID_PREFIX_SOLO) === 0;
 
 if ($solo_bid) {
 	// Solo game...
