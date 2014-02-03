@@ -56,7 +56,7 @@ foreach ($tricks_array as $index => $dummy) {
 }
 
 
-$game_with_active_round = db_get_game_type_with_active_round($game_id, $number_of_players);
+$game_with_active_round = db_get_game_type_with_active_round($game_id);
 
 if ($game_with_active_round === NULL) {
 	$input_error = $data['unknown_game'] = TRUE;

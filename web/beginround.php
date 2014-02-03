@@ -76,7 +76,7 @@ if ($input_bid === '') {
 }
 
 
-$game = db_get_game_type_with_active_round($game_id, $number_of_players);
+$game = db_get_game_type_with_active_round($game_id);
 
 if ($game === NULL) {
 	$input_error = $data['unknown_game'] = TRUE;

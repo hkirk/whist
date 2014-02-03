@@ -47,7 +47,7 @@ foreach ($db_game['players'] as $player) {
 $n_players = count($players);
 $point_rules = &$db_game['point_rules'];
 
-$db_game_with_active_round = db_get_game_type_with_active_round($id, $n_players);
+$db_game_with_active_round = db_get_game_type_with_active_round($id);
 
 $active_round = $db_game_with_active_round['active_round'];
 

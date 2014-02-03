@@ -251,10 +251,12 @@ EOS;
  * @param type $game_id
  * @return Game array with keys 'attachments', 'point_rules', and 'active_round'. The latter is NULL, if there is no active game round.
  */
-function db_get_game_type_with_active_round($game_id, $number_of_players) {
+function db_get_game_type_with_active_round($game_id) {
 	global $_DB_ROUND_TYPES_SELECT;
 	global $_DB_ROUND_TYPES_JOINS;
-	// The LIMIT is the maximum number of solo bid winner rows
+	$limit = DEFAULT_PLAYERS + 1;
+	// The LIMIT is the maximum number of solo bid winner rows + 1 to detect data inconsistency 
+	// in _db_build_game_rounds_from_traversable()
 	$sql = <<<EOS
 SELECT 
 	g.attachments AS attachments,
@@ -265,7 +267,7 @@ LEFT OUTER JOIN  game_rounds AS gr  ON g.id = gr.game_id
 $_DB_ROUND_TYPES_JOINS
 WHERE g.id = ?
 ORDER BY gr.round DESC
-LIMIT $number_of_players
+LIMIT $limit
 EOS;
 	$params = [$game_id];
 	list(,, $rows) = _db_prepare_execute_fetchAll($sql, $params);
@@ -354,6 +356,9 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
 			$player_position = $row['solo_player_position'];
 			$tricks = $row['solo_tricks'];
 			$solo_data['bid_winner_tricks_by_position'][$player_position] = $tricks;
+			if (count($solo_data['bid_winner_tricks_by_position']) > DEFAULT_PLAYERS) {
+				assert(FALSE);
+			}
 		} else {
 			assert(FALSE);
 		}

@@ -13,7 +13,7 @@ if ($number_of_players < DEFAULT_PLAYERS) {
 	render_unexpected_input_page_and_exit("Game not found!");
 }
 
-$game = db_get_game_type_with_active_round($game_id, $number_of_players);
+$game = db_get_game_type_with_active_round($game_id);
 if ($game === NULL) {
 	// No active round!
 	render_unexpected_input_page_and_exit("Game no started!");
