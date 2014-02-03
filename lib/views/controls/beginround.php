@@ -19,6 +19,27 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<h2>Begin round</h2>
 
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
+
+	<?php
+	if ($number_of_players > DEFAULT_PLAYERS) {
+		?>
+		<fieldset class="bye">
+			<legend>Bye(s)</legend>
+			<?php $name = "bye_positions"; ?>
+			<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier) ?>">
+				<?php
+				foreach ($players as $position => $player):
+					option($position, $player['nickname']);
+				endforeach;
+				?>
+			</select>
+			<div class="description">Choose players not in this round</div>
+		</fieldset>
+		<?php
+	}
+	// TODO hidden bye_positions?
+	?>
+
 	<fieldset class="bid">
 		<legend>Game bid</legend>
 		<?php label('bid', 'Base bid:', $id_qualifier); ?>
@@ -88,37 +109,15 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<fieldset class="bid_winners">
 		<legend>Bid winner(s)</legend>
 		<?php $name = "bid_winner_positions"; ?>
-		<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier)?>">
-			<?php 
-			foreach ($players as $position => $player): 
+		<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier) ?>">
+			<?php
+			foreach ($players as $position => $player):
 				option($position, $player['nickname']);
-			endforeach; 
+			endforeach;
 			?>
 		</select>
 		<div class="description">One player for normal games. One or more players for solo games</div>
 	</fieldset>
-
-    <?php
-
-    if ($number_of_players > DEFAULT_PLAYERS) {
-    ?>
-        <fieldset class="bye">
-            <legend>Bye(s)</legend>
-            <?php $name = "bye_positions"; ?>
-            <select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier)?>">
-                <?php
-                foreach ($players as $position => $player):
-                    option($position, $player['nickname']);
-                endforeach;
-                ?>
-            </select>
-            <div class="description">Choose players not in this round</div>
-        </fieldset>
-    <?php
-
-    }
-
-    ?>
 
 	<button type="submit">Begin round</button>
 </form>
