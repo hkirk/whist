@@ -9,10 +9,12 @@ $data = [
 		'has_active_round' => FALSE,
 		'missing_bid' => FALSE,
 		'solo_and_attachment' => FALSE,
-		'missing_solo_bid_winners' => FALSE,
-		'missing_normal_bid_winner' => FALSE,
 		'missing_attachment' => FALSE,
-		'illegal_attachment' => FALSE
+		'illegal_attachment' => FALSE,
+		'illegal_solo_bid_winner_count' => FALSE,
+		'illegal_normal_bid_winner_count' => FALSE,
+		'illegal_bye_count' => FALSE,
+		'joint_bid_winner_bye' => FALSE
 ];
 $input_error = FALSE;
 
@@ -43,13 +45,8 @@ $bye_positions = check_get_multi_input_array($_POST, 'bye_positions', $VALID_PLA
 check_input($input_bid, $input_attachment, $bid_winner_positions, $bye_positions);
 
 $n_bid_winner_positions = count($bid_winner_positions);
-if ($n_bid_winner_positions > DEFAULT_PLAYERS) {
+if ($n_bid_winner_positions > $number_of_players) {
 	render_unexpected_input_page_and_exit("Too many bid winners!");
-}
-
-$n_bye_players = count($bye_positions);
-if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
-	render_unexpected_input_page_and_exit("Too few or many 'bye' players ($number_of_players - $n_bye_players)");
 }
 
 $used_bid_winner_position = [];
@@ -62,17 +59,21 @@ foreach ($bid_winner_positions as $index => $bid_winner_position) {
 	$bid_winner_positions[$index] = (int) $bid_winner_position;
 }
 
+$used_bye_position = [];
+foreach ($bye_positions as $index => $bye_position) {
+	if (isset($used_bye_position[$bye_position])) {
+		render_unexpected_input_page_and_exit("Bye position occurs twice");
+	}
+	$used_bye_position[$bye_position] = TRUE;
+	// Convert position to an integer
+	$bye_positions[$index] = (int) $bye_position;
+}
+
 
 // Advanced input validation:
 
 function beginround_render_page_and_exit($data) {
 	render_page_and_exit("Input Error", "Input error", "begin_round_input_error", $data);
-}
-
-
-if ($input_bid === '') {
-	$input_error = $data['missing_bid'] = TRUE;
-	beginround_render_page_and_exit($data);
 }
 
 
@@ -86,7 +87,21 @@ if ($game === NULL) {
 if ($game['active_round'] !== NULL) {
 	$input_error = $data['has_active_round'] = TRUE;
 }
-//var_dump($game);
+
+$bid_winner_bye_intersection = array_intersect($bid_winner_positions, $bye_positions);
+if (!empty($bid_winner_bye_intersection)) {
+	$input_error = $data['joint_bid_winner_bye'] = TRUE;
+}
+
+$n_bye_players = count($bye_positions);
+if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
+	$input_error = $data['illegal_bye_count'] = TRUE;
+}
+
+if ($input_bid === '') {
+	$input_error = $data['missing_bid'] = TRUE;
+	beginround_render_page_and_exit($data);
+}
 
 
 $solo_bid = strpos($input_bid, BID_PREFIX_SOLO) === 0;
@@ -97,8 +112,8 @@ if ($solo_bid) {
 	if ($input_attachment !== '') {
 		$input_error = $data['solo_and_attachment'] = TRUE;
 	}
-	if ($n_bid_winner_positions < 1) {
-		$input_error = $data['missing_solo_bid_winners'] = TRUE;
+	if ($n_bid_winner_positions < 1 || $n_bid_winner_positions > DEFAULT_PLAYERS) {
+		$input_error = $data['illegal_solo_bid_winner_count'] = TRUE;
 	}
 } else {
 	// Normal game...
@@ -123,7 +138,7 @@ if ($solo_bid) {
 		}
 	}
 	if ($n_bid_winner_positions !== 1) {
-		$input_error = $data['missing_normal_bid_winner'] = TRUE;
+		$input_error = $data['illegal_normal_bid_winner_count'] = TRUE;
 	}
 }
 
