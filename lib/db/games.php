@@ -146,7 +146,7 @@ EOS;
 	$params = [$game_id];
 	list($stm, ) = _db_prepare_execute($sql, $params);
 	$index = 0;
-	$player_points = [];
+	$player_data = [];
 	$n_non_bye_players = 0;
 	$last_round = NULL;
 	while ($row = $stm->fetch()) {
@@ -159,7 +159,7 @@ EOS;
 		$is_bye = (bool) $row['player_bye'];
 		$points = $row['player_points'];
 		$player_position = (int) $row['player_position'];
-		$expected_player_position = count($player_points);
+		$expected_player_position = count($player_data);
 		if ($is_active_round && $points !== NULL) {
 			throw new WhistException("Non-null point for active round $round!");
 		}
@@ -183,7 +183,10 @@ EOS;
 			$n_non_bye_players++;
 		}
 
-		$player_points[] = $row['player_points']; // TODO Is NULL for active round, which is find, but is also for bye players. Consider this
+		$player_data[] = [
+				'points' => $points, // TODO Is NULL for active round, which is fine, but is also for bye players. Consider this
+				'is_bye' => $is_bye
+		];
 
 		if ($expected_player_position == $n_players - 1) {
 			if ($n_non_bye_players != DEFAULT_PLAYERS) {
@@ -191,8 +194,8 @@ EOS;
 			}
 			$round_data = &$rounds[$index];
 			assert($round_data['round'] === $round);
-			$round_data['player_points'] = $player_points;
-			$player_points = [];
+			$round_data['player_data'] = $player_data;
+			$player_data = [];
 			$n_non_bye_players = 0;
 			$index++;
 		}

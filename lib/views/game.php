@@ -16,6 +16,7 @@ function avg_string($sum, $n) {
 	}
 }
 
+
 $number_of_players = count($players);
 $controls_view_data['number_of_players'] = $number_of_players;
 
@@ -29,7 +30,6 @@ if ($cancel_view !== NULL) {
 	render_view('controls/' . $cancel_view, $cancel_view_data);
 }
 $render_controls('top');
-
 ?>
 <h2>Score board</h2>
 <table class="scoreboard">
@@ -110,14 +110,16 @@ $render_controls('top');
 				<td><?php echo implode(", ", $bid_winner_tricks_diff) ?></td>
 				<?php foreach ($round['player_data'] as $position => $player_data): ?>
 					<?php
-					$player_round_points = $player_data['round_points'];
-					$player_total_points = $player_data['total_points'];
+					$player_round_points = $player_data['points'];
+					$player_acc_points = $player_data['acc_points'];
+					$is_bye = $player_data['is_bye'];
 					$is_dealer = $position === $dealer_position;
 					$is_bid_winner = in_array($position, $bid_winner_positions);
 					$is_bid_winner_mate = $position === $bid_winner_mate_position;
 					$round_points_class = [];
 					$total_points_class = [];
 					if ($player_round_points !== NULL) {
+						assert(!$is_bye);
 						if ($player_round_points < 0) {
 							$player_round_points = "" . $player_round_points;
 							$round_points_class[] = "negative";
@@ -127,6 +129,13 @@ $render_controls('top');
 							$round_points_class[] = "positive";
 						}
 					}
+					if ($is_bye) {
+						assert($player_round_points === null);
+						assert(!$is_dealer);
+						$player_round_points = "";
+						$round_points_class[] = "bye";
+						$total_points_class[] = "bye";
+					}
 					if ($is_dealer) {
 						$round_points_class[] = "dealer";
 						$total_points_class[] = "dealer";
@@ -135,7 +144,7 @@ $render_controls('top');
 					$is_bid_winner_mate && $round_points_class[] = "bidwinnermate";
 					?>
 					<td class="<?php echo implode(" ", $round_points_class) ?>"><?php echo rewrite_null($player_round_points) ?></td>
-					<td class="<?php echo implode(" ", $total_points_class) ?>"><?php echo rewrite_null($player_total_points) ?></td>
+					<td class="<?php echo implode(" ", $total_points_class) ?>"><?php echo rewrite_null($player_acc_points) ?></td>
 				<?php endforeach ?>
 			</tr>
 		<?php endforeach ?>
@@ -147,7 +156,7 @@ $render_controls('top');
 		$tricks_avg_string = avg_string($tricks_sum, $bid_winners_with_tricks_count);
 		$tricks_diff_avg_string = avg_string($tricks_diff_sum, $bid_winners_with_tricks_count);
 		$tricks_abs_diff_avg_string = avg_string($tricks_abs_diff_sum, $bid_winners_with_tricks_count);
-        for ($p = 0; $p < $number_of_players; $p++) {
+		for ($p = 0; $p < $number_of_players; $p++) {
 			$bid_winner_count_texts[$p] = sprintf("%d (%d)", $bid_winner_count_by_position[$p], $bid_winner_mate_count_by_position[$p]);
 		}
 		?>

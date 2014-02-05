@@ -128,14 +128,12 @@ foreach ($db_rounds as $r) {
 	}
 	$bid['type'] = $bid_type;
 	$player_data = [];
-	foreach ($r['player_points'] as $position => $player_points) {
-		if ($player_points !== NULL) {
-			$acc_total_points[$position] += $player_points;
+	foreach ($r['player_data'] as $position => $data) {
+		if ($data['points'] !== NULL) {
+			$acc_total_points[$position] += $data['points'];
 		}
-		$player_data[] = [
-				'round_points' => $player_points,
-				'total_points' => $acc_total_points[$position]
-		];
+		$data['acc_points'] = $acc_total_points[$position];
+		$player_data[] = $data;
 	}
 	$round = [
 			'index' => $r['round'],

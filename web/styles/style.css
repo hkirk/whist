@@ -182,6 +182,10 @@ table.scoreboard td.dealer {
 	background-color: #ffffc0;
 }
 
+table.scoreboard td.bye {
+	background-color: #808080;
+}
+
 table.scoreboard td.bidwinner {
 	text-decoration: underline;
 	font-style: italic;
