@@ -296,6 +296,24 @@ EOS;
 	}
 	$most_recent_round = $rounds[0];
 	if ($most_recent_round['ended_at'] === NULL) {
+		$sql = <<<SQL
+SELECT player_position, bye
+FROM game_round_players
+WHERE game_round_id = ?
+ORDER BY player_position
+SQL;
+		$params = [$most_recent_round['id']];
+		list($stm, ) = _db_prepare_execute($sql, $params);
+		$expected_position = 0;
+		$player_data = [];
+		while ($row = $stm->fetch()) {
+			assert($row['player_position'] == $expected_position);
+			$player_data[] = [
+					'is_bye' => (bool) $row['bye']
+			];
+			$expected_position++;
+		}
+		$most_recent_round['player_data'] = $player_data;
 		$game['active_round'] = $most_recent_round;
 	} else {
 		$game['active_round'] = NULL;
