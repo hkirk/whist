@@ -26,9 +26,9 @@ function _db_force_connect() {
 	$name = $s['name'];
 	$dsn = "mysql:host=$host;dbname=$name";
 	$attributes = [
-		PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
-		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-		PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+			PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
 	];
 	$_db = new PDO($dsn, $s['username'], $s['password'], $attributes);
 	return $_db;
@@ -68,15 +68,15 @@ function _db_quoted_values_list($array) {
 }
 
 
-function _db_assert_player_position($position) {
-	assert(is_int($position) && $position >= 0 && $position <= 3);
+function _db_assert_player_position($position, $n_players) {
+	assert(is_int($position) && $position >= 0 && $position < $n_players); // TODO fix constant
 }
 
 
-function _db_assert_player_positions($positions) {
+function _db_assert_player_positions($positions, $n_players) {
 	assert(is_array($positions));
 	foreach ($positions as $position) {
-		_db_assert_player_position($position);
+		_db_assert_player_position($position, $n_players);
 	}
 }
 
@@ -106,7 +106,7 @@ function _db_prepare_execute($sql, $params = []) {
 
 function _db_prepare_execute_rowCount($sql, $params = []) {
 	list($stm, $result) = _db_prepare_execute($sql, $params);
-	if($result) {
+	if ($result) {
 		$rows_affected = $stm->rowCount();
 	} else {
 		$rows_affected = NULL;

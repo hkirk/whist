@@ -44,7 +44,7 @@ function db_create_normal_round($game_id, $is_bye_players, $bid_tricks, $bid_att
 	} else {
 		assert(is_null($tips));
 	}
-	_db_assert_player_position($bid_winner_position);
+	_db_assert_player_position($bid_winner_position, count($is_bye_players));
 	_db_beginTransaction();
 	$game_round_id = db_create_round($game_id, $is_bye_players, 'normal');
 	$sql = <<<EOS
@@ -66,7 +66,7 @@ EOS;
 
 
 function db_create_solo_round($game_id, $is_bye_players, $solo_type, $bid_winner_positions) {
-	_db_assert_player_positions($bid_winner_positions);
+	_db_assert_player_positions($bid_winner_positions, count($is_bye_players));
 	assert(count($bid_winner_positions) > 0);
 	global $_db;
 	_db_beginTransaction();
