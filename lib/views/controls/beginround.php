@@ -26,7 +26,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<fieldset class="bye">
 			<legend>Bye(s)</legend>
 			<?php $name = "bye_positions"; ?>
-			<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier) ?>">
+			<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier) ?>" size="<?php echo $number_of_players ?>">
 				<?php
 				foreach ($players as $position => $player):
 					option($position, $player['nickname']);
@@ -37,7 +37,6 @@ global $TIPS_COUNT_MULTIPLIERS;
 		</fieldset>
 		<?php
 	}
-	// TODO hidden bye_positions?
 	?>
 
 	<fieldset class="bid">
@@ -109,7 +108,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<fieldset class="bid_winners">
 		<legend>Bid winner(s)</legend>
 		<?php $name = "bid_winner_positions"; ?>
-		<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier) ?>">
+		<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier) ?>" size="<?php echo $number_of_players ?>">
 			<?php
 			foreach ($players as $position => $player):
 				option($position, $player['nickname']);
