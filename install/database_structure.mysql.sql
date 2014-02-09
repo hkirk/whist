@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.31, for debian-linux-gnu (i686)
+-- MySQL dump 10.13  Distrib 5.5.33, for debian-linux-gnu (i686)
 --
 -- Host: localhost    Database: whist_calc
 -- ------------------------------------------------------
--- Server version	5.5.31-0+wheezy1-log
+-- Server version	5.5.33-0+wheezy1-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -45,7 +45,7 @@ DROP TABLE IF EXISTS `game_round_players`;
 CREATE TABLE `game_round_players` (
   `game_round_id` int(10) unsigned NOT NULL,
   `player_position` int(10) unsigned NOT NULL,
-  `bye` tinyint(1) NOT NULL,
+  `bye` tinyint(1) NOT NULL COMMENT 'Boolean (0/1)',
   `points` int(11) DEFAULT NULL,
   PRIMARY KEY (`game_round_id`,`player_position`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
@@ -67,8 +67,8 @@ CREATE TABLE `game_rounds` (
   `ended_at` datetime DEFAULT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `game_id` (`game_id`,`round`)
-) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+  UNIQUE KEY `game_id_round` (`game_id`,`round`)
+) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,4 +226,4 @@ CREATE TABLE `solo_game_rounds` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-30 23:53:09
+-- Dump completed on 2014-02-09 21:36:56
