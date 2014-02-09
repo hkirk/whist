@@ -146,7 +146,7 @@ foreach ($db_rounds as $r) {
 	}
 	$round = [
 			'index' => $r['round'],
-			'dealer_position' => ($r['round'] - 1) % 4, // The first round index is 1 and the first player most be the dealer of the first round
+			'dealer_position' => ($r['round'] - 1) % $n_players, // The first round index is 1 and the first player must be the dealer of the first round - TODO allow the user to choose the dealer
 			'player_data' => $player_data,
 			'bid' => $bid,
 			'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
