@@ -200,11 +200,14 @@ EOS;
 		];
 		$stm_round->execute($params);
 		// Update game total points
-		$params = [
-				$points,
-				$game_id,
-				$position
-		];
+		if ($points !== null) {
+			// Do not update points for bye players (SQL int + NULL = NULL ~ 0 total points)
+			$params = [
+					$points,
+					$game_id,
+					$position
+			];
+		}
 		$stm_game->execute($params);
 	}
 	// Rounds table row:
