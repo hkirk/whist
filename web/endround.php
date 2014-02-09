@@ -71,7 +71,13 @@ if ($active_round === NULL) {
 
 $bid_type = $active_round['bid_type'];
 $bid_data = $active_round['bid_data'];
+$player_data = $active_round['player_data'];
 if ($bid_type === 'normal') {
+	foreach ($player_data as $position => $data) {
+		if ($data['is_bye'] && $position === $bid_winner_mate_position) {
+			render_unexpected_input_page_and_exit("Bid winner position cannot be a bye player position!");
+		}
+	}
 	if ($bid_winner_mate_position === '') {
 		$input_error = $data['missing_bid_winner_mate_position'] = TRUE;
 	}
@@ -124,7 +130,6 @@ function init_player_points($player_data, $value) {
 }
 
 
-$player_data = $active_round['player_data'];
 $point_rules = $game_with_active_round['point_rules'];
 $round_id = $active_round['id'];
 if ($bid_type === 'normal') {
