@@ -131,8 +131,11 @@ EOS;
 	if ($n_rows == $n_players) {
 		error_log("Removing points from users...");
 		foreach ($rows as $row) {
-			$params_game_players = [$row['points'], $game_id, $row['player_position']];
-			_db_prepare_execute($sql_game_players, $params_game_players);
+			// Do not update points for bye players and unfinished rounds (SQL int - NULL = NULL ~ 0 total points)
+			if ($row['points'] !== null) {
+				$params_game_players = [$row['points'], $game_id, $row['player_position']];
+				_db_prepare_execute($sql_game_players, $params_game_players);
+			}
 		}
 	} else {
 		error_log("Unexpected number of players for game round $game_round_id ($n_rows, expected $n_players)");
