@@ -14,6 +14,7 @@ $data = [
 		'illegal_solo_bid_winner_count' => FALSE,
 		'illegal_normal_bid_winner_count' => FALSE,
 		'illegal_bye_count' => FALSE,
+		'multi_bye_position' => FALSE,
 		'joint_bid_winner_bye' => FALSE
 ];
 $input_error = FALSE;
@@ -59,16 +60,6 @@ foreach ($bid_winner_positions as $index => $bid_winner_position) {
 	$bid_winner_positions[$index] = (int) $bid_winner_position;
 }
 
-$used_bye_position = [];
-foreach ($bye_positions as $index => $bye_position) {
-	if (isset($used_bye_position[$bye_position])) {
-		render_unexpected_input_page_and_exit("Bye position occurs twice");
-	}
-	$used_bye_position[$bye_position] = TRUE;
-	// Convert position to an integer
-	$bye_positions[$index] = (int) $bye_position;
-}
-
 
 // Advanced input validation:
 
@@ -86,6 +77,16 @@ if ($game === NULL) {
 
 if ($game['active_round'] !== NULL) {
 	$input_error = $data['has_active_round'] = TRUE;
+}
+
+$used_bye_position = [];
+foreach ($bye_positions as $index => $bye_position) {
+	if (isset($used_bye_position[$bye_position])) {
+		$input_error = $data['multi_bye_position'] = TRUE;
+	}
+	$used_bye_position[$bye_position] = TRUE;
+	// Convert position to an integer
+	$bye_positions[$index] = (int) $bye_position;
 }
 
 $bid_winner_bye_intersection = array_intersect($bid_winner_positions, $bye_positions);

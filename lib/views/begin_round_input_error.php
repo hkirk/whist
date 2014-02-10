@@ -18,6 +18,7 @@ function error_add($condition, $message) {
 	error_add($illegal_solo_bid_winner_count, "Please choose 1-4 solo bid winners");
 	error_add($illegal_normal_bid_winner_count, "Please choose a normal bid winner");
 	error_add($illegal_bye_count, 'Invalid number of bye players!');
+	error_add($multi_bye_position, 'Bye player selected multiple times!');
 	error_add($joint_bid_winner_bye, 'Cannot have overlapping bid winner and bye player(s)!');
 	?>
 </ul>
