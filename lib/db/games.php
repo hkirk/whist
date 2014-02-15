@@ -340,6 +340,7 @@ function _db_build_game_rounds_from_traversable($traversable, $expected_round = 
 			$round_data = [
 					'id' => $row['id'],
 					'round' => $round,
+					'dealer_position' => (int) $row['dealer_position'],
 					'bid_type' => $bid_type,
 					'started_at' => $row['started_at'],
 					'ended_at' => $row['ended_at'],

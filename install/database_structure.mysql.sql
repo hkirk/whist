@@ -62,13 +62,14 @@ CREATE TABLE `game_rounds` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `game_id` int(10) unsigned NOT NULL,
   `round` int(10) unsigned NOT NULL,
+  `dealer_position` tinyint(3) unsigned NOT NULL,
   `bid_type` enum('normal','solo') COLLATE utf8_danish_ci NOT NULL,
   `started_at` datetime NOT NULL,
   `ended_at` datetime DEFAULT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `game_id_round` (`game_id`,`round`)
-) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=312 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +91,7 @@ CREATE TABLE `games` (
   PRIMARY KEY (`id`),
   KEY `started_at` (`started_at`),
   KEY `location_id` (`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,4 +227,4 @@ CREATE TABLE `solo_game_rounds` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-02-09 21:36:56
+-- Dump completed on 2014-02-15 22:28:02

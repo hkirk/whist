@@ -108,7 +108,7 @@ foreach ($db_rounds as $r) {
 	}
 	$round = [
 			'index' => $r['round'],
-			'dealer_position' => ($r['round'] - 1) % $n_players, // The first round index is 1 and the first player must be the dealer of the first round - TODO allow the user to choose the dealer
+			'dealer_position' => $r['dealer_position'],
 			'player_data' => $player_data,
 			'bid' => $bid,
 			'bid_winner_tricks_by_position' => $bid_winner_tricks_by_position,
@@ -143,23 +143,28 @@ if ($active_round === NULL) {
 	$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
 	$tips_count = in_array(POINT_RULE_TIPS, $point_rules);
 	$cancel_view_data = NULL;
+	// Calculate default (auto) player positions:
 	$auto_bye_player_positions = [];
 	if ($most_recent_round === NULL) {
 		for ($i = DEFAULT_PLAYERS; $i < $n_players; $i++) {
 			$auto_bye_player_positions[] = $i;
 		}
+		$auto_dealer_position = 0;
 	} else {
 		list($last_round_bye_player_positions, ) = get_bye_and_participating_player_positions($most_recent_round);
 		foreach ($last_round_bye_player_positions as $position) {
 			$auto_bye_player_positions[] = ($position + 1) % $n_players;
 		}
 		sort($auto_bye_player_positions); // First auto bye player is the one with the lowest position
+		error_log("dealer: $most_recent_round[dealer_position]");
+		$auto_dealer_position = ($most_recent_round['dealer_position'] + 1) % $n_players;
 	}
 	$controls_view_data = [
 			'is_tips_legal' => $is_tips_legal,
 			'tips_count' => $tips_count,
 			'legal_attachment_keys' => $legal_attachment_keys,
-			'auto_bye_player_positions' => $auto_bye_player_positions
+			'auto_bye_player_positions' => $auto_bye_player_positions,
+			'auto_dealer_position' => $auto_dealer_position
 	];
 } else {
 	$controls_view = 'endround';

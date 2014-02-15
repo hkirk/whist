@@ -4,12 +4,13 @@
  * 
  * $id_qualifier (string) (from parent view)
  * $game_id
- * $players (array)
- * $point_rules (array)
+ * $players (array<array>)
+ * $point_rules (array<string>)
  * $is_tips_legal (bool)
  * $tips_count (bool)
- * $legal_attachment_keys (array)
- * $auto_bye_player_positions (array)
+ * $legal_attachment_keys (array<string>)
+ * $auto_bye_player_positions (array<int>)
+ * $auto_dealer_position (int)
  * 
  */
 global $ATTACHMENTS;
@@ -54,20 +55,19 @@ global $TIPS_COUNT_MULTIPLIERS;
 						?>
 					</tr>
 				<?php endfor; ?>
-				<!--
-			<tr>
-				<th>Dealer:</th>
-				<?php
-				foreach ($players as $position => $player):
-					$name = 'dealer_position';
-					?>
+				<tr>
+					<th>Dealer:</th>
+					<?php
+					foreach ($players as $position => $player):
+						$name = 'dealer_position';
+						$checked = $auto_dealer_position === $position;
+						?>
 						<td><?php
-					radio_button($name, $position, $id_qualifier);
-					multi_element_label($name, $position, "Toggle", $id_qualifier);
-					?></td>
-				<?php endforeach; ?>
-			</tr>
-				-->
+							radio_button($name, $position, $id_qualifier, $checked);
+							multi_element_label($name, $position, "Toggle", $id_qualifier);
+							?></td>
+					<?php endforeach; ?>
+				</tr>
 				<tr>
 					<th>Bid winner(s):</th>
 					<?php

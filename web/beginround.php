@@ -7,6 +7,7 @@ check_request_method("POST");
 $data = [
 		'unknown_game' => FALSE,
 		'has_active_round' => FALSE,
+		'missing_dealer' => FALSE,
 		'missing_bid' => FALSE,
 		'solo_and_attachment' => FALSE,
 		'missing_attachment' => FALSE,
@@ -15,7 +16,8 @@ $data = [
 		'illegal_normal_bid_winner_count' => FALSE,
 		'illegal_bye_count' => FALSE,
 		'multi_bye_position' => FALSE,
-		'joint_bid_winner_bye' => FALSE
+		'joint_bid_winner_bye' => FALSE,
+		'joint_bye_dealer' => FALSE
 ];
 $input_error = FALSE;
 
@@ -39,11 +41,14 @@ $VALID_ATTACHMENT_VALUES = build_valid_attachment_input_values();
 /* Build valid player positions */
 $VALID_PLAYER_POSITIONS = build_valid_player_position_input_values($number_of_players);
 
+$max_player_position = $number_of_players - 1;
+
 $input_bid = check_get_select_enum($_POST, 'bid', $VALID_BID_VALUES, TRUE);
 $input_attachment = check_get_select_enum($_POST, 'attachment', $VALID_ATTACHMENT_VALUES, TRUE);
 $bid_winner_positions = check_get_multi_input_array($_POST, 'bid_winner_positions', $VALID_PLAYER_POSITIONS);
 $bye_positions = check_get_multi_input_array($_POST, 'bye_positions', $VALID_PLAYER_POSITIONS);
-check_input($input_bid, $input_attachment, $bid_winner_positions, $bye_positions);
+$dealer_position = check_get_uint($_POST, 'dealer_position', FALSE, MIN_PLAYER_POSITION, $max_player_position, '');
+check_input($input_bid, $input_attachment, $bid_winner_positions, $bye_positions, $dealer_position);
 
 $n_bid_winner_positions = count($bid_winner_positions);
 if ($n_bid_winner_positions > $number_of_players) {
@@ -79,6 +84,11 @@ if ($game['active_round'] !== NULL) {
 	$input_error = $data['has_active_round'] = TRUE;
 }
 
+$n_bye_players = count($bye_positions);
+if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
+	$input_error = $data['illegal_bye_count'] = TRUE;
+}
+
 $used_bye_position = [];
 foreach ($bye_positions as $index => $bye_position) {
 	if (isset($used_bye_position[$bye_position])) {
@@ -89,14 +99,17 @@ foreach ($bye_positions as $index => $bye_position) {
 	$bye_positions[$index] = (int) $bye_position;
 }
 
+if ($dealer_position === '') {
+	$input_error = $data['missing_dealer'] = TRUE;
+	beginround_render_page_and_exit($data);
+}
+
 $bid_winner_bye_intersection = array_intersect($bid_winner_positions, $bye_positions);
 if (!empty($bid_winner_bye_intersection)) {
 	$input_error = $data['joint_bid_winner_bye'] = TRUE;
 }
-
-$n_bye_players = count($bye_positions);
-if ($number_of_players - $n_bye_players != DEFAULT_PLAYERS) {
-	$input_error = $data['illegal_bye_count'] = TRUE;
+if (in_array($dealer_position, $bye_positions)) {
+	$input_error = $data['joint_bye_dealer'] = TRUE;
 }
 
 if ($input_bid === '') {
@@ -153,9 +166,9 @@ foreach ($bye_positions as $bye_position) {
 	$is_bye_players[$bye_position] = TRUE;
 }
 if ($solo_bid) {
-	$game_round_id = db_create_solo_round($game_id, $is_bye_players, $solo_game_key, $bid_winner_positions);
+	$game_round_id = db_create_solo_round($game_id, $is_bye_players, $dealer_position, $solo_game_key, $bid_winner_positions);
 } else {
-	$game_round_id = db_create_normal_round($game_id, $is_bye_players, $tricks, $attachment_key, $bid_winner_positions[0], $tips);
+	$game_round_id = db_create_normal_round($game_id, $is_bye_players, $dealer_position, $tricks, $attachment_key, $bid_winner_positions[0], $tips);
 }
 
 

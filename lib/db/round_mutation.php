@@ -1,12 +1,13 @@
 <?php
 
 
-function db_create_round($game_id, $is_bye_players, $bid_type) {
+function db_create_round($game_id, $is_bye_players, $dealer_position, $bid_type) {
 	assert(count($is_bye_players) >= DEFAULT_PLAYERS);
+	assert($dealer_position >= MIN_PLAYER_POSITION && $dealer_position < count($is_bye_players));
 	global $_db;
 	$sql = <<<EOS
 INSERT INTO game_rounds
-(game_id, round, bid_type, started_at, ended_at, updated_at)
+(game_id, round, dealer_position, bid_type, started_at, ended_at, updated_at)
 SELECT ?, (
 	SELECT IF(max IS NULL, 1, max+1)
 	FROM (
@@ -14,11 +15,12 @@ SELECT ?, (
 		FROM game_rounds
 		WHERE game_id = ?
 	) AS nested
-),?, NOW(), NULL, NOW()
+),?, ?, NOW(), NULL, NOW()
 EOS;
 	$params = [
 			$game_id,
 			$game_id,
+			$dealer_position,
 			$bid_type
 	];
 	_db_prepare_execute($sql, $params);
@@ -38,7 +40,7 @@ EOS;
 }
 
 
-function db_create_normal_round($game_id, $is_bye_players, $bid_tricks, $bid_attachment, $bid_winner_position, $tips = NULL) {
+function db_create_normal_round($game_id, $is_bye_players, $dealer_position, $bid_tricks, $bid_attachment, $bid_winner_position, $tips = NULL) {
 	if ($bid_attachment === 'tips') {
 		assert(is_int($tips) && $tips >= 1 && $tips <= 3);
 	} else {
@@ -46,7 +48,7 @@ function db_create_normal_round($game_id, $is_bye_players, $bid_tricks, $bid_att
 	}
 	_db_assert_player_position($bid_winner_position, count($is_bye_players));
 	_db_beginTransaction();
-	$game_round_id = db_create_round($game_id, $is_bye_players, 'normal');
+	$game_round_id = db_create_round($game_id, $is_bye_players, $dealer_position, 'normal');
 	$sql = <<<EOS
 INSERT INTO normal_game_rounds
 (game_round_id, bid_winner_position, bid_winner_mate_position, bid_tricks, bid_attachment, tricks, tips)
@@ -65,13 +67,13 @@ EOS;
 }
 
 
-function db_create_solo_round($game_id, $is_bye_players, $solo_type, $bid_winner_positions) {
+function db_create_solo_round($game_id, $is_bye_players, $dealer_position, $solo_type, $bid_winner_positions) {
 	_db_assert_player_positions($bid_winner_positions, count($is_bye_players));
 	assert(count($bid_winner_positions) > 0);
 	global $_db;
 	_db_beginTransaction();
 	// Round row:
-	$game_round_id = db_create_round($game_id, $is_bye_players, 'solo');
+	$game_round_id = db_create_round($game_id, $is_bye_players, $dealer_position, 'solo');
 	// Solo round row:
 	$sql = <<<EOS
 INSERT INTO solo_game_rounds	
