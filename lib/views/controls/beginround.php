@@ -9,6 +9,7 @@
  * $is_tips_legal (bool)
  * $tips_count (bool)
  * $legal_attachment_keys (array)
+ * $auto_bye_player_positions (array)
  * 
  */
 global $ATTACHMENTS;
@@ -43,9 +44,10 @@ global $TIPS_COUNT_MULTIPLIERS;
 						foreach ($players as $position => $player):
 							$name = "bye_positions[$i]";
 							$id = "$id_qualifier-$i"; // Required, as the tuple [$name, $position, $id_qualifier] occurs once for each bye player row
+							$checked = $auto_bye_player_positions[$i] === $position;
 							?>
 							<td><?php
-								radio_button($name, $position, $id);
+								radio_button($name, $position, $id, $checked);
 								multi_element_label($name, $position, "Toggle", $id);
 								?></td>
 						<?php endforeach;
@@ -59,7 +61,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 				foreach ($players as $position => $player):
 					$name = 'dealer_position';
 					?>
-					<td><?php
+						<td><?php
 					radio_button($name, $position, $id_qualifier);
 					multi_element_label($name, $position, "Toggle", $id_qualifier);
 					?></td>

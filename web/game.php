@@ -31,6 +31,20 @@ function game_render_error($key) {
 }
 
 
+function get_bye_and_participating_player_positions($round) {
+	$bye_player_positions = [];
+	$participating_player_positions = [];
+	foreach ($round['player_data'] as $position => $data) {
+		if ($data['is_bye']) {
+			$bye_player_positions[] = $position;
+		} else {
+			$participating_player_positions[] = $position;
+		}
+	}
+	return [$bye_player_positions, $participating_player_positions];
+}
+
+
 $db_game = db_get_game_with_players($id);
 if ($db_game === NULL) {
 	game_render_error('unknown_game');
@@ -114,10 +128,8 @@ $n_rounds = count($rounds);
 // Build begin or end round data, based on the most recent round
 //
 
-$active_round = NULL;
-if ($n_rounds > 0 && $rounds[$n_rounds - 1]['ended_at'] === NULL) {
-	$active_round = $rounds[$n_rounds - 1];
-}
+$most_recent_round = $n_rounds > 0 ? $rounds[$n_rounds - 1] : NULL;
+$active_round = $most_recent_round !== NULL && $most_recent_round['ended_at'] === NULL ? $most_recent_round : NULL;
 
 if ($active_round === NULL) {
 	$controls_view = 'beginround';
@@ -131,25 +143,30 @@ if ($active_round === NULL) {
 	$is_tips_legal = in_array(TIPS, $legal_attachment_keys);
 	$tips_count = in_array(POINT_RULE_TIPS, $point_rules);
 	$cancel_view_data = NULL;
+	$auto_bye_player_positions = [];
+	if ($most_recent_round === NULL) {
+		for ($i = DEFAULT_PLAYERS; $i < $n_players; $i++) {
+			$auto_bye_player_positions[] = $i;
+		}
+	} else {
+		list($last_round_bye_player_positions, ) = get_bye_and_participating_player_positions($most_recent_round);
+		foreach ($last_round_bye_player_positions as $position) {
+			$auto_bye_player_positions[] = ($position + 1) % $n_players;
+		}
+		sort($auto_bye_player_positions); // First auto bye player is the one with the lowest position
+	}
 	$controls_view_data = [
 			'is_tips_legal' => $is_tips_legal,
 			'tips_count' => $tips_count,
-			'legal_attachment_keys' => $legal_attachment_keys
+			'legal_attachment_keys' => $legal_attachment_keys,
+			'auto_bye_player_positions' => $auto_bye_player_positions
 	];
 } else {
 	$controls_view = 'endround';
 	$cancel_view = 'cancelactiveround';
 	$bid_type = $active_round['bid']['type'];
 	$bid_winner_positions = array_keys($active_round['bid_winner_tricks_by_position']);
-	$bye_player_positions = [];
-	$participating_player_positions = [];
-	foreach ($active_round['player_data'] as $position => $data) {
-		if ($data['is_bye']) {
-			$bye_player_positions[] = $position;
-		} else {
-			$participating_player_positions[] = $position;
-		}
-	}
+	list($bye_player_positions, $participating_player_positions) = get_bye_and_participating_player_positions($active_round);
 	$cancel_view_data = [
 			'game_id' => &$id
 	];
