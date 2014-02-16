@@ -73,8 +73,8 @@ $bid_type = $active_round['bid_type'];
 $bid_data = $active_round['bid_data'];
 $player_data = $active_round['player_data'];
 if ($bid_type === 'normal') {
-	foreach ($player_data as $position => $data) {
-		if ($data['is_bye'] && $position === $bid_winner_mate_position) {
+	foreach ($player_data as $position => $pd) {
+		if ($pd['is_bye'] && $position === $bid_winner_mate_position) {
 			render_unexpected_input_page_and_exit("Bid winner position cannot be a bye player position!");
 		}
 	}
@@ -123,8 +123,8 @@ if ($input_error) {
 
 function init_player_points($player_data, $value) {
 	$player_points = [];
-	foreach ($player_data as $data) {
-		$player_points[] = $data['is_bye'] ? null : $value;
+	foreach ($player_data as $pd) {
+		$player_points[] = $pd['is_bye'] ? null : $value;
 	}
 	return $player_points;
 }
@@ -157,8 +157,8 @@ if ($bid_type === 'normal') {
 	foreach ($bid_winner_tricks_by_position as $position => $tricks) {
 		//printf("Solo game: %s, tricks: %s", $solo_game['name'], $tricks);
 		$bidder_points = solo_game_points($point_rules, $solo_game, $tricks);
-		foreach ($player_data as $i => $data) {
-			if ($data['is_bye']) {
+		foreach ($player_data as $i => $pd) {
+			if ($pd['is_bye']) {
 				continue;
 			}
 			if ($i === $position) {

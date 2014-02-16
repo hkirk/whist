@@ -34,8 +34,8 @@ function game_render_error($key) {
 function get_bye_and_participating_player_positions($round) {
 	$bye_player_positions = [];
 	$participating_player_positions = [];
-	foreach ($round['player_data'] as $position => $data) {
-		if ($data['is_bye']) {
+	foreach ($round['player_data'] as $position => $pd) {
+		if ($pd['is_bye']) {
 			$bye_player_positions[] = $position;
 		} else {
 			$participating_player_positions[] = $position;
@@ -99,12 +99,12 @@ foreach ($db_rounds as $r) {
 	}
 	$bid['type'] = $bid_type;
 	$player_data = [];
-	foreach ($r['player_data'] as $position => $data) {
-		if ($data['points'] !== NULL) {
-			$acc_total_points[$position] += $data['points'];
+	foreach ($r['player_data'] as $position => $pd) {
+		if ($pd['points'] !== NULL) {
+			$acc_total_points[$position] += $pd['points'];
 		}
-		$data['acc_points'] = $acc_total_points[$position];
-		$player_data[] = $data;
+		$pd['acc_points'] = $acc_total_points[$position];
+		$player_data[] = $pd;
 	}
 	$round = [
 			'index' => $r['round'],
