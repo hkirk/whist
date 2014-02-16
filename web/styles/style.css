@@ -74,7 +74,10 @@ form.endround ol {
 	display: inline;
 }
 
-/*** Tables, general **/
+
+
+/*** Tables, general ***/
+
 table {
 	border-collapse: collapse;
 	border: 2px solid black;
@@ -101,7 +104,10 @@ table th {
 	font-weight: bold;
 }
 
+
+
 /*** Score board table ***/
+
 table.scoreboard, table.scoreboard tbody {
 	border: 3px solid black;
 }
@@ -198,8 +204,17 @@ table.scoreboard td.bidwinnermate {
 	font-style: italic;
 }
 
+
+
+/*** Roles table ***/
+
+/* Some space for the fat fingers on touch devices :) */
+table.roles td, table.roles th {
+	padding: 7px;
+}
+
 table.roles th:first-child {
-	border: 2px solid black;
+	border-right: 2px solid black;
 }
 
 table.roles th:nth-child(n+2) {
@@ -210,10 +225,21 @@ table.roles td:nth-child(n+2) {
 	text-align: center;
 }
 
+table.roles input {
+	vertical-align: text-bottom;
+}
+
 table.roles label {
-	font-size: 80%;
+	font-size: 85%;
 	font-weight: normal;
 }
+
+/* The bid winners row, which requires manual selection */
+table.roles tr.bidwinners {
+	border: 2px solid black;
+}
+
+
 
 div.point-rules label {
 	display: inline;

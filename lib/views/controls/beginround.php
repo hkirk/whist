@@ -68,7 +68,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 							?></td>
 					<?php endforeach; ?>
 				</tr>
-				<tr>
+				<tr class="bidwinners">
 					<th>Bid winner(s):</th>
 					<?php
 					foreach ($players as $position => $player):
