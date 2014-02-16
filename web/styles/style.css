@@ -170,10 +170,10 @@ table.scoreboard td:nth-child(n+6) {
 }
 
 table.scoreboard tbody tr:nth-child(odd) {
-	background-color: #fff;
+	background-color: #ffffff;
 }
 table.scoreboard tbody tr:nth-child(even) {
-	background-color: #eee;
+	background-color: #efefef;
 }
 
 table.scoreboard td.negative,
@@ -186,12 +186,17 @@ table.scoreboard th.positive {
 	color: green;
 }
 
-table.scoreboard td.dealer {
-	background-color: #f0f0c0;
+/* Dealer backgound must match the row background */
+table.scoreboard tr:nth-child(odd) td.dealer {
+	background-color: #ffffbf;
+}
+table.scoreboard tr:nth-child(even) td.dealer {
+	background-color: #efefaf;
 }
 
-table.scoreboard td.bye {
-	background-color: #808080;
+/* Not a number cells (bye and unfinished) */
+table.scoreboard td.nan {
+	text-align: center;
 }
 
 table.scoreboard td.bidwinner {

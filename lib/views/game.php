@@ -118,7 +118,9 @@ $render_controls('top');
 					$is_bid_winner_mate = $position === $bid_winner_mate_position;
 					$round_points_class = [];
 					$total_points_class = [];
-					if ($player_round_points !== NULL) {
+					if ($player_round_points === NULL) {
+						$round_points_class[] = "nan"; // Not a number
+					} else {
 						assert(!$is_bye);
 						if ($player_round_points < 0) {
 							$player_round_points = "" . $player_round_points;
@@ -132,7 +134,7 @@ $render_controls('top');
 					if ($is_bye) {
 						assert($player_round_points === null);
 						assert(!$is_dealer);
-						$player_round_points = "";
+						$player_round_points = "&ndash;";
 						$round_points_class[] = "bye";
 						$total_points_class[] = "bye";
 					}
