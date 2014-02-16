@@ -234,6 +234,10 @@ table.roles label {
 	font-weight: normal;
 }
 
+table.roles input:checked + label {
+	font-weight: bold;
+}
+
 /* The bid winners row, which requires manual selection */
 table.roles tr.bidwinners {
 	border: 2px solid black;
