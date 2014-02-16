@@ -36,6 +36,8 @@ EOS;
 		$params = [$id, $player_position, $is_bye_player];
 		$stm_players->execute($params);
 	}
+	// Update the game row:
+	_db_set_game_updated($game_id);
 	return $id;
 }
 
@@ -225,14 +227,8 @@ WHERE id = ?
 EOS;
 	$params = [$game_round_id];
 	_db_prepare_execute($sql, $params);
-	// Game table row:
-	$sql = <<<EOS
-UPDATE games
-SET updated_at = NOW()
-WHERE id = ?
-EOS;
-	$params = [$game_id];
-	_db_prepare_execute($sql, $params);
+	// Update the game row:
+	_db_set_game_updated($game_id);
 }
 
 
@@ -276,5 +272,17 @@ EOS;
 	}
 	db_end_round($game_id, $game_round_id, $player_points);
 	_db_commit();
+}
+
+
+function _db_set_game_updated($game_id) {
+	// Game table row:
+	$sql = <<<SQL
+UPDATE games
+SET updated_at = NOW()
+WHERE id = ?
+SQL;
+	$params = [$game_id];
+	_db_prepare_execute($sql, $params);
 }
 
