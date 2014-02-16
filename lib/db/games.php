@@ -8,7 +8,11 @@ g.id AS id,
 g.started_at AS started_at,
 g.ended_at AS ended_at,
 g.updated_at AS updated_at,
-l.name AS location
+l.name AS location, (
+	SELECT COUNT(*)
+	FROM game_players AS gp
+	WHERE gp.game_id = g.id
+) AS n_players					
 FROM games AS g
 LEFT OUTER JOIN locations l
 ON g.location_id = l.id
