@@ -74,7 +74,10 @@ form.endround ol {
 	display: inline;
 }
 
-/*** Tables, general **/
+
+
+/*** Tables, general ***/
+
 table {
 	border-collapse: collapse;
 	border: 2px solid black;
@@ -101,7 +104,10 @@ table th {
 	font-weight: bold;
 }
 
+
+
 /*** Score board table ***/
+
 table.scoreboard, table.scoreboard tbody {
 	border: 3px solid black;
 }
@@ -114,20 +120,28 @@ table.scoreboard th {
 
 /* The round index column */
 table.scoreboard td:first-child, 
-table.scoreboard tr:first-child th:first-child {
+table.scoreboard tr.full-row th:first-child {
 	border-right: 3px solid black;
 }
 
-/* Player header cells and the leftmost column for each player */
-table.scoreboard td:nth-last-child(-2n+8),
-table.scoreboard th:nth-last-child(-n+4) {
+/* The first (leftmost) player column */
+table.scoreboard td:nth-child(6),
+table.scoreboard tr.full-row th:nth-child(6),
+table.scoreboard tr.aggregate-row th:nth-child(4) {
+	border-left: 3px solid black;
+}
+
+/* Player header cells and the leftmost body column for each player, except the first (leftmost) player */
+table.scoreboard td:nth-child(2n+8),
+table.scoreboard tr.full-row th:nth-child(n+7),
+table.scoreboard tr.aggregate-row th:nth-child(n+5) {
 	border-left: 2px solid black;
 }
 
-/* The leftmost player column */
-table.scoreboard td:nth-last-child(8),
-table.scoreboard th:nth-last-child(4) {
-	border-left: 3px solid black;
+/* Round index column */
+table.scoreboard td:first-child,
+table.scoreboard tr.full-row th:first-child {
+	text-align: center;
 }
 
 /* The tricks and tricks delta columns */
@@ -141,31 +155,25 @@ table.scoreboard tr.aggregate-row th:nth-child(3) {
 }
 
 /* Player names */
-table.scoreboard tr.full-row th:nth-last-child(-n+4) {
+table.scoreboard tr.full-row th:nth-child(n+6) {
 	text-align: center;
 }
 
 /* Player sums and bid winner (mate) count */
-table.scoreboard tr.aggregate-row th:nth-last-child(-n+4) {
-	text-align: center;
-}
-
-/* Round index column */
-table.scoreboard td:first-child,
-table.scoreboard tr.full-row th:first-child {
+table.scoreboard tr.aggregate-row th:nth-child(n+4) {
 	text-align: center;
 }
 
 /* Player points */
-table.scoreboard td:nth-last-child(-n+8) {
+table.scoreboard td:nth-child(n+6) {
 	text-align: right;
 }
 
 table.scoreboard tbody tr:nth-child(odd) {
-	background-color: #fff;
+	background-color: #ffffff;
 }
 table.scoreboard tbody tr:nth-child(even) {
-	background-color: #eee;
+	background-color: #efefef;
 }
 
 table.scoreboard td.negative,
@@ -178,8 +186,17 @@ table.scoreboard th.positive {
 	color: green;
 }
 
-table.scoreboard td.dealer {
-	background-color: #ffffc0;
+/* Dealer backgound must match the row background */
+table.scoreboard tr:nth-child(odd) td.dealer {
+	background-color: #ffffbf;
+}
+table.scoreboard tr:nth-child(even) td.dealer {
+	background-color: #efefaf;
+}
+
+/* Not a number cells (bye and unfinished) */
+table.scoreboard td.nan {
+	text-align: center;
 }
 
 table.scoreboard td.bidwinner {
@@ -191,6 +208,47 @@ table.scoreboard td.bidwinnermate {
 	text-decoration: none;
 	font-style: italic;
 }
+
+
+
+/*** Roles table ***/
+
+/* Some space for the fat fingers on touch devices :) */
+table.roles td, table.roles th {
+	padding: 7px;
+}
+
+table.roles th:first-child {
+	border-right: 2px solid black;
+}
+
+table.roles th:nth-child(n+2) {
+	text-align: center;
+}
+
+table.roles td:nth-child(n+2) {
+	text-align: center;
+}
+
+table.roles input {
+	vertical-align: text-bottom;
+}
+
+table.roles label {
+	font-size: 85%;
+	font-weight: normal;
+}
+
+table.roles input:checked + label {
+	font-weight: bold;
+}
+
+/* The bid winners row, which requires manual selection */
+table.roles tr.bidwinners {
+	border: 2px solid black;
+}
+
+
 
 div.point-rules label {
 	display: inline;

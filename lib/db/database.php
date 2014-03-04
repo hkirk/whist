@@ -25,11 +25,11 @@ function _db_force_connect() {
 	$host = $s['host'];
 	$name = $s['name'];
 	$dsn = "mysql:host=$host;dbname=$name";
-	$attributes = array(
-		PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
-		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-		PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-	);
+	$attributes = [
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+			PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+	];
 	$_db = new PDO($dsn, $s['username'], $s['password'], $attributes);
 	return $_db;
 }
@@ -42,7 +42,7 @@ function _db_set_string_from_array($array) {
 
 function _db_set_array_from_string($string) {
 	if ($string === '') {
-		return array();
+		return [];
 	}
 	return explode(",", $string);
 }
@@ -60,7 +60,7 @@ function _db_placeholders_list($array) {
 
 function _db_quoted_values_list($array) {
 	global $_db;
-	$quoted_array = array();
+	$quoted_array = [];
 	foreach ($array as $value) {
 		$quoted_array[] = $_db->quote($value);
 	}
@@ -68,15 +68,15 @@ function _db_quoted_values_list($array) {
 }
 
 
-function _db_assert_player_position($position) {
-	assert(is_int($position) && $position >= 0 && $position <= 3);
+function _db_assert_player_position($position, $n_players) {
+	assert(is_int($position) && $position >= 0 && $position < $n_players); // TODO fix constant
 }
 
 
-function _db_assert_player_positions($positions) {
+function _db_assert_player_positions($positions, $n_players) {
 	assert(is_array($positions));
 	foreach ($positions as $position) {
-		_db_assert_player_position($position);
+		_db_assert_player_position($position, $n_players);
 	}
 }
 
@@ -95,44 +95,44 @@ function _db_commit() {
 }
 
 
-function _db_prepare_execute($sql, $params = array()) {
+function _db_prepare_execute($sql, $params = []) {
 	global $_db;
 	_db_connect();
 	$stm = $_db->prepare($sql);
 	$result = $stm->execute($params);
-	return array($stm, $result);
+	return [$stm, $result];
 }
 
 
-function _db_prepare_execute_rowCount($sql, $params = array()) {
+function _db_prepare_execute_rowCount($sql, $params = []) {
 	list($stm, $result) = _db_prepare_execute($sql, $params);
-	if($result) {
+	if ($result) {
 		$rows_affected = $stm->rowCount();
 	} else {
 		$rows_affected = NULL;
 	}
-	return array($stm, $result, $rows_affected);
+	return [$stm, $result, $rows_affected];
 }
 
 
-function _db_prepare_execute_fetch($sql, $params = array()) {
+function _db_prepare_execute_fetch($sql, $params = []) {
 	list($stm, $result) = _db_prepare_execute($sql, $params);
 	if ($result) {
 		$row = $stm->fetch();
 	} else {
 		$row = NULL;
 	}
-	return array($stm, $result, $row);
+	return [$stm, $result, $row];
 }
 
 
-function _db_prepare_execute_fetchAll($sql, $params = array()) {
+function _db_prepare_execute_fetchAll($sql, $params = []) {
 	list($stm, $result) = _db_prepare_execute($sql, $params);
 	if ($result) {
 		$rows = $stm->fetchAll();
 	} else {
 		$rows = NULL;
 	}
-	return array($stm, $result, $rows);
+	return [$stm, $result, $rows];
 }
 

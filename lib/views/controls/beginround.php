@@ -4,11 +4,13 @@
  * 
  * $id_qualifier (string) (from parent view)
  * $game_id
- * $players (array)
- * $point_rules (array)
+ * $players (array<array>)
+ * $point_rules (array<string>)
  * $is_tips_legal (bool)
  * $tips_count (bool)
- * $legal_attachment_keys (array)
+ * $legal_attachment_keys (array<string>)
+ * $auto_bye_player_positions (array<int>)
+ * $auto_dealer_position (int)
  * 
  */
 global $ATTACHMENTS;
@@ -19,6 +21,70 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<h2>Begin round</h2>
 
 	<input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
+
+	<fieldset class="roles">
+		<legend>Player roles</legend>
+		<table class="roles">
+			<thead>
+				<tr>
+					<th>Role</th>
+					<?php foreach ($players as $position => $player): ?>
+						<th><?php echo $player['nickname'] ?></th>
+					<?php endforeach; ?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$n_bye_players = $number_of_players - DEFAULT_PLAYERS;
+				for ($i = 0; $i < $n_bye_players; $i++):
+					$bye_number = $n_bye_players > 1 ? " " . ($i + 1) : "";
+					?>
+					<tr>
+						<th>Bye<?php echo $bye_number ?>:</th>
+						<?php
+						foreach ($players as $position => $player):
+							$name = "bye_positions[$i]";
+							$id = "$id_qualifier-$i"; // Required, as the tuple [$name, $position, $id_qualifier] occurs once for each bye player row
+							$checked = $auto_bye_player_positions[$i] === $position;
+							?>
+							<td><?php
+								radio_button($name, $position, $id, $checked);
+								multi_element_label($name, $position, "Toggle", $id);
+								?></td>
+						<?php endforeach;
+						?>
+					</tr>
+				<?php endfor; ?>
+				<tr>
+					<th>Dealer:</th>
+					<?php
+					foreach ($players as $position => $player):
+						$name = 'dealer_position';
+						$checked = $auto_dealer_position === $position;
+						?>
+						<td><?php
+							radio_button($name, $position, $id_qualifier, $checked);
+							multi_element_label($name, $position, "Toggle", $id_qualifier);
+							?></td>
+					<?php endforeach; ?>
+				</tr>
+				<tr class="bidwinners">
+					<th>Bid winner(s):</th>
+					<?php
+					foreach ($players as $position => $player):
+						$name = 'bid_winner_positions';
+						?>
+						<td><?php
+							multi_checkbox($name, $position, $id_qualifier);
+							multi_element_label($name, $position, "Toggle", $id_qualifier);
+							?></td>
+					<?php endforeach; ?>					
+				</tr>
+			</tbody>
+		</table>
+		<div class="description">One bid winner for normal games. One or more bid winners for solo games.</div>
+	</fieldset>
+
 	<fieldset class="bid">
 		<legend>Game bid</legend>
 		<?php label('bid', 'Base bid:', $id_qualifier); ?>
@@ -85,40 +151,8 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<div class="description">A normal non-solo game requires an attachment. If the attachment is "Tips", then also choose the number of tips, please.</div>
 	</fieldset>
 
-	<fieldset class="bid_winners">
-		<legend>Bid winner(s)</legend>
-		<?php $name = "bid_winner_positions"; ?>
-		<select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier)?>">
-			<?php 
-			foreach ($players as $position => $player): 
-				option($position, $player['nickname']);
-			endforeach; 
-			?>
-		</select>
-		<div class="description">One player for normal games. One or more players for solo games</div>
+	<fieldset class="buttons">
+		<legend>Actions</legend>
+		<button type="submit">Begin round</button>
 	</fieldset>
-
-    <?php
-
-    if ($number_of_players > DEFAULT_PLAYERS) {
-    ?>
-        <fieldset class="bye">
-            <legend>Bye(s)</legend>
-            <?php $name = "bye_positions"; ?>
-            <select multiple name="<?php echo $name ?>[]" id="<?php echo name_id($name, $id_qualifier)?>">
-                <?php
-                foreach ($players as $position => $player):
-                    option($position, $player['nickname']);
-                endforeach;
-                ?>
-            </select>
-            <div class="description">Choose players not in this round</div>
-        </fieldset>
-    <?php
-
-    }
-
-    ?>
-
-	<button type="submit">Begin round</button>
 </form>

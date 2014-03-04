@@ -1,5 +1,8 @@
 <div class="alert alert-error">
 	<button type="button" class="close" data-dismiss="alert">&times;</button>
+	<?php if ($invalid_player_count): ?>
+		Invalid player count!
+	<? endif; ?>
 	<?php if ($missing_location): ?>
 		Missing location!
 	<? endif; ?>

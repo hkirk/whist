@@ -6,7 +6,7 @@ switch (request_method()) {
     case "POST":
         $name = check_get_string($_REQUEST, "name");
         check_input();
-        $data = array ("name" => $name);
+        $data =  ["name" => $name];
         if ($name == NULL || $name == "") {
             $input_error = true;
             $data["location_error"] = "name";
@@ -23,7 +23,7 @@ switch (request_method()) {
         break;
 
     case "GET":
-        $data = array();
+        $data = [];
         render_page("Create location", "Create location", "createlocation", $data);
     break;
 }
