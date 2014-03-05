@@ -6,7 +6,7 @@ switch (request_method()) {
         $name = check_get_string($_REQUEST, "name");
         $nickname = check_get_string($_REQUEST, "nickname");
         check_input();
-        $data = array ("name" => $name, "nickname" => $nickname);
+        $data =  ["name" => $name, "nickname" => $nickname];
         if ($name == NULL || $name == "") {
             $input_error = true;
             $data["name_error"] = "name";
@@ -27,7 +27,7 @@ switch (request_method()) {
 
         break;
     case "GET":
-        $data = array();
+        $data = [];
         render_page("Create player", "Create player", "createplayer", $data);
         break;
 

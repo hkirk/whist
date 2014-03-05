@@ -10,13 +10,13 @@ FROM players
 ORDER BY nickname
 EOS;
 	$stm = $_db->query($query);
-	$players = array();
+	$players = [];
 	foreach ($stm as $row) {
-		$players[] = array(
+		$players[] = [
 			'id' => $row['id'],
 			'nickname' => $row['nickname'],
 			'fullname' => $row['fullname']
-		);
+		];
 	}
 	return $players;
 }
@@ -41,4 +41,16 @@ EOS;
 	return (int) $count === count($player_ids);
 }
 
+function db_get_number_of_players($game_id) {
+    _db_connect();
+
+    $sql = <<<EOS
+SELECT count(*) as count
+FROM game_players WHERE game_id = ?
+EOS;
+
+    list(,,$row)  = _db_prepare_execute_fetch($sql, [$game_id]);
+    return $row['count'];
+
+}
 

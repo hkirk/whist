@@ -4,10 +4,12 @@
  * 
  * $id_qualifier (string) (from parent view)
  * $game_id
- * $players (array)
+ * $players (array<array>)
  * $point_rules (array)
  * $bid_type (string)
- * $bid_winner_positions (array)
+ * $bid_winner_positions (array<int>)
+ * $bye_player_positions (array<int>)
+ * $participating_player_positions (array<int>)
  * 
  */
 ?>
@@ -42,7 +44,8 @@
 					<select name="<?php echo $name ?>" id="<?php echo name_id($name, $id_qualifier) ?>">
 						<?php
 						option('', 'Choose a mate');
-						foreach ($players as $position => $player) {
+						foreach ($participating_player_positions as $position) {
+							$player = $players[$position];
 							$label = $player['nickname'];
 							if ($position === $bid_winner_positions[0]) {
 								$label .= ' (Self mate)';
@@ -53,15 +56,20 @@
 					</select>
 				</div>
 			<?php else: ?>
-				<input type="hidden" name="bid_winner_mate_position" value="" />
+				<input type="hidden" name="bid_winner_mate_position" value="" /> <!-- FIXME claus why -->
 			<?php endif; ?>
 		</fieldset>
 	<?php endforeach; ?>
-	<div>
-		<button type="submit">End round</button>
+	<div>Bye players:
+		<?php
+		$bye_nicknames = [];
+		foreach ($bye_player_positions as $position) {
+			$bye_nicknames[] = $players[$position]['nickname'];
+		}
+		echo join(", ", $bye_nicknames);
+		?>
 	</div>
 	<div>
-		<label>Point rules:</label>
-		<?php echo implode(',', $point_rules) ?>
+		<button type="submit">End round</button>
 	</div>
 </form>
