@@ -263,4 +263,3 @@ $series_json = join(",\n", $series_json_entries);
 </div>
 <?php
 $render_controls('bottom');
-?>
