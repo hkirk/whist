@@ -209,6 +209,18 @@ $player_round_acc_points = array_fill(0, $number_of_players, []);
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
 <div id="container" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+<?php
+// json_encode() does not work when the outermost array is numeric (a JSON array). Therefore we must join the individual objects
+$series_json_entries = [];
+foreach ($player_round_acc_points as $player_position => $acc_points) {
+	$series_json_entries[] = json_encode([
+			'name' => $players[$player_position]['nickname'],
+			'data' => $acc_points
+	]);
+}
+// TODO HTML encode does not work...
+$series_json = join(",\n", $series_json_entries);
+?>
 
 <script type="text/javascript">
 	$(function() {
@@ -239,12 +251,7 @@ $player_round_acc_points = array_fill(0, $number_of_players, []);
 				borderWidth: 0
 			},
 			series: [
-				<?php foreach ($player_round_acc_points as $player_position => $acc_points): ?>
-					{
-						name: '<?php echo htmlspecialchars($players[$player_position]['nickname']); ?>',
-						data: [<?php echo implode(",", $acc_points); ?>]
-					},
-				<?php endforeach ?>
+				<?php echo $series_json ?>
 			]
 		});
 	});
