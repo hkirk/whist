@@ -30,7 +30,8 @@ if ($cancel_view !== NULL) {
 	render_view('controls/' . $cancel_view, $cancel_view_data);
 }
 $render_controls('top');
-$nicknames = array();
+
+$player_round_acc_points = array_fill(0, $number_of_players, []);
 ?>
 <h2>Score board</h2>
 <table class="table table-striped .table-responsive scoreboard">
@@ -42,11 +43,7 @@ $nicknames = array();
 			<th>Tricks</th>
 			<th>&Delta;</th>
 			<?php foreach ($players as $player): ?>
-				<th colspan="2"><?php echo htmlspecialchars($player['nickname']);
-				                      $nicknames[] = array("nickname" => htmlspecialchars($player['nickname']),
-				                                           "points" => array()
-				                                           );
-				                ?></th>
+				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
 			<?php endforeach ?>
 		</tr>
 	</thead>
@@ -149,12 +146,10 @@ $nicknames = array();
 					}
 					$is_bid_winner && $round_points_class[] = "bidwinner";
 					$is_bid_winner_mate && $round_points_class[] = "bidwinnermate";
+					$player_round_acc_points[$position][] = $player_acc_points;
 					?>
 					<td class="<?php echo implode(" ", $round_points_class) ?>"><?php echo rewrite_null($player_round_points) ?></td>
 					<td class="<?php echo implode(" ", $total_points_class) ?>"><?php echo rewrite_null($player_acc_points) ?></td>
-					<?php
-					  $nicknames[$position]["points"][] = $player_acc_points;
-					?>
 				<?php endforeach ?>
 			</tr>
 		<?php endforeach ?>
@@ -216,43 +211,43 @@ $nicknames = array();
 <div id="container" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
 
 <script type="text/javascript">
-$(function () {
-        $('#container').highcharts({
-            title: {
-                text: 'Points progression',
-                x: -20 //center
-            },
-            xAxis: {
-              title: {
-                    text: 'Round #'
-              }
-            },
-            yAxis: {
-                title: {
-                    text: 'Points'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
-                borderWidth: 0
-            },
-            series: [
-            <?php foreach ($nicknames as $nickname): ?>
-              {
-                name: '<?php echo htmlspecialchars($nickname['nickname']); ?>',
-                data: [ <?php echo implode(",", $nickname["points"]); ?> ]
-              },
-            <?php endforeach ?>
-            ]
-        });
-    });
+	$(function() {
+		$('#container').highcharts({
+			title: {
+				text: 'Points progression',
+				x: -20 //center
+			},
+			xAxis: {
+				title: {
+					text: 'Round #'
+				}
+			},
+			yAxis: {
+				title: {
+					text: 'Points'
+				},
+				plotLines: [{
+						value: 0,
+						width: 1,
+						color: '#808080'
+					}]
+			},
+			legend: {
+				layout: 'vertical',
+				align: 'right',
+				verticalAlign: 'middle',
+				borderWidth: 0
+			},
+			series: [
+				<?php foreach ($player_round_acc_points as $player_position => $acc_points): ?>
+					{
+						name: '<?php echo htmlspecialchars($players[$player_position]['nickname']); ?>',
+						data: [<?php echo implode(",", $acc_points); ?>]
+					},
+				<?php endforeach ?>
+			]
+		});
+	});
 </script>
 
 <div class="point-rules">
