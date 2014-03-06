@@ -88,7 +88,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<fieldset class="bid">
 		<legend>Game bid</legend>
 		<?php label('bid', 'Base bid:', $id_qualifier); ?>
-		<select name="bid" id="<?php echo name_id('bid', $id_qualifier) ?>">
+		<select class="form-control" name="bid" id="<?php echo name_id('bid', $id_qualifier) ?>">
 			<?php
 			option('', "Choose a base bid");
 			$beats = FIRST_SOLO_GAME_BEATS;
@@ -114,7 +114,7 @@ global $TIPS_COUNT_MULTIPLIERS;
 	<fieldset class="attachment">
 		<legend>Attachment</legend>
 		<?php label('attachment', 'Attachment:', $id_qualifier); ?>
-		<select name="attachment" id="<?php echo name_id('attachment', $id_qualifier) ?>">
+		<select class="form-control" name="attachment" id="<?php echo name_id('attachment', $id_qualifier) ?>">
 			<?php
 			// The "null" attachment for solo games:
 			$attachment_key = '';
@@ -153,6 +153,6 @@ global $TIPS_COUNT_MULTIPLIERS;
 
 	<fieldset class="buttons">
 		<legend>Actions</legend>
-		<button type="submit">Begin round</button>
+		<button class="btn btn-primary" type="submit">Begin round</button>
 	</fieldset>
 </form>
