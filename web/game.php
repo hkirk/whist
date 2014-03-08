@@ -78,6 +78,21 @@ try {
 $acc_total_points = array_fill(0, $n_players, 0);
 $rounds = [];
 
+// Init player stats:
+$player_stats = [];
+for ($position = 0; $position < $n_players; $position++) {
+	$player_stats[] = [
+			'position' => $position,
+			'total_points' => $total_points[$position],
+			'bid_winner_rounds' => 0,
+			'bid_winner_mate_rounds' => 0,
+			'opponent_rounds' => 0,
+			'bye_rounds' => 0,
+			'won_rounds' => 0,
+			'lost_rounds' => 0
+	];
+}
+
 foreach ($db_rounds as $r) {
 	$bid_type = $r['bid_type'];
 	$data = $r['bid_data'];
@@ -118,7 +133,45 @@ foreach ($db_rounds as $r) {
 			'updated_at' => $r['updated_at']
 	];
 	$rounds[] = $round;
+
+	// Do not include active rounds in the stats:
+	if ($r['ended_at'] === NULL) {
+		continue;
+	}
+	// Update player stats:
+	$is_opponent_by_position = array_fill(0, $n_players, true);
+	foreach (array_keys($bid_winner_tricks_by_position) as $position) {
+		$player_stats[$position]['bid_winner_rounds'] ++;
+		$is_opponent_by_position[$position] = false;
+	}
+	if ($bid_winner_mate_position !== NULL) {
+		$player_stats[$bid_winner_mate_position]['bid_winner_mate_rounds'] ++;
+		$is_opponent_by_position[$bid_winner_mate_position] = false;
+	}
+	foreach ($r['player_data'] as $position => $pd) {
+		if ($pd['is_bye']) {
+			$player_stats[$position]['bye_rounds'] ++;
+			$is_opponent_by_position[$position] = false;
+		}
+		if ($is_opponent_by_position[$position]) {
+			$player_stats[$position]['opponent_rounds'] ++;
+		}
+		if ($pd['points'] === NULL) {
+			continue;
+		}
+		// TODO this algorithm does not always work for multi bid winner solo rounds!
+		if ($pd['points'] > 0) {
+			$player_stats[$position]['won_rounds'] ++;
+		} else if ($pd['points'] < 0) {
+			$player_stats[$position]['lost_rounds'] ++;
+		}
+	}
 }
+
+// Order player stats by points, descending
+usort($player_stats, function($a, $b) {
+	return $b['total_points'] - $a['total_points'];
+});
 
 $n_rounds = count($rounds);
 
@@ -215,6 +268,7 @@ $data = [
 		'game_id' => &$id,
 		'location' => &$location,
 		'players' => &$players,
+		'player_stats' => &$player_stats,
 		'rounds' => &$rounds,
 		'total_points' => &$total_points,
 		'point_rules' => &$point_rules,

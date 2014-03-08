@@ -32,7 +32,52 @@ if ($cancel_view !== NULL) {
 $render_controls('top');
 
 $player_round_acc_points = array_fill(0, $number_of_players, []);
+$n_rounds = count($rounds);
+$rounds_percent = function ($number) use($n_rounds) {
+	if ($n_rounds === 0) {
+		return "0";
+	}
+	return sprintf("%.1f", ($number / $n_rounds) * 100.0);
+}
 ?>
+<h2>Player Stats</h2>
+<table>
+	<thead>
+		<tr>
+			<th>Rank</th>
+			<th>Player</th>
+			<th>Points</th>
+			<th colspan="2">Bid winner</th>
+			<th colspan="2">B.w. mate</th>
+			<th colspan="2">Opponent</th>
+			<th colspan="2">Bye</th>
+			<th colspan="2">Won</th>
+			<th colspan="2">Lost</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php foreach ($player_stats as $rank => $player_stat): ?>
+			<tr>
+				<td><?php echo $rank + 1 ?></td>
+				<td><?php echo $players[$player_stat['position']]['nickname'] ?></td>
+				<td><?php echo $player_stat['total_points'] ?></td>
+				<td><?php echo $player_stat['bid_winner_rounds'] ?></td>
+				<td><?php echo $rounds_percent($player_stat['bid_winner_rounds']) ?>%</td>
+				<td><?php echo $player_stat['bid_winner_mate_rounds'] ?></td>
+				<td><?php echo $rounds_percent($player_stat['bid_winner_mate_rounds']) ?>%</td>
+				<td><?php echo $player_stat['opponent_rounds'] ?></td>
+				<td><?php echo $rounds_percent($player_stat['opponent_rounds']) ?>%</td>
+				<td><?php echo $player_stat['bye_rounds'] ?></td>
+				<td><?php echo $rounds_percent($player_stat['bye_rounds']) ?>%</td>
+				<td><?php echo $player_stat['won_rounds'] ?></td>
+				<td><?php echo $rounds_percent($player_stat['won_rounds']) ?>%</td>
+				<td><?php echo $player_stat['lost_rounds'] ?></td>
+				<td><?php echo $rounds_percent($player_stat['lost_rounds']) ?>%</td>			
+			</tr>
+		<?php endforeach; ?>
+	</tbody>
+</table>
+
 <h2>Score board</h2>
 <table class="table table-striped .table-responsive scoreboard">
 	<thead>
@@ -251,7 +296,7 @@ $series_json = join(",\n", $series_json_entries);
 				borderWidth: 0
 			},
 			series: [
-				<?php echo $series_json ?>
+<?php echo $series_json ?>
 			]
 		});
 	});
