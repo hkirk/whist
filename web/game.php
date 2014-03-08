@@ -77,6 +77,7 @@ try {
 
 $acc_total_points = array_fill(0, $n_players, 0);
 $rounds = [];
+$n_finished_rounds = 0;
 
 // Init player stats:
 $player_stats = [];
@@ -88,6 +89,7 @@ for ($position = 0; $position < $n_players; $position++) {
 			'bid_winner_mate_rounds' => 0,
 			'opponent_rounds' => 0,
 			'bye_rounds' => 0,
+			'participating_rounds' => 0,
 			'won_rounds' => 0,
 			'lost_rounds' => 0
 	];
@@ -138,6 +140,7 @@ foreach ($db_rounds as $r) {
 	if ($r['ended_at'] === NULL) {
 		continue;
 	}
+	$n_finished_rounds++;
 	// Update player stats:
 	$is_opponent_by_position = array_fill(0, $n_players, true);
 	foreach (array_keys($bid_winner_tricks_by_position) as $position) {
@@ -152,6 +155,8 @@ foreach ($db_rounds as $r) {
 		if ($pd['is_bye']) {
 			$player_stats[$position]['bye_rounds'] ++;
 			$is_opponent_by_position[$position] = false;
+		} else {
+			$player_stats[$position]['participating_rounds'] ++;
 		}
 		if ($is_opponent_by_position[$position]) {
 			$player_stats[$position]['opponent_rounds'] ++;
@@ -269,6 +274,7 @@ $data = [
 		'location' => &$location,
 		'players' => &$players,
 		'player_stats' => &$player_stats,
+		'n_finished_rounds' => &$n_finished_rounds,
 		'rounds' => &$rounds,
 		'total_points' => &$total_points,
 		'point_rules' => &$point_rules,
