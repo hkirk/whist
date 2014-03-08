@@ -104,6 +104,68 @@ table th {
 	font-weight: bold;
 }
 
+table td.negative,
+table th.negative {
+	color: red;
+}
+
+table td.positive,
+table th.positive {
+	color: green;
+}
+
+
+
+
+/*** Player stats table ***/
+table.player-stats, table.player-stats tbody {
+	border: 3px solid black;
+}
+
+table.player-stats-normal tr,
+table.player-stats-bye tr:nth-child(odd) {
+	border-top: 2px solid black;
+}
+
+/* Vertical borders: */
+table.player-stats tr th,
+table.player-stats-normal tr td:nth-child(-n+3),
+table.player-stats-normal tr td:nth-child(2n+5),
+table.player-stats-bye tr:nth-child(odd) td:nth-child(-n+3),
+table.player-stats-bye tr:nth-child(odd) td:nth-child(2n+5),
+table.player-stats-bye tr:nth-child(even) td:nth-child(2n) {
+	border-right: 2px solid black;
+}
+
+/* Header cells: */
+table.player-stats th {
+	text-align: center;
+}
+
+/* Default: align numbers to the right */
+table.player-stats {
+	text-align: right;
+}
+
+/* Rank column: */
+table.player-stats-normal tr td:first-child,
+table.player-stats-bye tr:nth-child(odd) td:first-child {
+	text-align: center;
+}
+
+/* Player name column: */
+table.player-stats-normal tr td:nth-child(2),
+table.player-stats-bye tr:nth-child(odd) td:nth-child(2) {
+	text-align: left;
+}
+
+/* First 3 columns: */
+table.player-stats-normal tr td:nth-child(-n+3),
+table.player-stats-bye tr:nth-child(odd) td:nth-child(-n+3) {
+	font-weight: bold;
+}
+
+
 
 
 /*** Score board table ***/
@@ -174,16 +236,6 @@ table.scoreboard tbody tr:nth-child(odd) {
 }
 table.scoreboard tbody tr:nth-child(even) {
 	background-color: #efefef;
-}
-
-table.scoreboard td.negative,
-table.scoreboard th.negative {
-	color: red;
-}
-
-table.scoreboard td.positive,
-table.scoreboard th.positive {
-	color: green;
 }
 
 /* Dealer backgound must match the row background */

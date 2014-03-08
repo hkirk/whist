@@ -17,6 +17,17 @@ function avg_string($sum, $n) {
 }
 
 
+function number_class($number) {
+	if ($number < 0) {
+		return "negative";
+	} else if ($number > 0) {
+		return "positive";
+	} else {
+		return "zero";
+	}
+}
+
+
 $number_of_players = count($players);
 $controls_view_data['number_of_players'] = $number_of_players;
 
@@ -43,13 +54,15 @@ $rounds_percent = function ($number, $n_rounds) {
 if ($number_of_players > DEFAULT_PLAYERS) {
 	$row_span = 2;
 	$show_bye = true;
+	$extra_class = 'player-stats-bye';
 } else {
 	$row_span = 1;
 	$show_bye = false;
+	$extra_class = 'player-stats-normal';
 }
 ?>
 <h2>Player Stats</h2>
-<table>
+<table class="table player-stats <?php echo $extra_class ?>">
 	<thead>
 		<tr>
 			<th>Rank</th>
@@ -65,10 +78,11 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 	</thead>
 	<tbody>
 		<?php foreach ($player_stats as $rank => $player_stat): ?>
+			<?php $points_class = number_class($player_stat['total_points']) ?>
 			<tr>
 				<td rowspan="<?php echo $row_span ?>"><?php echo $rank + 1 ?></td>
 				<td rowspan="<?php echo $row_span ?>"><?php echo $players[$player_stat['position']]['nickname'] ?></td>
-				<td rowspan="<?php echo $row_span ?>"><?php echo $player_stat['total_points'] ?></td>
+				<td rowspan="<?php echo $row_span ?>" class="<?php echo $points_class ?>"><?php echo $player_stat['total_points'] ?></td>
 				<td><?php echo $player_stat['bid_winner_rounds'] ?></td>
 				<td><?php echo $rounds_percent($player_stat['bid_winner_rounds'], $n_finished_rounds) ?>%</td>
 				<td><?php echo $player_stat['bid_winner_mate_rounds'] ?></td>
@@ -252,13 +266,7 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 			<th title="&#x01c0;Abs&#x01c0;"><?php echo "$tricks_diff_sum ~ &#x01c0;$tricks_abs_diff_sum&#x01c0;" ?></th>
 			<?php foreach ($total_points as $points): ?>
 				<?php
-				if ($points < 0) {
-					$class = "negative";
-				} else if ($points > 0) {
-					$class = "positive";
-				} else {
-					$class = "zero";
-				}
+				$class = number_class($points);
 				?>
 				<th colspan="2" class="<?php echo $class ?>"><?php echo $points ?></th>
 			<?php endforeach ?>
