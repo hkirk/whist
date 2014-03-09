@@ -122,18 +122,14 @@ table.player-stats, table.player-stats tbody {
 	border: 3px solid black;
 }
 
-table.player-stats-normal tr,
-table.player-stats-bye tr:nth-child(odd) {
+table.player-stats tr {
 	border-top: 2px solid black;
 }
 
 /* Vertical borders: */
 table.player-stats tr th,
-table.player-stats-normal tr td:nth-child(-n+3),
-table.player-stats-normal tr td:nth-child(2n+5),
-table.player-stats-bye tr:nth-child(odd) td:nth-child(-n+3),
-table.player-stats-bye tr:nth-child(odd) td:nth-child(2n+5),
-table.player-stats-bye tr:nth-child(even) td:nth-child(2n) {
+table.player-stats tr td:nth-child(-n+3),
+table.player-stats tr td:nth-child(2n+5) {
 	border-right: 2px solid black;
 }
 
@@ -143,25 +139,22 @@ table.player-stats th {
 }
 
 /* Default: align numbers to the right */
-table.player-stats {
+table.player-stats td {
 	text-align: right;
 }
 
 /* Rank column: */
-table.player-stats-normal tr td:first-child,
-table.player-stats-bye tr:nth-child(odd) td:first-child {
+table.player-stats tr td:first-child {
 	text-align: center;
 }
 
 /* Player name column: */
-table.player-stats-normal tr td:nth-child(2),
-table.player-stats-bye tr:nth-child(odd) td:nth-child(2) {
+table.player-stats tr td:nth-child(2) {
 	text-align: left;
 }
 
 /* First 3 columns: */
-table.player-stats-normal tr td:nth-child(-n+3),
-table.player-stats-bye tr:nth-child(odd) td:nth-child(-n+3) {
+table.player-stats tr td:nth-child(-n+3) {
 	font-weight: bold;
 }
 

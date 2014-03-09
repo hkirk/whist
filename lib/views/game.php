@@ -61,20 +61,29 @@ $rounds_percent = function ($number, $n_rounds) {
 };
 
 if ($number_of_players > DEFAULT_PLAYERS) {
-	$row_span = 2;
 	$show_bye = true;
 	$extra_class = 'player-stats-bye';
 } else {
-	$row_span = 1;
 	$show_bye = false;
 	$extra_class = 'player-stats-normal';
 }
+
+$print_player_stat_cells = function($player_stat, $key) use ($rounds_percent, $n_finished_rounds, $show_bye) {
+	?>
+	<td><?php echo $player_stat[$key] ?></td>
+	<td><?php echo $rounds_percent($player_stat[$key], $player_stat['participating_rounds']) ?>%
+		<?php if ($show_bye): ?>
+			(<?php echo $rounds_percent($player_stat[$key], $n_finished_rounds) ?>%)
+		<?php endif; ?>
+	</td>
+	<?php
+};
 ?>
 <h2>Player Stats</h2>
 <table class="table player-stats <?php echo $extra_class ?>">
 	<thead>
 		<tr>
-			<th>Rank</th>
+			<th>#</th>
 			<th>Player</th>
 			<th>Points</th>
 			<th colspan="2">Bid winner</th>
@@ -89,38 +98,21 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 		<?php foreach ($player_stats as $rank => $player_stat): ?>
 			<?php $points_class = number_class($player_stat['total_points']) ?>
 			<tr>
-				<td rowspan="<?php echo $row_span ?>"><?php echo $rank + 1 ?></td>
-				<td rowspan="<?php echo $row_span ?>"><?php echo $players[$player_stat['position']]['nickname'] ?></td>
-				<td rowspan="<?php echo $row_span ?>" class="<?php echo $points_class ?>"><?php echo $player_stat['total_points'] ?></td>
-				<td><?php echo $player_stat['bid_winner_rounds'] ?></td>
-				<td><?php echo $rounds_percent($player_stat['bid_winner_rounds'], $n_finished_rounds) ?>%</td>
-				<td><?php echo $player_stat['bid_winner_mate_rounds'] ?></td>
-				<td><?php echo $rounds_percent($player_stat['bid_winner_mate_rounds'], $n_finished_rounds) ?>%</td>
-				<td><?php echo $player_stat['opponent_rounds'] ?></td>
-				<td><?php echo $rounds_percent($player_stat['opponent_rounds'], $n_finished_rounds) ?>%</td>
-				<td><?php echo $player_stat['won_rounds'] ?></td>
-				<td><?php echo $rounds_percent($player_stat['won_rounds'], $n_finished_rounds) ?>%</td>
-				<td><?php echo $player_stat['lost_rounds'] ?></td>
-				<td><?php echo $rounds_percent($player_stat['lost_rounds'], $n_finished_rounds) ?>%</td>			
-				<?php if ($show_bye): ?>
-					<td rowspan="<?php echo $row_span ?>"><?php echo $player_stat['bye_rounds'] ?></td>
-					<td rowspan="<?php echo $row_span ?>"><?php echo $rounds_percent($player_stat['bye_rounds'], $n_finished_rounds) ?>%</td>
+				<td><?php echo $rank + 1 ?></td>
+				<td><?php echo $players[$player_stat['position']]['nickname'] ?></td>
+				<td class="<?php echo $points_class ?>"><?php echo $player_stat['total_points'] ?></td>
+				<?php
+				$print_player_stat_cells($player_stat, 'bid_winner_rounds');
+				$print_player_stat_cells($player_stat, 'bid_winner_mate_rounds');
+				$print_player_stat_cells($player_stat, 'opponent_rounds');
+				$print_player_stat_cells($player_stat, 'won_rounds');
+				$print_player_stat_cells($player_stat, 'lost_rounds');
+				if ($show_bye):
+					?>
+					<td><?php echo $player_stat['bye_rounds'] ?></td>
+					<td><?php echo $rounds_percent($player_stat['bye_rounds'], $n_finished_rounds) ?>%</td>
 				<?php endif ?>
 			</tr>
-			<?php if ($show_bye): ?>
-				<tr>
-					<td><?php echo $player_stat['bid_winner_rounds'] ?></td>
-					<td><?php echo $rounds_percent($player_stat['bid_winner_rounds'], $player_stat['participating_rounds']) ?>%</td>
-					<td><?php echo $player_stat['bid_winner_mate_rounds'] ?></td>
-					<td><?php echo $rounds_percent($player_stat['bid_winner_mate_rounds'], $player_stat['participating_rounds']) ?>%</td>
-					<td><?php echo $player_stat['opponent_rounds'] ?></td>
-					<td><?php echo $rounds_percent($player_stat['opponent_rounds'], $player_stat['participating_rounds']) ?>%</td>
-					<td><?php echo $player_stat['won_rounds'] ?></td>
-					<td><?php echo $rounds_percent($player_stat['won_rounds'], $player_stat['participating_rounds']) ?>%</td>
-					<td><?php echo $player_stat['lost_rounds'] ?></td>
-					<td><?php echo $rounds_percent($player_stat['lost_rounds'], $player_stat['participating_rounds']) ?>%</td>
-				</tr>
-			<?php endif ?>
 		<?php endforeach; ?>
 	</tbody>
 </table>
@@ -140,7 +132,7 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 				<th>Bid</th>
 				<th>Realized</th>
 				<th>&Delta;</th>
-				<th>&#x01c0;&Delta;&#x01c0;</th>
+				<th>&#x01c0; &Delta; &#x01c0;</th>
 			<?php endfor ?>
 		</tr>
 	</thead>
