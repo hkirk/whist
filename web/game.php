@@ -334,6 +334,6 @@ $data = [
 		'controls_view_data' => &$controls_view_data
 ];
 
-$title = "Whist game at " . $location;
+$title = "Whist game at $location, " . datetime_string($db_game['started_at']);
 
 render_page($title, $title, "game", $data);
