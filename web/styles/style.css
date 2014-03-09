@@ -168,6 +168,37 @@ table.player-stats-bye tr:nth-child(odd) td:nth-child(-n+3) {
 
 
 
+
+/*** Game stats table ***/
+table.game-stats, table.game-stats tbody {
+	border: 3px solid black;
+}
+
+/* Vertical borders: */
+table.game-stats thead tr:nth-child(1) th:nth-child(n+2),
+table.game-stats thead tr:nth-child(2) th:nth-child(4n+1),
+table.game-stats tbody td:nth-child(4n-2) {
+	border-left: 2px solid black;
+}
+
+/* Top header cells */
+table.game-stats thead th {
+	/* Override bootstrap border: */
+	border: 1px solid black;
+	text-align: center;
+	vertical-align: middle;
+}
+
+table.game-stats tbody th {
+	text-align: left;
+}
+table.game-stats tbody td {
+	text-align: center;
+}
+
+
+
+
 /*** Score board table ***/
 
 table.scoreboard, table.scoreboard tbody {
