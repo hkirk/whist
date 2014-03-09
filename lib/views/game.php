@@ -176,20 +176,33 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 </table>
 
 
+<?php
+
+
+function print_full_header_row($players) {
+	?>
+	<tr class="full-row">
+		<th>#</th>
+		<th>Bid winner(s)</th>
+		<th>Bid</th>
+		<th>Tricks</th>
+		<th>&Delta;</th>
+		<?php foreach ($players as $player): ?>
+			<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
+		<?php endforeach ?>
+	</tr>
+	<?php
+}
+?>
+
+
 <h2>Score board</h2>
 <table class="table table-striped .table-responsive scoreboard">
-	<thead>
-		<tr class="full-row">
-			<th>#</th>
-			<th>Bid winner(s)</th>
-			<th>Bid</th>
-			<th>Tricks</th>
-			<th>&Delta;</th>
-			<?php foreach ($players as $player): ?>
-				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
-			<?php endforeach ?>
-		</tr>
-	</thead>
+	<?php if ($n_rounds > 0): ?>
+		<thead>
+			<?php print_full_header_row($players) ?>
+		</thead>
+	<?php endif ?>
 	<tbody>
 		<?php foreach ($rounds as $round): ?>
 			<tr>
@@ -277,16 +290,7 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 		<?php endforeach ?>
 	</tbody>
 	<tfoot>
-		<tr class="full-row">
-			<th>#</th>
-			<th>Bid winner(s)</th>
-			<th>Bid</th>
-			<th>Tricks</th>
-			<th>&Delta;</th>
-			<?php foreach ($players as $player): ?>
-				<th colspan="2"><?php echo htmlspecialchars($player['nickname']) ?></th>
-			<?php endforeach ?>
-		</tr>
+		<?php print_full_header_row($players) ?>
 		<tr class="aggregate-row">
 			<th colspan="5">Total points (&sum;):</th>
 			<?php foreach ($total_points as $points): ?>
