@@ -10,9 +10,18 @@ function rewrite_null($e) {
 
 function avg_string($sum, $n) {
 	if ($n === 0) {
-		return NULL;
+		return "?";
 	} else {
 		return sprintf("%.2f", $sum / $n);
+	}
+}
+
+
+function rms_string($square_sum, $n) {
+	if ($n === 0) {
+		return "?";
+	} else {
+		return sprintf("%.2f", sqrt($square_sum / $n));
 	}
 }
 
@@ -115,6 +124,57 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 		<?php endforeach; ?>
 	</tbody>
 </table>
+
+
+<h2>Game stats</h2>
+<table class="table game-stats">
+	<thead>
+		<tr>
+			<th rowspan="2">Aggregate</th>
+			<th colspan="4">Total tricks (<?php echo $game_stats['total']['n_bid_winners'] ?> b.w.)</th>
+			<th colspan="4">Normal tricks  (<?php echo $game_stats['normal']['n_bid_winners'] ?> b.w.)</th>
+			<th colspan="4">Solo tricks  (<?php echo $game_stats['solo']['n_bid_winners'] ?> b.w.)</th>
+		</tr>
+		<tr>
+			<?php for ($i = 0; $i < 3; $i++): ?>
+				<th>Bid</th>
+				<th>Realized</th>
+				<th>&Delta;</th>
+				<th>&#x01c0;&Delta;&#x01c0;</th>
+			<?php endfor ?>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th>Sum:</th>
+			<?php foreach ($game_stats as $gs): ?>
+				<td><?php echo $gs['bid_tricks_sum'] ?></td>
+				<td><?php echo $gs['realized_tricks_sum'] ?></td>
+				<td><?php echo $gs['tricks_diff_sum'] ?></td>
+				<td><?php echo $gs['abs_tricks_diff_sum'] ?></td>
+			<?php endforeach; ?>
+		</tr>
+		<tr>
+			<th>Avg.:</th>
+			<?php foreach ($game_stats as $gs): ?>
+				<td><?php echo avg_string($gs['bid_tricks_sum'], $gs['n_bid_winners']) ?></td>
+				<td><?php echo avg_string($gs['realized_tricks_sum'], $gs['n_bid_winners']) ?></td>
+				<td><?php echo avg_string($gs['tricks_diff_sum'], $gs['n_bid_winners']) ?></td>
+				<td><?php echo avg_string($gs['abs_tricks_diff_sum'], $gs['n_bid_winners']) ?></td>
+			<?php endforeach; ?>
+		</tr>
+		<tr>
+			<th>RMS:</th>
+			<?php foreach ($game_stats as $gs): ?>
+				<td><?php echo rms_string($gs['bid_tricks_square_sum'], $gs['n_bid_winners']) ?></td>
+				<td><?php echo rms_string($gs['realized_tricks_square_sum'], $gs['n_bid_winners']) ?></td>
+				<td><?php echo rms_string($gs['tricks_diff_square_sum'], $gs['n_bid_winners']) ?></td>
+				<td><?php echo rms_string($gs['abs_tricks_diff_square_sum'], $gs['n_bid_winners']) ?></td>
+			<?php endforeach; ?>
+		</tr>
+	</tbody>
+</table>
+
 
 <h2>Score board</h2>
 <table class="table table-striped .table-responsive scoreboard">
@@ -273,8 +333,8 @@ if ($number_of_players > DEFAULT_PLAYERS) {
 		</tr>
 		<tr class="aggregate-row">
 			<th colspan="2">Avg. / bid winner (mate) count:</th>
-			<th title="(Normal, Solo)"><?php echo rewrite_null($tricks_avg_string) . ' (' . rewrite_null($tricks_avg_normal_string) . ', ' . rewrite_null($tricks_avg_solo_string) . ')' ?></th>
-			<th title="&#x01c0;Abs&#x01c0;"><?php echo rewrite_null($tricks_diff_avg_string) . ' ~ &#x01c0;' . rewrite_null($tricks_abs_diff_avg_string) . '&#x01c0;' ?></th>
+			<th title="(Normal, Solo)"><?php echo $tricks_avg_string . ' (' . $tricks_avg_normal_string . ', ' . $tricks_avg_solo_string . ')' ?></th>
+			<th title="&#x01c0;Abs&#x01c0;"><?php echo $tricks_diff_avg_string . ' ~ &#x01c0;' . $tricks_abs_diff_avg_string . '&#x01c0;' ?></th>
 			<?php foreach ($bid_winner_count_texts as $bid_winner_count_text): ?>
 				<th colspan="2"><?php echo $bid_winner_count_text ?></th>
 			<?php endforeach ?>

@@ -95,6 +95,25 @@ for ($position = 0; $position < $n_players; $position++) {
 	];
 }
 
+// Init game stats:
+$game_stats_init = [
+		'n_bid_winners' => 0,
+		'bid_tricks_sum' => 0,
+		'bid_tricks_square_sum' => 0,
+		'realized_tricks_sum' => 0,
+		'realized_tricks_square_sum' => 0,
+		'tricks_diff_sum' => 0,
+		'tricks_diff_square_sum' => 0,
+		'abs_tricks_diff_sum' => 0,
+		'abs_tricks_diff_square_sum' => 0
+];
+$game_stats = [
+		'total' => $game_stats_init,
+		'normal' => $game_stats_init,
+		'solo' => $game_stats_init
+];
+
+
 foreach ($db_rounds as $r) {
 	$bid_type = $r['bid_type'];
 	$data = $r['bid_data'];
@@ -141,6 +160,7 @@ foreach ($db_rounds as $r) {
 		continue;
 	}
 	$n_finished_rounds++;
+
 	// Update player stats:
 	$is_opponent_by_position = array_fill(0, $n_players, true);
 	foreach (array_keys($bid_winner_tricks_by_position) as $position) {
@@ -171,12 +191,40 @@ foreach ($db_rounds as $r) {
 			$player_stats[$position]['lost_rounds'] ++;
 		}
 	}
+
+	// Update game stats:
+	if ($bid_type === 'solo') {
+		$bid_tricks = $SOLO_GAMES[$bid['solo_type']]['max_tricks'];
+		$tricks_diff_sign = -1;
+	} else {
+		$bid_tricks = $data['bid_tricks'];
+		$tricks_diff_sign = 1;
+	}
+	$gs = &$game_stats[$bid_type];
+	foreach ($bid_winner_tricks_by_position as $tricks) {
+		$tricks_diff = $tricks_diff_sign * ($tricks - $bid_tricks);
+		$gs['n_bid_winners'] ++;
+		$gs['bid_tricks_sum'] += $bid_tricks;
+		$gs['bid_tricks_square_sum'] += $bid_tricks * $bid_tricks;
+		$gs['realized_tricks_sum'] += $tricks;
+		$gs['realized_tricks_square_sum'] += $tricks * $tricks;
+		$gs['tricks_diff_sum'] += $tricks_diff;
+		$gs['tricks_diff_square_sum'] += $tricks_diff * $tricks_diff;
+		$gs['abs_tricks_diff_sum'] += abs($tricks_diff);
+		$gs['abs_tricks_diff_square_sum'] += $tricks_diff * $tricks_diff; // squared => positive
+	}
 }
 
 // Order player stats by points, descending
 usort($player_stats, function($a, $b) {
 	return $b['total_points'] - $a['total_points'];
 });
+
+// Total = normal + solo
+foreach ($game_stats['total'] as $key => &$sum) {
+	$sum = $game_stats['normal'][$key] + $game_stats['solo'][$key];
+}
+
 
 $n_rounds = count($rounds);
 
@@ -274,6 +322,7 @@ $data = [
 		'location' => &$location,
 		'players' => &$players,
 		'player_stats' => &$player_stats,
+		'game_stats' => $game_stats,
 		'n_finished_rounds' => &$n_finished_rounds,
 		'rounds' => &$rounds,
 		'total_points' => &$total_points,
