@@ -156,3 +156,13 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<button class="btn btn-primary" type="submit">Begin round</button>
 	</fieldset>
 </form>
+<hr/>
+<form action="deletelastround.php" method="post">
+    <input type="hidden" name="game_id" value="<?php echo $game_id ?>" />
+
+    <fieldset class="buttons">
+        <legend>Delete last round</legend>
+        <button class="btn btn-warning" type="submit">Delete last round</button>
+    </fieldset>
+</form>
+<hr/>
