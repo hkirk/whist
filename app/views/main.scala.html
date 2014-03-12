@@ -1,0 +1,33 @@
+@(title: String, active: String)(content: => Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+        <!-- Bootstrap core CSS -->
+        <link href="@routes.Assets.at("stylesheets/bootstrap.min.css")" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="@routes.Assets.at("stylesheets/jumbotron.css")" rel="stylesheet">
+
+    </head>
+    <body>
+        @menu.topMenu(active)
+
+        <div class="jumbotron">
+
+            <div class="container">
+                @content
+            </div>
+
+            @menu.footerMenu()
+        </div>
+
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
+    </body>
+</html>

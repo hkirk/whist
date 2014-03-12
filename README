@@ -1,3 +1,0 @@
-Import the SQL files in install/.
-
-Copy conf/settings.template.php to conf/settings.php and change setting values.

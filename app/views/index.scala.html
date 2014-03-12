@@ -1,0 +1,27 @@
+@(games: List[model.Game], message: Option[String])
+
+@main("Welcome to Whist calculator", "Games") {
+  @message match {
+    case None          => {}
+    case Some(messageTest) => {<div class="alert alert-success">@messageTest</div>}
+  }
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Link</th><th>Started</th><th>Ended</th><th>Last update</th><th>Players</th><th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+    @for(game <- games) {
+      <tr>
+        <td><a href="/game/@game.id">Go to</a></td>
+        <td>@game.startedAt</td>
+        <td>@game.endedAt</td>
+        <td>@game.updatedAt</td>
+        <td>@game.numPlayers</td>
+        <td>@game.location</td>
+      </tr>
+    }
+    </tbody>
+  </table>
+}

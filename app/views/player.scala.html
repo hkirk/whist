@@ -1,0 +1,30 @@
+@(playerForm: Form[controllers.model.Player])
+
+@import views.common.TwitterBootstrapInput._
+@import helper._
+
+@main("Create a new player", "Player") {
+
+  @helper.form(routes.Player.addPlayer(), 'class -> "form-horizontal") {
+    @helper.inputText(
+      playerForm("name"),
+      '_label -> "Name",
+      '_error -> "Enter your name"
+    )
+
+    @helper.inputText(
+      playerForm("nickname"),
+      'label -> "Nickname",
+      '_error -> "Enter your nickname"
+    )
+
+    <div class="control-group">
+      <div class="controls">
+        <input type="submit" class="btn primary btn-primary" value="Submit">
+      </div>
+    </div>
+  }
+
+  <hr />
+
+}
