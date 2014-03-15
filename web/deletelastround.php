@@ -31,4 +31,5 @@ if ($row === false) {
 	}
 }
 
-header("Location: game.php?id=$game_id");
+redirect_to_game($game_id);
+
