@@ -116,10 +116,6 @@ global $TIPS_COUNT_MULTIPLIERS;
 		<?php label('attachment', 'Attachment:', $id_qualifier); ?>
 		<select class="form-control" name="attachment" id="<?php echo name_id('attachment', $id_qualifier) ?>">
 			<?php
-			// The "null" attachment for solo games:
-			$attachment_key = '';
-			$text = '[Solo game]';
-			option($attachment_key, $text);
 			// The actual attachments:
 			foreach ($legal_attachment_keys as $attachment_key):
 				$attachment = $ATTACHMENTS[$attachment_key];
@@ -146,6 +142,11 @@ global $TIPS_COUNT_MULTIPLIERS;
 					option($attachment_key, $text);
 				}
 			endforeach;
+			// The "null" attachment for solo games:
+			$attachment_key = '';
+			$text = '[Solo game]';
+			option($attachment_key, $text);
+			
 			?>
 		</select>
 		<div class="description">A normal non-solo game requires an attachment. If the attachment is "Tips", then also choose the number of tips, please.</div>
