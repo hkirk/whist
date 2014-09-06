@@ -11,7 +11,7 @@ check_input($id);
 $controls_positions = check_get_array($_GET, 'cp');
 if ($controls_positions === NULL) {
 	// Default positions
-	$controls_positions = ['bottom'];
+	$controls_positions = ['top'];
 } else {
 	if (count($controls_positions) > 2) {
 		render_unexpected_input_page_and_exit("Too many controls positions!");
