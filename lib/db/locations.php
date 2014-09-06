@@ -7,6 +7,7 @@ SELECT
 id,
 name
 FROM locations
+WHERE current
 ORDER BY name
 EOS;
 	$params = [];
@@ -24,6 +25,7 @@ function db_check_location_id($id) {
 SELECT COUNT(*) AS count
 FROM locations
 WHERE id = ?
+AND current
 EOS;
 	$params = [$id];
 	list(,, $row) = _db_prepare_execute_fetch($sql, $params);
