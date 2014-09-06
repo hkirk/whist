@@ -21,7 +21,6 @@ function error_add($condition, $message) {
 	error_add($illegal_bye_count, 'Invalid number of bye players!');
 	error_add($multi_bye_position, 'Bye player selected multiple times!');
 	error_add($joint_bid_winner_bye, 'Cannot have overlapping bid winner and bye player(s)!');
-	error_add($joint_bye_dealer, 'Cannot have overlapping bye and dealer player!');
 	?>
 </ul>
 
