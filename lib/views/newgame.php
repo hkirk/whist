@@ -13,7 +13,7 @@ if (isset($_GET['players']) && $_GET['players'] > DEFAULT_PLAYERS && $_GET['play
 
 <form action="newgame.php" method="get" class="form-inline" role="form">
 	<div class="form-group">
-		<label class="sr-only" for="players">Players (<? echo $description; ?>)</label>
+		<label class="sr-only" for="players">Players (<?php echo $description; ?>)</label>
 		<input type="number" min="<?php echo DEFAULT_PLAYERS ?>" max="<?php echo MAX_PLAYERS ?>" class="form-control" id="players" name="players" placeholder="#players" />
 	</div>
 	<button type="submit" class="btn btn-info">Change number of players</button>
