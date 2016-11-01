@@ -13,10 +13,10 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        @if("Games".eq(active)) {<li class="active">} else {<li>}<a href="/">Games</a></li>
-        @if("NewGame".eq(active)) {<li class="active">} else {<li>}<a href="#">New game</a></li>
-        @if("NewPlayer".eq(active)) {<li class="active">} else {<li>}<a href="/player">New player</a></li>
-        @if("NewPlace".eq(active)) {<li class="active">} else {<li>}<a href="#">New place</a></li>
+        @if("Games".eq(active)) {<li class="active">} else {<li>}<a href="@controllers.routes.Application.index(None)">Games</a></li>
+        @if("NewGame".eq(active)) {<li class="active">} else {<li>}<a href="@controllers.routes.GameController.newGame()">New game</a></li>
+        @if("NewPlayer".eq(active)) {<li class="active">} else {<li>}<a href="@controllers.routes.PlayerController.player()">New player</a></li>
+        @if("NewPlace".eq(active)) {<li class="active">} else {<li>}<a href="@controllers.routes.LocationController.location()">New place</a></li>
       </ul>
 
     </div><!--/.navbar-collapse -->

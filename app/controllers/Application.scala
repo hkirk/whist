@@ -1,16 +1,14 @@
 package controllers
 
-import play.api._
+import javax.inject.Inject
+
 import play.api.mvc._
-import play.api.db.DB
-import play.api.Play.current
-
-import anorm._
-
 import model.Game
+import play.api.i18n.{I18nSupport, MessagesApi}
 
-
-object Application extends Controller {
+class Application @Inject() (
+                              val messagesApi: MessagesApi
+                            ) extends Controller with I18nSupport{
 
   def index(message: Option[String]) = Action {
     val games = Game.getGames

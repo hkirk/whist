@@ -1,0 +1,25 @@
+@(locationForm: Form[model.Location])(implicit request: RequestHeader, lang: Lang, messages: Messages)
+
+@import views.common.TwitterBootstrapInput._
+@import helper._
+
+@main("Create a new Location", "Location") {
+    @helper.form(routes.LocationController.add(), 'class -> "form-horizontal") {
+        <input type="hidden" name="id" value="-1" />
+
+        @helper.inputText(
+            locationForm("name"),
+            '_label -> "Name",
+            '_error -> "Enter location name"
+        )
+
+        <input type="hidden" name="current" value="false" />
+        <div class="control-group">
+            <div class="controls">
+                <input type="submit" class="btn primary btn-primary" value="Submit">
+            </div>
+        </div>
+    }
+
+    <hr />
+}

@@ -1,0 +1,57 @@
+@(gameWithPlayers: List[model.GameWithPlayers])
+
+@import model.GameWithPlayers
+
+@main("Whist game at %s".format(gameWithPlayers.head.location), "") {
+  <h1>Whist game at @gameWithPlayers.head.location</h1>
+  <div>
+    <h2>Score board</h2>
+    <table class="table table-striped .table-responsive scoreboard">
+      <thead>
+        <tr class="full-row">
+          <th>#</th>
+          <th>Bid winner(s)</th>
+          <th>Bid</th>
+          <th>Tricks</th>
+          <th>&Delta;</th>
+          @printTableHeader(gameWithPlayers)
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+      <tfoot>
+        <tr class="full-row">
+          <th rowspan="3">#</th>
+          <th>Bid winner(s)</th>
+          <th>Bid</th>
+          <th>Tricks</th>
+          <th>&Delta;</th>
+          @printTableHeader(gameWithPlayers)
+        </tr>
+        <tr class="aggregate-row">
+          <th colspan="2">Total (&sum;):</th>
+          <th title="(Normal, Solo)">0 (0, 0)</th>
+          <th title="&#x01c0;Abs&#x01c0;">0 ~ &#x01c0;0&#x01c0;</th>
+          @for(player <- gameWithPlayers) {
+            <th colspan="2" class="zero">@player.playerPoints</th>
+          }
+        </tr>
+        <tr class="aggregate-row">
+          <th colspan="2">Avg. / bid winner (mate) count:</th>
+          <th title="(Normal, Solo)">? (?, ?)</th>
+          <th title="&#x01c0;Abs&#x01c0;">? ~ &#x01c0;?&#x01c0;</th>
+          <th colspan="2">0 (0)</th>
+          <th colspan="2">0 (0)</th>
+          <th colspan="2">0 (0)</th>
+          <th colspan="2">0 (0)</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+}
+
+@printTableHeader(game: List[GameWithPlayers]) = {
+  @for(player <- game) {
+    <th colspan="2">@player.nickname</th>
+  }
+}

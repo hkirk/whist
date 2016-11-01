@@ -1,11 +1,11 @@
-@(playerForm: Form[controllers.model.Player])
+@(playerForm: Form[model.Player])(implicit request: RequestHeader, lang: Lang, messages: Messages)
 
 @import views.common.TwitterBootstrapInput._
 @import helper._
 
 @main("Create a new player", "Player") {
 
-  @helper.form(routes.Player.addPlayer(), 'class -> "form-horizontal") {
+  @helper.form(controllers.routes.PlayerController.add(), 'class -> "form-horizontal") {
     @helper.inputText(
       playerForm("name"),
       '_label -> "Name",

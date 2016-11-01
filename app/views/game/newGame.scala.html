@@ -1,0 +1,48 @@
+@import model.Game
+
+@import model.whist.Attachment
+@(gameForm: Form[Game], locationOptions: Seq[(String,String)], players: Seq[(String, String)])(implicit request: RequestHeader, lang: Lang, messages: Messages)
+
+@import views.common.TwitterBootstrapInput._
+@import helper._
+
+@main("Create a new Game", "Game") {
+    <input type="number" min="4" max="8" id="players" />
+
+    <h3>Create game</h3>
+
+    @helper.form(controllers.routes.GameController.createGame(), 'class -> "form-horizontal") {
+        <fieldset>
+            <legend>Information</legend>
+
+            @helper.select(
+                gameForm("location"),
+                locationOptions,
+                '_label -> "Location",
+                '_error -> "Pick location"
+            )
+
+            @helper.textarea(
+                gameForm("description"),
+                '_label -> "Description",
+                '_error -> "Description"
+            )
+        </fieldset>
+        <fieldset>
+            <legend>Bid attachments</legend>
+
+            @for(attachment <- Attachment.optionalAttachmentsOrder) {
+                @helper.checkbox(
+                    gameForm(attachment.name),
+                    '_label -> attachment.name,
+                    '_error -> attachment.description
+                )
+            }
+        </fieldset>
+        <fieldset>
+            <legend>Players</legend>
+
+            <div id="players"></div>
+        </fieldset>
+    }
+}
