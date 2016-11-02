@@ -4,15 +4,11 @@
  */
 package model
 
-import java.sql.Timestamp
-
-import play.api.Play.current
-import play.api.db.DB
+import java.sql.{Connection, Timestamp}
 
 import anorm.SqlParser._
 import anorm._
 import anorm.~
-
 import utilities.AnormExtension._
 
 case class Game(id: Long, startedAt: Timestamp, endedAt: Option[Timestamp], updatedAt: Timestamp, location: String,
@@ -20,6 +16,8 @@ case class Game(id: Long, startedAt: Timestamp, endedAt: Option[Timestamp], upda
 case class GameWithPlayers(id: Long, locationID: Long, description: String, attachments: String, point_ruls: String,
                            startedAt: Timestamp, endedAt: Option[Timestamp], location: String, playerPosition: Long,
                            playerPoints: Long, nickname: String, name: String)
+case class GameForm(location: String, description: String, rule: String, attachment: String)
+
 
 object Game {
   private val game = {
@@ -52,44 +50,36 @@ object Game {
     }
   }
 
-  def getGames: List[Game] = {
-    DB.withConnection {
-      implicit c =>
-
-        SQL(
-          """
-          SELECT g.id AS id, g.started_at AS started_at, g.ended_at AS ended_at, g.updated_at AS updated_at,
-                 l.name AS location, (SELECT COUNT(*)
-                                        FROM game_players AS gp
-                                        WHERE gp.game_id = g.id
-                                      ) AS n_players
-          FROM games AS g
-          LEFT OUTER JOIN locations l ON g.location_id = l.id
-          ORDER BY g.started_at DESC
-          """.stripMargin).as(Game.game *)
-    }
+  def getGames()(implicit c: Connection): List[Game] = {
+    SQL(
+      """
+      SELECT g.id AS id, g.started_at AS started_at, g.ended_at AS ended_at, g.updated_at AS updated_at,
+             l.name AS location, (SELECT COUNT(*)
+                                    FROM game_players AS gp
+                                    WHERE gp.game_id = g.id
+                                  ) AS n_players
+      FROM games AS g
+      LEFT OUTER JOIN locations l ON g.location_id = l.id
+      ORDER BY g.started_at DESC
+      """.stripMargin).as(Game.game *)
   }
 
   def getGameWithPlayers(id: Long): List[GameWithPlayers] = {
-    DB.withConnection {
-      implicit c =>
-        SQL(
-          """
-            SELECT
-            	g.*,
-            	l.name             AS location,
-            	gp.player_position AS player_position,
-            	gp.total_points    AS player_total_points,
-            	p.nickname         AS player_nickname,
-            	p.fullname         AS player_fullname
-            FROM             games        AS g
-            LEFT OUTER JOIN  locations    AS l   ON l.id = g.location_id
-            INNER JOIN       game_players AS gp  ON gp.game_id = g.id
-            LEFT OUTER JOIN  players      AS p   ON p.id = gp.player_id
-            WHERE g.id = {id}
-            ORDER BY gp.player_position ASC
-          """.stripMargin).on('id -> id).as(Game.gameWithPlayers *)
-
-    }
+    SQL(
+      """
+        SELECT
+          g.*,
+          l.name             AS location,
+          gp.player_position AS player_position,
+          gp.total_points    AS player_total_points,
+          p.nickname         AS player_nickname,
+          p.fullname         AS player_fullname
+        FROM             games        AS g
+        LEFT OUTER JOIN  locations    AS l   ON l.id = g.location_id
+        INNER JOIN       game_players AS gp  ON gp.game_id = g.id
+        LEFT OUTER JOIN  players      AS p   ON p.id = gp.player_id
+        WHERE g.id = {id}
+        ORDER BY gp.player_position ASC
+      """.stripMargin).on('id -> id).as(Game.gameWithPlayers *)
   }
 }

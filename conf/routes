@@ -4,9 +4,9 @@
 
 # Home page
 GET         /                    controllers.Application.index(message: Option[String])
-GET         /game/:id            controllers.GameController.game(id: Long)
 GET         /game/new            controllers.GameController.newGame()
 POST        /game/new            controllers.GameController.createGame()
+GET         /game/:id            controllers.GameController.game(id: Long)
 
 GET         /player              controllers.PlayerController.player()
 POST        /player/add          controllers.PlayerController.add()

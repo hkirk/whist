@@ -1,7 +1,8 @@
-@import model.Game
-
 @import model.whist.Attachment
-@(gameForm: Form[Game], locationOptions: Seq[(String,String)], players: Seq[(String, String)])(implicit request: RequestHeader, lang: Lang, messages: Messages)
+@import model.whist.PointRule
+@import model.GameForm
+
+@(gameForm: Form[GameForm], locationOptions: Seq[(String,String)], players: Seq[(String, String)])(implicit request: RequestHeader, lang: Lang, messages: Messages)
 
 @import views.common.TwitterBootstrapInput._
 @import helper._
@@ -29,14 +30,26 @@
             )
         </fieldset>
         <fieldset>
+            <legend>Point Rules</legend>
+
+
+            @for(index <- PointRule.pointRules.indices) {
+                <div class="form-group">
+                    <input type="checkbox" name="rules[@index]" value="@PointRule.pointRules(index).value" id="rule_@index" class="checkbox-inline" />
+                    <label for="rule_@index">@PointRule.pointRules(index).name</label>
+                    <span class="help-block">@PointRule.pointRules(index).description</span>
+                </div>
+            }
+        </fieldset>
+        <fieldset>
             <legend>Bid attachments</legend>
 
-            @for(attachment <- Attachment.optionalAttachmentsOrder) {
-                @helper.checkbox(
-                    gameForm(attachment.name),
-                    '_label -> attachment.name,
-                    '_error -> attachment.description
-                )
+            @for(index <- Attachment.optionalAttachmentsOrder.indices) {
+                <div class="form-group">
+                    <input type="checkbox" name="attachment[@index]" value="@Attachment.optionalAttachmentsOrder(index).value" id="attachment_@index" class="checkbox-inline" />
+                    <label for="attachment_@index">@Attachment.optionalAttachmentsOrder(index).name</label>
+                    <span class="help-block">@Attachment.optionalAttachmentsOrder(index).description</span>
+                </div>
             }
         </fieldset>
         <fieldset>

@@ -19,7 +19,7 @@ class LocationController @Inject()(
                          ) extends Controller with I18nSupport {
   val locationForm = Form(
     mapping(
-      "id" -> number(-1, Int.MaxValue),
+      "id" -> longNumber(-1, Long.MaxValue),
       "name" -> nonEmptyText,
       "current" -> boolean
     )(model.Location.apply)(model.Location.unapply)

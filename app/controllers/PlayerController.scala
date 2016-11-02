@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 import anorm.SQL
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.data.Forms._
 import play.api.db.Database
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller}
@@ -20,6 +20,7 @@ class PlayerController @Inject()(
 
   val playerForm = Form (
     mapping (
+      "id" -> longNumber,
       "name" -> nonEmptyText,
       "nickname" -> nonEmptyText
     )(model.Player.apply)(model.Player.unapply)
