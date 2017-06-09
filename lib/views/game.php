@@ -303,6 +303,7 @@ function print_full_header_row($players) {
 // json_encode() does not work when the outermost array is numeric (a JSON array). Therefore we must join the individual objects
 $series_json_entries = [];
 foreach ($player_round_acc_points as $player_position => $acc_points) {
+	array_unshift($acc_points, 0); // start with 0 points in "round 0"
 	$series_json_entries[] = json_encode([
 			'name' => $players[$player_position]['nickname'],
 			'data' => $acc_points
