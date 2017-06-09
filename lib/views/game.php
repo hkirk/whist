@@ -295,8 +295,8 @@ function print_full_header_row($players) {
 	</tfoot>
 </table>
 
-<script src="http://code.highcharts.com/highcharts.js"></script>
-<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script src="//code.highcharts.com/highcharts.js"></script>
+<script src="//code.highcharts.com/modules/exporting.js"></script>
 
 <div id="container" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
 <?php
