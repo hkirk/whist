@@ -33,7 +33,7 @@ VALUES(?, ?, ?, NULL)
 EOS;
 	$stm_players = $_db->prepare($sql_players);
 	foreach ($is_bye_players as $player_position => $is_bye_player) {
-		$params = [$id, $player_position, $is_bye_player];
+		$params = [$id, $player_position, (int)$is_bye_player];
 		$stm_players->execute($params);
 	}
 	// Update the game row:
