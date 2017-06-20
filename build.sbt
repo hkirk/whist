@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "anorm" % "2.4.0",
   "mysql" % "mysql-connector-java" % "5.1.21",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % "test"
+  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % "test"
 )
 
 scalacOptions ++= Seq("-feature", "-deprecation")

@@ -6,6 +6,7 @@ package controllers
 
 import javax.inject.Inject
 
+import model.service.GameService
 import model.{GameForm, Location}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -15,7 +16,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 
 class GameController @Inject()(
                         val db: Database,
-                        val messagesApi: MessagesApi
+                        val messagesApi: MessagesApi,
+                        val gameService: GameService
                       ) extends Controller with I18nSupport {
 
   val createGameFrom = Form(
@@ -30,7 +32,7 @@ class GameController @Inject()(
   def game(id: Long) = Action { implicit r =>
     db.withConnection {
       implicit c =>
-        Ok(views.html.game.game(model.Game.getGameWithPlayers(id)))
+        Ok(views.html.game.game(gameService.getGameWithPlayers(id)))
     }
   }
 
