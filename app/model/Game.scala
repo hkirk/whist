@@ -64,7 +64,7 @@ object Game {
       """.stripMargin).as(Game.game *)
   }
 
-  def getGameWithPlayers(id: Long): List[GameWithPlayers] = {
+  def getGameWithPlayers(id: Long)(implicit c: Connection): List[GameWithPlayers] = {
     SQL(
       """
         SELECT

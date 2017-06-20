@@ -28,7 +28,10 @@ class GameController @Inject()(
   )
 
   def game(id: Long) = Action { implicit r =>
-    Ok(views.html.game.game(model.Game.getGameWithPlayers(id)))
+    db.withConnection {
+      implicit c =>
+        Ok(views.html.game.game(model.Game.getGameWithPlayers(id)))
+    }
   }
 
   def newGame() = Action { implicit r =>
