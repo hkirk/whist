@@ -4,7 +4,7 @@
         <div class="control-group<?php echo ($data["location_error"] != "" ? " error" : ""); ?>">
             <label for="location">Location</label>
             <div class="controls">
-                <input type="text" placeholder="Type location name" id="location" name="name" value="<? echo $data["name"]; ?>">
+                <input type="text" placeholder="Type location name" id="location" name="name" value="<?php echo $data["name"]; ?>">
                 <span class="help-block">Location name</span>
             </div>
         </div>
