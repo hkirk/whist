@@ -8,6 +8,7 @@ g.id AS id,
 g.started_at AS started_at,
 g.ended_at AS ended_at,
 g.updated_at AS updated_at,
+g.description AS description,
 l.name AS location, (
 	SELECT COUNT(*)
 	FROM game_players AS gp
@@ -220,6 +221,7 @@ SELECT
 	l.name             AS location,
 	gp.player_position AS player_position,
 	gp.total_points    AS player_total_points,
+	p.id						   AS player_id,
 	p.nickname         AS player_nickname,
 	p.fullname         AS player_fullname
 FROM             games        AS g
@@ -240,7 +242,7 @@ EOS;
 	foreach ($rows as $index => $row) {
 		//printf("pos: %s", $row['player_position']);
 		assert((string) $index === $row['player_position']);
-		$player = array_filter_entries($row, 'player_', ['nickname', 'fullname']);
+		$player = array_filter_entries($row, 'player_', ['id', 'nickname', 'fullname']);
 		$player['total_points'] = (int) $row['player_total_points'];
 		$players[] = $player;
 	}
