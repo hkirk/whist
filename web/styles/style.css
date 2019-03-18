@@ -104,6 +104,92 @@ table th {
 	font-weight: bold;
 }
 
+table td.negative,
+table th.negative {
+	color: red;
+}
+
+table td.positive,
+table th.positive {
+	color: green;
+}
+
+
+
+
+/*** Player stats table ***/
+table.player-stats, table.player-stats tbody {
+	border: 3px solid black;
+}
+
+table.player-stats tr {
+	border-top: 2px solid black;
+}
+
+/* Vertical borders: */
+table.player-stats tr th,
+table.player-stats tr td:nth-child(-n+3),
+table.player-stats tr td:nth-child(2n+5) {
+	border-right: 2px solid black;
+}
+
+/* Header cells: */
+table.player-stats th {
+	text-align: center;
+}
+
+/* Default: align numbers to the right */
+table.player-stats td {
+	text-align: right;
+}
+
+/* Rank column: */
+table.player-stats tr td:first-child {
+	text-align: center;
+}
+
+/* Player name column: */
+table.player-stats tr td:nth-child(2) {
+	text-align: left;
+}
+
+/* First 3 columns: */
+table.player-stats tr td:nth-child(-n+3) {
+	font-weight: bold;
+}
+
+
+
+
+
+/*** Game stats table ***/
+table.game-stats, table.game-stats tbody {
+	border: 3px solid black;
+}
+
+/* Vertical borders: */
+table.game-stats thead tr:nth-child(1) th:nth-child(n+2),
+table.game-stats thead tr:nth-child(2) th:nth-child(4n+1),
+table.game-stats tbody td:nth-child(4n-2) {
+	border-left: 2px solid black;
+}
+
+/* Top header cells */
+table.game-stats thead th {
+	/* Override bootstrap border: */
+	border: 1px solid black;
+	text-align: center;
+	vertical-align: middle;
+}
+
+table.game-stats tbody th {
+	text-align: left;
+}
+table.game-stats tbody td {
+	text-align: center;
+}
+
+
 
 
 /*** Score board table ***/
@@ -127,14 +213,14 @@ table.scoreboard tr.full-row th:first-child {
 /* The first (leftmost) player column */
 table.scoreboard td:nth-child(6),
 table.scoreboard tr.full-row th:nth-child(6),
-table.scoreboard tr.aggregate-row th:nth-child(4) {
+table.scoreboard tr.aggregate-row th:nth-child(2) {
 	border-left: 3px solid black;
 }
 
 /* Player header cells and the leftmost body column for each player, except the first (leftmost) player */
 table.scoreboard td:nth-child(2n+8),
 table.scoreboard tr.full-row th:nth-child(n+7),
-table.scoreboard tr.aggregate-row th:nth-child(n+5) {
+table.scoreboard tr.aggregate-row th:nth-child(n+3) {
 	border-left: 2px solid black;
 }
 
@@ -148,9 +234,7 @@ table.scoreboard tr.full-row th:first-child {
 table.scoreboard td:nth-child(4),
 table.scoreboard td:nth-child(5),
 table.scoreboard tr.full-row th:nth-child(4),
-table.scoreboard tr.full-row th:nth-child(5),
-table.scoreboard tr.aggregate-row th:nth-child(2),
-table.scoreboard tr.aggregate-row th:nth-child(3) {
+table.scoreboard tr.full-row th:nth-child(5) {
 	text-align: center;
 }
 
@@ -159,8 +243,8 @@ table.scoreboard tr.full-row th:nth-child(n+6) {
 	text-align: center;
 }
 
-/* Player sums and bid winner (mate) count */
-table.scoreboard tr.aggregate-row th:nth-child(n+4) {
+/* Player total points */
+table.scoreboard tr.aggregate-row th:nth-child(n+2) {
 	text-align: center;
 }
 
@@ -174,16 +258,6 @@ table.scoreboard tbody tr:nth-child(odd) {
 }
 table.scoreboard tbody tr:nth-child(even) {
 	background-color: #efefef;
-}
-
-table.scoreboard td.negative,
-table.scoreboard th.negative {
-	color: red;
-}
-
-table.scoreboard td.positive,
-table.scoreboard th.positive {
-	color: green;
 }
 
 /* Dealer backgound must match the row background */

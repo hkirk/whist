@@ -32,7 +32,7 @@ EOS;
  */
 function db_create_location($name) {
 	_db_beginTransaction();
-	$sql = "INSERT INTO locations (name) VALUES (?)";
+	$sql = "INSERT INTO locations (name, current) VALUES (?, 1)";
 	$params = [$name];
 	_db_prepare_execute($sql, $params);
 	_db_commit();

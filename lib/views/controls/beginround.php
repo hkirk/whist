@@ -146,7 +146,6 @@ global $TIPS_COUNT_MULTIPLIERS;
 			$attachment_key = '';
 			$text = '[Solo game]';
 			option($attachment_key, $text);
-			
 			?>
 		</select>
 		<div class="description">A normal non-solo game requires an attachment. If the attachment is "Tips", then also choose the number of tips, please.</div>

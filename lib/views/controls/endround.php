@@ -26,7 +26,7 @@
 			<legend>Outcome for <?php echo $bid_winner['nickname'] ?></legend>
 			<div>
 				<?php label($name, 'Tricks:', $id_qualifier) ?>
-				<select name="<?php echo $name ?>" id="<?php echo name_id($name, $id_qualifier) ?>">			
+				<select name="<?php echo $name ?>" id="<?php echo name_id($name, $id_qualifier) ?>" class="form-control">			
 					<?php
 					option('', 'Choose tricks');
 					for ($tricks = MIN_TRICKS; $tricks <= MAX_TRICKS; $tricks++) {
@@ -41,7 +41,7 @@
 				?>
 				<div>
 					<?php label($name, 'Mate:', $id_qualifier) ?>
-					<select name="<?php echo $name ?>" id="<?php echo name_id($name, $id_qualifier) ?>">
+					<select name="<?php echo $name ?>" id="<?php echo name_id($name, $id_qualifier) ?>" class="form-control">
 						<?php
 						option('', 'Choose a mate');
 						foreach ($participating_player_positions as $position) {
@@ -70,6 +70,6 @@
 		?>
 	</div>
 	<div>
-		<button type="submit">End round</button>
+		<button class="btn btn-primary" type="submit">End round</button>
 	</div>
 </form>

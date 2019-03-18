@@ -2,10 +2,10 @@
 	<button type="button" class="close" data-dismiss="alert">&times;</button>
 	<?php if ($invalid_player_count): ?>
 		Invalid player count!
-	<? endif; ?>
+	<?php endif; ?>
 	<?php if ($missing_location): ?>
 		Missing location!
-	<? endif; ?>
+	<?php endif; ?>
 	<?php if ($missing_player): ?>
 		Missing player!
 	<?php endif; ?>
@@ -17,6 +17,6 @@
 	<?php endif; ?>
 	<?php if ($unknown_location): ?>
 		Unknown location!
-	<? endif; ?>
+	<?php endif; ?>
 </div>
 <p>Try again.</p>

@@ -16,8 +16,7 @@ $data = [
 		'illegal_normal_bid_winner_count' => FALSE,
 		'illegal_bye_count' => FALSE,
 		'multi_bye_position' => FALSE,
-		'joint_bid_winner_bye' => FALSE,
-		'joint_bye_dealer' => FALSE
+		'joint_bid_winner_bye' => FALSE
 ];
 $input_error = FALSE;
 
@@ -107,9 +106,6 @@ if ($dealer_position === '') {
 $bid_winner_bye_intersection = array_intersect($bid_winner_positions, $bye_positions);
 if (!empty($bid_winner_bye_intersection)) {
 	$input_error = $data['joint_bid_winner_bye'] = TRUE;
-}
-if (in_array($dealer_position, $bye_positions)) {
-	$input_error = $data['joint_bye_dealer'] = TRUE;
 }
 
 if ($input_bid === '') {

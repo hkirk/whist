@@ -353,3 +353,8 @@ function nonnull_index($array, $key) {
 	return isset($array[$key]) && $array[$key] !== NULL;
 }
 
+
+function datetime_string($full_datetime_string, $null_value = "") {
+	return $full_datetime_string === null ? $null_value : substr($full_datetime_string, 0, 16);
+}
+

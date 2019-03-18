@@ -11,7 +11,7 @@ check_input($id);
 $controls_positions = check_get_array($_GET, 'cp');
 if ($controls_positions === NULL) {
 	// Default positions
-	$controls_positions = ['bottom'];
+	$controls_positions = ['top'];
 } else {
 	if (count($controls_positions) > 2) {
 		render_unexpected_input_page_and_exit("Too many controls positions!");
@@ -77,6 +77,42 @@ try {
 
 $acc_total_points = array_fill(0, $n_players, 0);
 $rounds = [];
+$n_finished_rounds = 0;
+
+// Init player stats:
+$player_stats = [];
+for ($position = 0; $position < $n_players; $position++) {
+	$player_stats[] = [
+			'position' => $position,
+			'total_points' => $total_points[$position],
+			'bid_winner_rounds' => 0,
+			'bid_winner_mate_rounds' => 0,
+			'opponent_rounds' => 0,
+			'bye_rounds' => 0,
+			'participating_rounds' => 0,
+			'won_rounds' => 0,
+			'lost_rounds' => 0
+	];
+}
+
+// Init game stats:
+$game_stats_init = [
+		'n_bid_winners' => 0,
+		'bid_tricks_sum' => 0,
+		'bid_tricks_square_sum' => 0,
+		'realized_tricks_sum' => 0,
+		'realized_tricks_square_sum' => 0,
+		'tricks_diff_sum' => 0,
+		'tricks_diff_square_sum' => 0,
+		'abs_tricks_diff_sum' => 0,
+		'abs_tricks_diff_square_sum' => 0
+];
+$game_stats = [
+		'total' => $game_stats_init,
+		'normal' => $game_stats_init,
+		'solo' => $game_stats_init
+];
+
 
 foreach ($db_rounds as $r) {
 	$bid_type = $r['bid_type'];
@@ -118,7 +154,77 @@ foreach ($db_rounds as $r) {
 			'updated_at' => $r['updated_at']
 	];
 	$rounds[] = $round;
+
+	// Do not include active rounds in the stats:
+	if ($r['ended_at'] === NULL) {
+		continue;
+	}
+	$n_finished_rounds++;
+
+	// Update player stats:
+	$is_opponent_by_position = array_fill(0, $n_players, true);
+	foreach (array_keys($bid_winner_tricks_by_position) as $position) {
+		$player_stats[$position]['bid_winner_rounds'] ++;
+		$is_opponent_by_position[$position] = false;
+	}
+	if ($bid_winner_mate_position !== NULL) {
+		$player_stats[$bid_winner_mate_position]['bid_winner_mate_rounds'] ++;
+		$is_opponent_by_position[$bid_winner_mate_position] = false;
+	}
+	foreach ($r['player_data'] as $position => $pd) {
+		if ($pd['is_bye']) {
+			$player_stats[$position]['bye_rounds'] ++;
+			$is_opponent_by_position[$position] = false;
+		} else {
+			$player_stats[$position]['participating_rounds'] ++;
+		}
+		if ($is_opponent_by_position[$position]) {
+			$player_stats[$position]['opponent_rounds'] ++;
+		}
+		if ($pd['points'] === NULL) {
+			continue;
+		}
+		// TODO this algorithm does not always work for multi bid winner solo rounds!
+		if ($pd['points'] > 0) {
+			$player_stats[$position]['won_rounds'] ++;
+		} else if ($pd['points'] < 0) {
+			$player_stats[$position]['lost_rounds'] ++;
+		}
+	}
+
+	// Update game stats:
+	if ($bid_type === 'solo') {
+		$bid_tricks = $SOLO_GAMES[$bid['solo_type']]['max_tricks'];
+		$tricks_diff_sign = -1;
+	} else {
+		$bid_tricks = $data['bid_tricks'];
+		$tricks_diff_sign = 1;
+	}
+	$gs = &$game_stats[$bid_type];
+	foreach ($bid_winner_tricks_by_position as $tricks) {
+		$tricks_diff = $tricks_diff_sign * ($tricks - $bid_tricks);
+		$gs['n_bid_winners'] ++;
+		$gs['bid_tricks_sum'] += $bid_tricks;
+		$gs['bid_tricks_square_sum'] += $bid_tricks * $bid_tricks;
+		$gs['realized_tricks_sum'] += $tricks;
+		$gs['realized_tricks_square_sum'] += $tricks * $tricks;
+		$gs['tricks_diff_sum'] += $tricks_diff;
+		$gs['tricks_diff_square_sum'] += $tricks_diff * $tricks_diff;
+		$gs['abs_tricks_diff_sum'] += abs($tricks_diff);
+		$gs['abs_tricks_diff_square_sum'] += $tricks_diff * $tricks_diff; // squared => positive
+	}
 }
+
+// Order player stats by points, descending
+usort($player_stats, function($a, $b) {
+	return $b['total_points'] - $a['total_points'];
+});
+
+// Total = normal + solo
+foreach ($game_stats['total'] as $key => &$sum) {
+	$sum = $game_stats['normal'][$key] + $game_stats['solo'][$key];
+}
+
 
 $n_rounds = count($rounds);
 
@@ -215,6 +321,9 @@ $data = [
 		'game_id' => &$id,
 		'location' => &$location,
 		'players' => &$players,
+		'player_stats' => &$player_stats,
+		'game_stats' => $game_stats,
+		'n_finished_rounds' => &$n_finished_rounds,
 		'rounds' => &$rounds,
 		'total_points' => &$total_points,
 		'point_rules' => &$point_rules,
@@ -225,6 +334,6 @@ $data = [
 		'controls_view_data' => &$controls_view_data
 ];
 
-$title = "Whist game at " . $location;
+$title = "Whist game at $location, " . datetime_string($db_game['started_at']);
 
 render_page($title, $title, "game", $data);
